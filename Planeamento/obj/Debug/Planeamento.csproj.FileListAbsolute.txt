@@ -1,0 +1,30 @@
+C:\Users\jose.figueiredo\AppData\Local\Temporary Projects\Planeamento\bin\Debug\Planeamento.exe.config
+C:\Users\jose.figueiredo\AppData\Local\Temporary Projects\Planeamento\bin\Debug\Planeamento.exe
+C:\Users\jose.figueiredo\AppData\Local\Temporary Projects\Planeamento\bin\Debug\Planeamento.pdb
+C:\Users\jose.figueiredo\AppData\Local\Temporary Projects\Planeamento\obj\Debug\Planeamento.Properties.Resources.resources
+C:\Users\jose.figueiredo\AppData\Local\Temporary Projects\Planeamento\obj\Debug\Planeamento.csproj.GenerateResource.Cache
+C:\Users\jose.figueiredo\AppData\Local\Temporary Projects\Planeamento\obj\Debug\Planeamento.exe
+C:\Users\jose.figueiredo\AppData\Local\Temporary Projects\Planeamento\obj\Debug\Planeamento.pdb
+C:\Users\jose.figueiredo\AppData\Local\Temporary Projects\Planeamento\obj\Debug\Planeamento.csprojResolveAssemblyReference.cache
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Debug\Planeamento.exe.config
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Debug\Planeamento.exe
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Debug\Planeamento.pdb
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.Properties.Resources.resources
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.csproj.GenerateResource.Cache
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.exe
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.pdb
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.csprojResolveAssemblyReference.cache
+C:\Users\jose.figueiredo\SkyDrive\Documentos\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Debug\Planeamento.exe.config
+C:\Users\jose.figueiredo\SkyDrive\Documentos\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.exe
+C:\Users\jose.figueiredo\SkyDrive\Documentos\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.pdb
+C:\Users\jose.figueiredo\SkyDrive\Documentos\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Debug\Planeamento.exe
+C:\Users\jose.figueiredo\SkyDrive\Documentos\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Debug\Planeamento.pdb
+C:\Users\jose.figueiredo\SkyDrive\Documentos\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.csprojResolveAssemblyReference.cache
+C:\Users\jose.figueiredo\SkyDrive\Documentos\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.Properties.Resources.resources
+C:\Users\jose.figueiredo\SkyDrive\Documentos\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.csproj.GenerateResource.Cache
+W:\joao.amorim\Planeamento\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Debug\Planeamento.exe.config
+W:\joao.amorim\Planeamento\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.exe
+W:\joao.amorim\Planeamento\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.pdb
+C:\Users\joao.amorim\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Debug\Planeamento.exe.config
+C:\Users\joao.amorim\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.exe
+C:\Users\joao.amorim\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.pdb

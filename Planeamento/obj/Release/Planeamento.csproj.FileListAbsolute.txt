@@ -1,0 +1,7 @@
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Release\Planeamento.exe.config
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Release\Planeamento.exe
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\bin\Release\Planeamento.pdb
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Release\Planeamento.Properties.Resources.resources
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Release\Planeamento.csproj.GenerateResource.Cache
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Release\Planeamento.exe
+C:\Users\jose.figueiredo\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Release\Planeamento.pdb
