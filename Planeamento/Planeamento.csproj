@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BDInit.cs" />
+    <Compile Include="BDUtil.cs" />
     <Compile Include="Primeiro Plano\BDMacharia.cs" />
     <Compile Include="Primeiro Plano\BDFusao.cs" />
     <Compile Include="Primeiro Plano\BDMolde.cs" />

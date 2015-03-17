@@ -7,14 +7,11 @@ using System.Windows.Forms;
 namespace Planeamento
 {
      class PrimeiroPlano
-    {
-       
-            
+    {    
         public PrimeiroPlano(){
 
-            
             //***************************  DESCRICAO da FUNCAO  *********************************   1//
-//des            BDMacharia bdMac = new BDMacharia();
+            BDMacharia bdMac = new BDMacharia();
             //inicializa as tabelas "Produtos Plan"; "Plan Macharia"; e as DataTables planMachariaCMW1; planMachariaCMW2
             //vai ler a tabela "Sales Line" e preenche o DataSet produtosCMW1      
             //insere na tabela "Produtos Plan" a lista dos produtos CMW1 a planear
@@ -26,7 +23,7 @@ namespace Planeamento
             //***************************  DESCRICAO da FUNCAO  *********************************   2//
 
             //getPlanoMachariaCMW1 retorna a lista de machos a planear
-//des             PlanMacharia pM = new PlanMacharia(bdMac.getListaMachariaCMW1(), bdMac.getListaMachariaCMW2());
+            PlanMacharia plMac = new PlanMacharia(bdMac.GetListaMachariaCMW1(), bdMac.GetListaMachariaCMW2());
             //apagar os planos da macharia recebidos de BDMacharia
             //verifica as capacidades das macharias através da consulta na tabela Parametros
             //inicializada os DataTables planoCMW1 e planoCMW2
@@ -37,7 +34,7 @@ namespace Planeamento
             //***************************  DESCRICAO da FUNCAO  *********************************   3//
 
             //insere o planeamento feito no Plan Macharia, na tabela "Plan Macharia"
-//des             bdMac.inserePlanos(pM.getPlanoCMW1(), pM.getPlanoCMW2());
+            bdMac.InserePlanos(plMac.getPlanoCMW1(), plMac.getPlanoCMW2());
            
             //**********************************************************************************//
 
@@ -60,21 +57,17 @@ namespace Planeamento
 
             //***************************  DESCRICAO da FUNCAO  *********************************   6//
             //lê da B.D. o planeamento de moldacao e pôe em fusaoCMW1,fusaoCMW2
-            BDFusao bdFus = new BDFusao();
+//des            BDFusao bdFus = new BDFusao();
             //bdFus.imprime();
 
 
             //***************************  DESCRICAO da FUNCAO  *********************************   7//
             //recebe os 3 planeamentos da bdFus e atribui os fornos às cargas
-            PlanFusao pFus = new PlanFusao(bdFus.getFusCMW1(),bdFus.getFusCMW2());
+//des            PlanFusao pFus = new PlanFusao(bdFus.getFusCMW1(),bdFus.getFusCMW2());
 
-            bdFus.inserePlano(pFus.getPlanoCMW1(),pFus.getPlanoCMW2());
+//des            bdFus.inserePlano(pFus.getPlanoCMW1(),pFus.getPlanoCMW2());
 
             //**********************************************************************************//
-
-
-
-
         }
     }
 }
