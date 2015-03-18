@@ -12,7 +12,6 @@ namespace Planeamento
 {
     class BDMacharia
     {
-        private String SQL;
         private DataSet produtosCMW1;
         private DataSet produtosCMW2;
         private DataSet machosCMW1;
@@ -25,9 +24,10 @@ namespace Planeamento
         {
             InicializaPlanMachariaBD();
             InicializaTabelas();
-
-            SetPlanMachariaCMW1();
-            SetPlanMachariaCMW2();
+            GetProdCMW1();
+            GetProdCMW2();
+            //SetPlanMachariaCMW1();
+            //SetPlanMachariaCMW2();
             //ImprimeP();
         }
 
@@ -39,7 +39,8 @@ namespace Planeamento
                 return;
             SqlCommand cmd = new SqlCommand("DELETE Planeamento.dbo.[CMW$Plan Macharia]", connection);
             cmd.CommandType = CommandType.Text;
-            cmd.ExecuteNonQuery();
+            int linhas = cmd.ExecuteNonQuery();
+            Console.WriteLine(linhas + " linhas removidas da tabela Plan Macharia");
             BDUtil.FechaBD(connection);
         }
 
@@ -67,38 +68,6 @@ namespace Planeamento
             planMachariaCMW2.Columns.Add(new DataColumn("noLiga", typeof(String)));
         }
 
-        //lê tabela SalesLine para o DataSet produtosCMW1
-        //insere na tabela "Produtos Plan" a lista dos produtos CMW1 a planear
-        //por cada produto a planear, verifica os machos associados e preenche machosCMW1
-        //por cada macho, vê o tempo de fabrico, faz os calculos correspondentes em função da quantidade
-        //insere na DataTable planMachariaCMW1 que é o plano final
-        private void SetPlanMachariaCMW1()
-        {
-            GetProdCMW1(); 
-
-            machosCMW1 = new DataSet();
-            foreach (DataTable table in produtosCMW1.Tables)
-                foreach (DataRow row in table.Rows)
-                {
-                    InsereProdutosPlan(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString(), row[6].ToString(), row[7].ToString());
-                    ExecutaMachoCMW1(row);
-                }
-        }
-
-        //igual ao setPlanMachariaCMW1, mas para a CMW2
-        private void SetPlanMachariaCMW2()
-        {
-            GetProdCMW2();
-            machosCMW2 = new DataSet();
-            foreach (DataTable table in produtosCMW2.Tables)
-                foreach (DataRow row in table.Rows)
-                {
-                    InsereProdutosPlan(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString(), row[6].ToString(), row[7].ToString());
-                    ExecutaMachoCMW2(row);
-                }
-        }
-
-
         //Retira produtos e quantidade, ordenados por local de produção, urgência e data de entrega planeada
         //da tabela Sales Line para o DataSet produtosCMW1
         private void GetProdCMW1()
@@ -110,7 +79,7 @@ namespace Planeamento
 
             try
             {
-                String SQL = BDUtil.QuerySalesLine("[Local de Producao], [Line No_],[Document No_], No_,[Outstanding Quantity],Urgente,[Planned Delivery Date],Material,[Peso Peça [Kg]]],NumeroMoldes", local : 1);
+                String SQL = BDUtil.QuerySalesLine("[Local de Producao], [Line No_],[Document No_], No_,[Outstanding Quantity],Urgente,[Planned Delivery Date],Material,[Peso Peça [Kg]]],NumeroMoldes", local: 1);
                 SqlDataAdapter res = new SqlDataAdapter(SQL, connection);
                 res.Fill(produtosCMW1);
                 res.Dispose();
@@ -136,7 +105,7 @@ namespace Planeamento
 
             try
             {
-                String SQL = BDUtil.QuerySalesLine("[Local de Producao], [Line No_],[Document No_], No_,[Outstanding Quantity],Urgente,[Planned Delivery Date],Material,[Peso Peça [Kg]]],NumeroMoldes", local : 2);
+                String SQL = BDUtil.QuerySalesLine("[Local de Producao], [Line No_],[Document No_], No_,[Outstanding Quantity],Urgente,[Planned Delivery Date],Material,[Peso Peça [Kg]]],NumeroMoldes", local: 2);
                 SqlDataAdapter res = new SqlDataAdapter(SQL, connection);
                 res.Fill(produtosCMW2);
                 res.Dispose();
@@ -150,14 +119,45 @@ namespace Planeamento
                 BDUtil.FechaBD(connection);
             }
 
+       } 
+
+        //lê tabela SalesLine para o DataSet produtosCMW1
+        //insere na tabela "Produtos Plan" a lista dos produtos CMW1 a planear
+        //por cada produto a planear, verifica os machos associados e preenche machosCMW1
+        //por cada macho, vê o tempo de fabrico, faz os calculos correspondentes em função da quantidade
+        //insere na DataTable planMachariaCMW1 que é o plano final
+        private void SetPlanMachariaCMW1()
+        {
+            machosCMW1 = new DataSet();
+            foreach (DataTable table in produtosCMW1.Tables)
+                foreach (DataRow row in table.Rows)
+                {
+                    InsereProdutosPlan(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString(), row[6].ToString(), row[7].ToString());
+                    ExecutaMachoCMW1(row);
+                }
         }
 
+        //igual ao setPlanMachariaCMW1, mas para a CMW2
+        private void SetPlanMachariaCMW2()
+        {
+            machosCMW2 = new DataSet();
+            int linhas = 0;
+            foreach (DataTable table in produtosCMW2.Tables)
+
+                foreach (DataRow row in table.Rows)
+                {
+                    linhas += InsereProdutosPlan(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString(), row[6].ToString(), row[7].ToString());
+                    ExecutaMachoCMW2(row);
+                }
+        }
+
+
         //Insere cada linha dos DataSets produtosCMW1 e produtosCMW2 na tabela Produtos Plan
-        private void InsereProdutosPlan(String lProd,String noLine,String noDoc, String noProd,String qtd,String urg,String planDev,String noL){
+        private int InsereProdutosPlan(String lProd,String noLine,String noDoc, String noProd,String qtd,String urg,String planDev,String noL){
 
             SqlConnection connection = BDUtil.AbreBD();
             if (connection == null)
-                return;
+                return 0;
             SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Produtos Plan]([Local Producao],[Document No_],[Line No_],[Prod No_],[Quantidade Pendente],Urgencia,[Planned Delivery Date],[Liga Metalica]) VALUES(@local,@doc,@noLine, @noProd,@qtd,@urg,@planD,@lMet)", connection);
             
             cmd.CommandType = CommandType.Text;
@@ -174,6 +174,8 @@ namespace Planeamento
             cmd.ExecuteNonQuery();
 
             BDUtil.FechaBD(connection);
+
+            return 1;
         }
 
         //Por cada produto, obtem os machos da tabela Production BOM Line e coloca no DataSet machosCMW1
@@ -318,66 +320,69 @@ namespace Planeamento
             return planMachariaCMW2;
         }
 
+        // ****************************************************************************************************************************************************
+        // ************************************************ Inserts após PlanMacharia *************************************************************************
+        // ****************************************************************************************************************************************************
 
-        private int GetLinhaGeral(DataRow row)
+        public void InserePlanos(DataTable pCMW1, DataTable pCMW2)
         {
-            int res=0;
+            int linhas = 0;
 
-            SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-            SqlCommand cmd = new SqlCommand("SELECT linha FROM Planeamento.dbo.[CMW$Numeracao] WHERE noEnc LIKE '" + row[4].ToString()+"' AND noLine="+Convert.ToInt32(row[5].ToString())+ " AND noProd LIKE '"+row[6].ToString()+"'", con);
-         
+            foreach (DataRow row in pCMW1.Rows) linhas += ImportPlano(row);
+
+            foreach (DataRow row in pCMW2.Rows) linhas += ImportPlano(row);
+
+        }
+
+        private int ImportPlano(DataRow row) 
+        {
+            SqlConnection connection = BDUtil.AbreBD();
+            if (connection == null)
+                return 0;
+
+            int num = GetLinhaGeral(row,connection);
+
+            SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Plan Macharia] (linha, local, semana, dia, noDoc,noLine, noProd, codMach, noLiga,qtd,tempo,acc,fabrica) VALUES(@linha,@local,@semana, @dia,@noDoc,@noLine,@noProd,@codMach,@noLiga,@qtd,@tempo,@acc,@fabrica)", connection);
+            
             cmd.CommandType = CommandType.Text;
-            con.Open();
-            //cmd.ExecuteNonQuery();
 
-            res= Convert.ToInt32(cmd.ExecuteScalar().ToString());
+            cmd.Parameters.AddWithValue("@linha", num);
+            cmd.Parameters.AddWithValue("@local", row[1]);
+            cmd.Parameters.AddWithValue("@semana", row[2]);
+            cmd.Parameters.AddWithValue("@dia", row[3]);
+            cmd.Parameters.AddWithValue("@noDoc", row[4]);
+            cmd.Parameters.AddWithValue("@noLine", row[5]);
+            cmd.Parameters.AddWithValue("@noProd", row[6]);
+            cmd.Parameters.AddWithValue("@codMach", row[7]);
+            cmd.Parameters.AddWithValue("@noLiga", row[8]);
+            cmd.Parameters.AddWithValue("@qtd", row[9]);
+            cmd.Parameters.AddWithValue("@tempo", row[10]);
+            cmd.Parameters.AddWithValue("@acc", row[11]);
+            cmd.Parameters.AddWithValue("@fabrica", row[12]);
 
-            con.Close();
+            cmd.ExecuteNonQuery();
+
+            BDUtil.FechaBD(connection);
+
+            return 1;
+        }
+
+        private int GetLinhaGeral(DataRow row,SqlConnection connection)
+        {
+            int res = 0;
+
+            SqlCommand cmd = new SqlCommand("SELECT linha FROM Planeamento.dbo.[CMW$Numeracao] WHERE noEnc LIKE '" + row[4].ToString() + "' AND noLine=" + Convert.ToInt32(row[5].ToString()) + " AND noProd LIKE '" + row[6].ToString() + "'", connection);
+
+            cmd.CommandType = CommandType.Text;
+
+            res = Convert.ToInt32(cmd.ExecuteScalar().ToString());
 
             return res;
         }
 
-        private void ImportPlano(DataRow row) 
-        {
-            int num = GetLinhaGeral(row);
-
-            using (SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;"))
-            {
-
-                //insere os novos registos
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Plan Macharia] (linha, local, semana, dia, noDoc,noLine, noProd, codMach, noLiga,qtd,tempo,acc,fabrica) VALUES(@linha,@local,@semana, @dia,@noDoc,@noLine,@noProd,@codMach,@noLiga,@qtd,@tempo,@acc,@fabrica)", con))
-                {
-                    cmd.CommandType = CommandType.Text;
-                    con.Open();
-
-                    cmd.Parameters.AddWithValue("@linha", num);
-                    cmd.Parameters.AddWithValue("@local", row[1]);
-                    cmd.Parameters.AddWithValue("@semana", row[2]);
-                    cmd.Parameters.AddWithValue("@dia", row[3]);
-                    cmd.Parameters.AddWithValue("@noDoc", row[4]);
-                    cmd.Parameters.AddWithValue("@noLine", row[5]);
-                    cmd.Parameters.AddWithValue("@noProd", row[6]);
-                    cmd.Parameters.AddWithValue("@codMach", row[7]);
-                    cmd.Parameters.AddWithValue("@noLiga", row[8]);
-                    cmd.Parameters.AddWithValue("@qtd", row[9]);
-                    cmd.Parameters.AddWithValue("@tempo", row[10]);
-                    cmd.Parameters.AddWithValue("@acc", row[11]);
-                    cmd.Parameters.AddWithValue("@fabrica", row[12]);
-
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                }
-            }
-     
-        }
-
-        public void InserePlanos(DataTable pCMW1,DataTable pCMW2) {
-
-            foreach (DataRow row in pCMW1.Rows) ImportPlano(row);
-
-            foreach (DataRow row in pCMW2.Rows) ImportPlano(row);
-
-        }
+        // ****************************************************************************************************************************************************
+        // ************************************************* GETs para o BDMolde ******************************************************************************
+        // ****************************************************************************************************************************************************
 
         public DataTable GetCMW1(){
 

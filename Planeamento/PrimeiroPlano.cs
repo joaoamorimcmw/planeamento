@@ -24,6 +24,7 @@ namespace Planeamento
 
             //getPlanoMachariaCMW1 retorna a lista de machos a planear
             PlanMacharia plMac = new PlanMacharia(bdMac.GetListaMachariaCMW1(), bdMac.GetListaMachariaCMW2());
+
             //apagar os planos da macharia recebidos de BDMacharia
             //verifica as capacidades das macharias através da consulta na tabela Parametros
             //inicializada os DataTables planoCMW1 e planoCMW2
@@ -34,8 +35,8 @@ namespace Planeamento
             //***************************  DESCRICAO da FUNCAO  *********************************   3//
 
             //insere o planeamento feito no Plan Macharia, na tabela "Plan Macharia"
-            bdMac.InserePlanos(plMac.getPlanoCMW1(), plMac.getPlanoCMW2());
-           
+            bdMac.InserePlanos(plMac.GetPlanoCMW1(), plMac.GetPlanoCMW2());
+
             //**********************************************************************************//
 
             //***************************  DESCRICAO da FUNCAO  *********************************   4//

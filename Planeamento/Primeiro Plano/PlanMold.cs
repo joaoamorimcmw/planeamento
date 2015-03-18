@@ -8,37 +8,38 @@ using System.Data;
 using System.Data.OleDb;
 
 
-
-
 namespace Planeamento
 {
 
     class PlanMold
     {
-
         private DataTable produtosCMW1;
         private DataTable produtosCMW2;
         private DataTable planeamentoMoldacGF;
         private DataTable planeamentoMoldacIMF;
         private DataTable planeamentoMoldacMAN;
+
         private int capMGF;
         private int capMIMF;
         private int capMMAN;
         private int capFGF;
         private int capFIMF;
         private int capFMAN;
+
         private int horarioGF;
         private int accCaixasGF;
         private int accPesoGF;
         private string diaGF;
         private int semanaGF;
         private int indexGF;
+
         private int horarioIMF;
         private int accCaixasIMF;
         private int accPesoIMF;
         private string diaIMF;
         private int semanaIMF;
         private int indexIMF;
+
         private int horarioMAN;
         private int accCaixasMAN;
         private int accPesoMAN;
@@ -51,34 +52,19 @@ namespace Planeamento
 
         public PlanMold(DataTable prodCMW1, DataTable prodCMW2)
         {
-
-            //apaga os planeamentos origem
             produtosCMW1 = prodCMW1.Copy();
             produtosCMW2 = prodCMW2.Copy();
-            prodCMW1.Clear();
-            prodCMW2.Clear();
+            //prodCMW1.Clear();
+            //prodCMW2.Clear();
 
-            init();
-            calcPlan();
-            
-
+            Inicializa();
+            CalcPlan();
         }
-
-     
-
-
-
 
         // ************************* Metodos ***********************************
 
-
-
-
-
-        public void init()
+        public void Inicializa()
         {
-
-
             produtosCMW1.Columns.Add(new DataColumn("caixas", typeof(int)));
             produtosCMW1.Columns.Add(new DataColumn("pesoTotal", typeof(int)));
             produtosCMW1.Columns.Add(new DataColumn("caixasACC", typeof(int)));
@@ -96,17 +82,18 @@ namespace Planeamento
             planeamentoMoldacIMF = planeamentoMoldacGF.Clone();
             planeamentoMoldacMAN = planeamentoMoldacGF.Clone();
 
-            capMGF = getCapacidadeMold(1);
-            capMIMF = getCapacidadeMold(2);
-            capMMAN = getCapacidadeMold(3);
-            capFGF = getCapacidadeFus(1);
-            capFIMF = getCapacidadeFus(2);
-            capFMAN = getCapacidadeFus(3);
+            capMGF = GetCapacidadeMold(1);
+            capMIMF = GetCapacidadeMold(2);
+            capMMAN = GetCapacidadeMold(3);
+
+            capFGF = GetCapacidadeFus(1);
+            capFIMF = GetCapacidadeFus(2);
+            capFMAN = GetCapacidadeFus(3);
+
             horarioGF = 1;
             indexGF = 0;
             diaGF = "Segunda-feira";
             semanaGF = 1;
-
 
             horarioIMF = 1;
             indexIMF = 0;
@@ -118,15 +105,57 @@ namespace Planeamento
             diaMAN = "Segunda-feira";
             semanaMAN = 1;
 
-
-            calcParametros();
-
-
+            CalcParametros();
         }
 
+        private int GetCapacidadeMold(int local)
+        {
+            int res = 0;
+
+            /*SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
+
+            if (local == 1) {  SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold GF] FROM Planeamento.dbo.[CMW$Parametros]", con);}
+            else if (local == 2) { SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold IMF] FROM Planeamento.dbo.[CMW$Parametros]", con); }
+            else SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold MAN] FROM Planeamento.dbo.[CMW$Parametros]", con);
+            
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+            res = (int)cmd.ExecuteScalar();
+            con.Close(); */
+
+            if (local == 1) { res = 420; }
+            else if (local == 2) { res = 95; }
+            else res = 12;
 
 
-        private void calcParametros() {
+            return res;
+        }
+
+        private int GetCapacidadeFus(int local)
+        {
+            int res = 0;
+
+            /*SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
+            
+            if (local == 1) {  SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold GF] FROM Planeamento.dbo.[CMW$Parametros]", con);}
+            else if (local == 2) { SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold IMF] FROM Planeamento.dbo.[CMW$Parametros]", con); }
+            else SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold MAN] FROM Planeamento.dbo.[CMW$Parametros]", con);
+            
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+            res = (int)cmd.ExecuteScalar();
+            con.Close(); */
+
+            if (local == 1)
+                res = 8092;
+            else if (local == 2)
+                res = 5753;
+            else res = 5753;
+
+            return res;
+        }
+
+        private void CalcParametros() {
 
             foreach (DataRow row in produtosCMW1.Rows)
             {
@@ -149,62 +178,6 @@ namespace Planeamento
             }
 
         }
-
-        private int getCapacidadeMold(int local)
-        {
-            int res = 0;
-            
-            /*SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-
-            
-            if (local == 1) {  SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold GF] FROM Planeamento.dbo.[CMW$Parametros]", con);}
-            else if (local == 2) { SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold IMF] FROM Planeamento.dbo.[CMW$Parametros]", con); }
-            else SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold MAN] FROM Planeamento.dbo.[CMW$Parametros]", con);
-            
-
-            
-            cmd.CommandType = CommandType.Text;
-            con.Open();
-            res = (int)cmd.ExecuteScalar();
-            con.Close();
-            
-             * */
-             
-            if (local==1) {  res=420; }
-            else if (local==2) { res=95; }
-            else res=12;
-
-
-             return res;
-        }
-        private int getCapacidadeFus(int local)
-        {
-            int res = 0;
-
-            /*SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-
-            
-            if (local == 1) {  SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold GF] FROM Planeamento.dbo.[CMW$Parametros]", con);}
-            else if (local == 2) { SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold IMF] FROM Planeamento.dbo.[CMW$Parametros]", con); }
-            else SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold MAN] FROM Planeamento.dbo.[CMW$Parametros]", con);
-            
-
-            
-            cmd.CommandType = CommandType.Text;
-            con.Open();
-            res = (int)cmd.ExecuteScalar();
-            con.Close();
-            
-             * */
-
-            if (local==1) {  res=8092; }
-            else if (local==2) { res=5753; }
-            else res=5753;
-
-
-            return res;
-        }
-
 
         private void setDay(int local)
         {

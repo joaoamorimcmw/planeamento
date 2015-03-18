@@ -24,7 +24,7 @@ namespace Planeamento
             BDInit bd = new BDInit();
 
             //aqui são preenchidos os 3 primeiros planeamentos de macharia, moldação, fusao
-            //PrimeiroPlano pl = new PrimeiroPlano();
+            PrimeiroPlano pl = new PrimeiroPlano();
 
             //aqui são verificadas as precedências entre macharia,moldacao,fusao
 

@@ -12,7 +12,6 @@ namespace Planeamento
 {
     class PlanMacharia
     {
-        //variaveis
         private DataTable batchCMW1;
         private DataTable batchCMW2;
         private DataTable planoCMW1;
@@ -20,61 +19,42 @@ namespace Planeamento
 
         int capacidadeCMW1;
         int capacidadeCMW2;
-        int horario;
+        int horario = 8 * 60;
         int acc;
         int dia;
         int semana;
         int index;
 
 
-        //construtores
-        public PlanMacharia() {
-            capacidadeCMW1 = getCapacidadeCMW1();
-            capacidadeCMW2 = getCapacidadeCMW2(); 
-            acc = 0;
-            dia = 1;
-            horario = 8;
-            semana = 1;
-            index = 0;
-        }
-
-        public PlanMacharia(DataTable planoCMW1, DataTable planoCMW2)
+        public PlanMacharia(DataTable bdMacCMW1, DataTable bdMacCMW2)
         {
+            batchCMW1 = bdMacCMW1.Copy();
+            batchCMW2 = bdMacCMW2.Copy();
+            //bdMacCMW1.Clear(); Provavelmente inútil, só mesmo para libertar espaço
+            //bdMacCMW2.Clear();
 
-            //apagar os planos da macharia recebidos de BDMacharia
-            batchCMW1 = planoCMW1.Copy();
-            batchCMW2 = planoCMW2.Copy();
-            planoCMW1.Clear();
-            planoCMW2.Clear();
-
-            //verifica as capacidades das macharias através da consulta na tabela Parametros
-            //inicializada os DataTables planoCMW1 e planoCMW2
-            inicializa();
-            //por cada linha da lista de machos, insere no planeamento da macharia planoCMW1 e planoCMW2
-            processa();
-            
-            //imprimePlano();
-
+            Inicializa();
+            Processa();
+            //ImprimePlano();
         }
 
-        //metodos
+        //Inicializa os parametros, variáveis e as DataTables planoCMW1 e 2
+        private void Inicializa() {
 
+            SqlConnection connection = BDUtil.AbreBD();
+            if (connection == null)
+                return;
 
-        private void inicializa() {
+            capacidadeCMW1 = GetCapacidadeCMW1(connection);
+            capacidadeCMW2 = GetCapacidadeCMW2(connection);
 
-            capacidadeCMW1 = getCapacidadeCMW1();
-            capacidadeCMW2 = getCapacidadeCMW2();
+            BDUtil.FechaBD(connection);
 
-            acc = 0;
-            dia = 1;
-            horario = 8*60; // minutos
-            semana = 1;
-            index = 0;
-
+            ResetGlobais();
 
             planoCMW1 = new DataTable("Plano CMW1");
             planoCMW1.Columns.Add(new DataColumn("linha", typeof(int)));
-            planoCMW1.Columns.Add(new DataColumn("local", typeof(String)));
+            planoCMW1.Columns.Add(new DataColumn("local", typeof(int)));
             planoCMW1.Columns.Add(new DataColumn("semana", typeof(int)));
             planoCMW1.Columns.Add(new DataColumn("dia", typeof(int)));
             planoCMW1.Columns.Add(new DataColumn("noDoc", typeof(String)));
@@ -85,11 +65,11 @@ namespace Planeamento
             planoCMW1.Columns.Add(new DataColumn("qtd", typeof(int)));
             planoCMW1.Columns.Add(new DataColumn("tempo", typeof(int)));
             planoCMW1.Columns.Add(new DataColumn("acc", typeof(int)));
-            planoCMW1.Columns.Add(new DataColumn("fabrica", typeof(String)));
+            planoCMW1.Columns.Add(new DataColumn("fabrica", typeof(int)));
 
             planoCMW2 = new DataTable("Plano CMW2");
             planoCMW2.Columns.Add(new DataColumn("linha", typeof(int)));
-            planoCMW2.Columns.Add(new DataColumn("local", typeof(String)));
+            planoCMW2.Columns.Add(new DataColumn("local", typeof(int)));
             planoCMW2.Columns.Add(new DataColumn("semana", typeof(int)));
             planoCMW2.Columns.Add(new DataColumn("dia", typeof(int)));
             planoCMW2.Columns.Add(new DataColumn("noDoc", typeof(String)));
@@ -100,228 +80,171 @@ namespace Planeamento
             planoCMW2.Columns.Add(new DataColumn("qtd", typeof(int)));
             planoCMW2.Columns.Add(new DataColumn("tempo", typeof(int)));
             planoCMW2.Columns.Add(new DataColumn("acc", typeof(int)));
-            planoCMW2.Columns.Add(new DataColumn("fabrica", typeof(String)));
-
-
+            planoCMW2.Columns.Add(new DataColumn("fabrica", typeof(int)));
         }
 
-        private int getCapacidadeCMW1() {
-            int res=0;
-            SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-            SqlCommand cmd = new SqlCommand("SELECT [Capacidade Macharia CMW1] FROM Planeamento.dbo.[CMW$Parametros]", con);
-            cmd.CommandType = CommandType.Text;
-            con.Open();
-            res = (int) cmd.ExecuteScalar();
-            con.Close();
-            return res;
-        }
-
-        private int getCapacidadeCMW2()
+        private void ResetGlobais()
         {
-            int res = 0;
-            SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-            SqlCommand cmd = new SqlCommand("SELECT [Capacidade Macharia CMW2] FROM Planeamento.dbo.[CMW$Parametros]", con);
-            cmd.CommandType = CommandType.Text;
-            con.Open();
-            res = (int) cmd.ExecuteScalar();
-            con.Close();
-            return res;
-        }
-
-
-        private void setDay() {
-
-            if (dia == 1)
-                dia = 2;
-            else if (dia == 2)
-                dia = 3;
-            else if (dia == 3)
-                dia = 4;
-            else if (dia == 4)
-                dia = 5;
-            else if (dia == 5)
-            {
-                dia = 1;
-                semana = semana + 1;
-            }
-        
-        
-        }
-
-
-        private void splitRowCMW1(DataRow row)
-        {
-            int espaço = (horario * capacidadeCMW1) - acc;
-            decimal razao = Convert.ToDecimal(row[5]) / Convert.ToDecimal(row[4]);
-         
-            DataRow dr = planoCMW1.NewRow();
-            index += 1;
-            dr["linha"] = index;
-            dr["local"] = Convert.ToInt32(row[0]);
-            dr["semana"] = semana;
-            dr["dia"] = dia;
-            dr["noDoc"] = row[1].ToString();
-            dr["noLine"] = row[2];
-            dr["noProd"] = row[3];
-            int quantidadeNova = Convert.ToInt32((Convert.ToDecimal(row[4]) * espaço) / Convert.ToDecimal(row[5]));
-            dr["qtd"] = quantidadeNova;
-            int tempoNovo = Convert.ToInt32(quantidadeNova * razao);
-            dr["tempo"] = tempoNovo;
-            dr["acc"] = acc + tempoNovo;
-            dr["codMach"] = row[6].ToString();
-            dr["noLiga"] = row[7].ToString();
-            dr["fabrica"] = 1;
-            planoCMW1.Rows.InsertAt(dr, index);
-            acc = 0;
-            row["qtd"] = Convert.ToInt32(row[4]) - quantidadeNova;
-            row["tempo"] = Convert.ToInt32(row[5]) - tempoNovo;
-
-            setDay();
-
-            inserePlaneamento(row,1);
-
-        }
-
-        private void splitRowCMW2(DataRow row)
-        {
-            int espaço = (horario * capacidadeCMW2) - acc;
-            decimal razao = Convert.ToDecimal(row[5]) / Convert.ToDecimal(row[4]);
-
-            DataRow dr = planoCMW2.NewRow();
-            index += 1;
-            dr["linha"] = index;
-            dr["local"] = Convert.ToInt32(row[0]);
-            dr["semana"] = semana;
-            dr["dia"] = dia;
-            dr["noDoc"] = row[1].ToString();
-            dr["noLine"] = row[2];
-            dr["noProd"] = row[3];
-            int quantidadeNova = Convert.ToInt32((Convert.ToDecimal(row[4]) * espaço) / Convert.ToDecimal(row[5]));
-            dr["qtd"] = quantidadeNova;
-            int tempoNovo = Convert.ToInt32(quantidadeNova * razao);
-            dr["tempo"] = tempoNovo;
-            dr["acc"] = acc + tempoNovo;
-            dr["codMach"] = row[6].ToString();
-            dr["noLiga"] = row[7].ToString();
-            dr["fabrica"] = 2;
-            planoCMW2.Rows.InsertAt(dr, index);
-            acc = 0;
-            row["qtd"] = Convert.ToInt32(row[4]) - quantidadeNova;
-            row["tempo"] = Convert.ToInt32(row[5]) - tempoNovo;
-            setDay();
-
-            inserePlaneamento(row,2);
-
-        }
-
-        
-
-
-
-        private void inserePlaneamento(DataRow row, int local)
-        {
-            if (local == 1)
-            {
-
-                if (acc + Convert.ToInt32(row[5]) > horario * capacidadeCMW1) splitRowCMW1(row);
-                else if (Convert.ToInt32(row[4]) > 0 && Convert.ToInt32(row[5]) > 0)
-                {
-                    index = index + 1;
-                    acc = acc + Convert.ToInt32(row[5]);
-                    DataRow dr = planoCMW1.NewRow();
-                    dr["linha"] = index;
-                    dr["semana"] = semana;
-                    dr["dia"] = dia;
-                    dr["noDoc"] = row[1].ToString();
-                    dr["noLine"] = row[2];
-                    dr["noProd"] = row[3];
-                    dr["qtd"] = Convert.ToInt32(row[4]);
-                    dr["tempo"] = Convert.ToInt32(row[5]);
-                    dr["codMach"] = row[6].ToString();
-                    dr["local"] = Convert.ToInt32(row[0]);
-                    dr["noLiga"] = row[7].ToString();
-                    dr["acc"] = acc;
-                    dr["fabrica"] = 1;
-
-                    planoCMW1.Rows.Add(dr);
-
-
-                }
-
-            }
-            else
-            {
-
-                if (acc + Convert.ToInt32(row[5]) > horario * capacidadeCMW2) splitRowCMW2(row);
-                else if (Convert.ToInt32(row[4]) > 0 && Convert.ToInt32(row[5]) > 0)
-                {
-                    index = index + 1;
-                    acc = acc + Convert.ToInt32(row[5]);
-                    DataRow dr = planoCMW2.NewRow();
-                    dr["linha"] = index;
-                    dr["semana"] = semana;
-                    dr["dia"] = dia;
-                    dr["noDoc"] = row[1].ToString();
-                    dr["noLine"] = row[2];
-                    dr["noProd"] = row[3];
-                    dr["qtd"] = Convert.ToInt32(row[4]);
-                    dr["tempo"] = Convert.ToInt32(row[5]);
-                    dr["codMach"] = row[6].ToString();
-                    dr["local"] = Convert.ToInt32(row[0]);
-                    dr["noLiga"] = row[7].ToString();
-                    dr["acc"] = acc;
-                    dr["fabrica"] = 2;
-                    planoCMW2.Rows.Add(dr);
-
-                }
-            }
-        }
-
-
-
-
-        private void processa() {
-
-            foreach (DataRow row in batchCMW1.Rows)
-                inserePlaneamento(row,1);
-            //actualizar globais
             acc = 0;
             dia = 1;
             semana = 1;
             index = 0;
+        }
+
+        //Retira parametro Capacidade Macharia CMW1 da tabela Parametros
+        private int GetCapacidadeCMW1(SqlConnection connection)
+        {
+            int res = 0;
+
+            SqlCommand cmd = new SqlCommand("SELECT [Capacidade Macharia CMW1] FROM Planeamento.dbo.[CMW$Parametros]", connection);
+            cmd.CommandType = CommandType.Text;
+            res = (int) cmd.ExecuteScalar();
+
+            return res;
+        }
+
+        //Retira parametro Capacidade Macharia CMW2 da tabela Parametros
+        private int GetCapacidadeCMW2(SqlConnection connection)
+        {
+            int res = 0;
+
+            SqlCommand cmd = new SqlCommand("SELECT [Capacidade Macharia CMW2] FROM Planeamento.dbo.[CMW$Parametros]", connection);
+            cmd.CommandType = CommandType.Text;
+            res = (int) cmd.ExecuteScalar();
+
+            return res;
+        }
+
+        private void Processa()
+        {
+            foreach (DataRow row in batchCMW1.Rows)
+                InserePlaneamento(row, 1);
+
+            ResetGlobais();
+
+
 
             foreach (DataRow row in batchCMW2.Rows)
-                inserePlaneamento(row,2);
+                InserePlaneamento(row, 2);
 
+        }
+        
+        //Por cada linha, se houver capacidade restante no dia, insere a linha completa, se não separa e insere no dia seguinte
+        private void InserePlaneamento(DataRow row, int fabrica)
+        {
+            int capacidade;
+            if (fabrica == 1)
+                capacidade = capacidadeCMW1;
+            else
+                capacidade = capacidadeCMW2;
+
+            if (acc + Convert.ToInt32(row[5]) > horario * capacidade) 
+                SeparaLinha(row,fabrica);
+            
+            else if (Convert.ToInt32(row[4]) > 0 && Convert.ToInt32(row[5]) > 0)
+            {
+                index += 1;
+                acc = acc + Convert.ToInt32(row[5]);
+                InsereLinha(fabrica,Convert.ToInt32(row[0]),row[1].ToString(),Convert.ToInt32(row[2]),row[3].ToString(),row[6].ToString(),row[7].ToString(),Convert.ToInt32(row[4]),Convert.ToInt32(row[5]),acc);
+            }
 
         }
 
+        private void SeparaLinha(DataRow row, int fabrica)
+        {
+            int espaço;
+            if (fabrica == 1)
+                espaço = (horario * capacidadeCMW1) - acc;
+            else
+                espaço = (horario * capacidadeCMW2) - acc;
 
-        public DataTable getPlanoCMW1() { 
+            decimal razao = Convert.ToDecimal(row[5]) / Convert.ToDecimal(row[4]);
+            int quantidadeNova = Convert.ToInt32((Convert.ToDecimal(row[4]) * espaço) / Convert.ToDecimal(row[5]));
+            int tempoNovo = Convert.ToInt32(quantidadeNova * razao);
+            int accNovo = acc + tempoNovo;
+            index += 1;
+
+            InsereLinha(fabrica, Convert.ToInt32(row[0]), row[1].ToString(), Convert.ToInt32(row[2]), row[3].ToString(), row[6].ToString(), row[7].ToString(), quantidadeNova, tempoNovo, accNovo, true);
+
+            acc = 0;
+
+            row["qtd"] = Convert.ToInt32(row[4]) - quantidadeNova;
+            row["tempo"] = Convert.ToInt32(row[5]) - tempoNovo;
+
+            ProximoDia();
+
+            InserePlaneamento(row, fabrica);
+        }
+
+        private void InsereLinha(int fabrica, int local, String noDoc, int noLine, String noProd, String codMach, String noLiga, int qtd, int tempo, int acc, bool insertAtIndex = false)
+        {
+            DataRow dr;
+            if (fabrica == 1)
+                dr = planoCMW1.NewRow();
+            else
+                dr = planoCMW2.NewRow();
+
+            dr["linha"] = index;
+            dr["local"] = local;
+            dr["semana"] = semana;
+            dr["dia"] = dia;
+            dr["noDoc"] = noDoc;
+            dr["noLine"] = noLine;
+            dr["noProd"] = noProd;
+            dr["codMach"] = codMach;
+            dr["noLiga"] = noLiga;
+            dr["qtd"] = qtd;
+            dr["tempo"] = tempo;
+            dr["acc"] = acc;
+            dr["fabrica"] = fabrica;
+
+            if (!insertAtIndex)
+            {
+                if (fabrica == 1)
+                    planoCMW1.Rows.Add(dr);
+                else
+                    planoCMW2.Rows.Add(dr);
+            }
+            else
+            {
+                if (fabrica == 1)
+                    planoCMW1.Rows.InsertAt(dr, index);
+                else
+                    planoCMW2.Rows.InsertAt(dr, index);
+            }
+
+        }
+
+        private void ProximoDia()
+        {
+            if (dia == 5)
+            {
+                dia = 1;
+                semana = semana + 1;
+            }
+            else
+                dia++;
+        }
+
+
+        public DataTable GetPlanoCMW1() { 
             return planoCMW1;
         }
 
-        public DataTable getPlanoCMW2()
+        public DataTable GetPlanoCMW2()
         {
             return planoCMW2;
         }
-
-
-
-
         
-        private void imprimePlano() {
-
+        private void ImprimePlano() {
 
             Console.WriteLine("---- Planeamento CMW1 ----");
-
 
             foreach (DataRow row in planoCMW1.Rows)
             {
                 foreach (DataColumn column in planoCMW1.Columns)
                     Console.Write(column.ToString() + " "+ row[column] + "|");
                 Console.WriteLine(" ");
-                
             }
 
             Console.WriteLine(" ");
@@ -336,11 +259,7 @@ namespace Planeamento
                 Console.WriteLine(" ");
 
             }
-            
-        
-        
         }
-
     }
 
 
