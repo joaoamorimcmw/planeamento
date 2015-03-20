@@ -18,6 +18,16 @@ namespace Planeamento
             InicializaNumeracaoBD();
         }
 
+        private void Teste()
+        {
+            SqlConnection connection = BDUtil.AbreBD();
+            SqlCommand cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Macharia CMW1'", connection);
+            cmd.CommandType = CommandType.Text;
+            Console.WriteLine((int)cmd.ExecuteScalar());
+            BDUtil.FechaBD(connection);
+        }
+
+
         //Elimina todos os registos da tabela Produtos Plan
 
         private void LimpaProdutosPlanBD ()

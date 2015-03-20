@@ -96,7 +96,7 @@ namespace Planeamento
         {
             int res = 0;
 
-            SqlCommand cmd = new SqlCommand("SELECT [Capacidade Macharia CMW1] FROM Planeamento.dbo.[CMW$Parametros]", connection);
+            SqlCommand cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Macharia CMW1'", connection);
             cmd.CommandType = CommandType.Text;
             res = (int) cmd.ExecuteScalar();
 
@@ -108,7 +108,7 @@ namespace Planeamento
         {
             int res = 0;
 
-            SqlCommand cmd = new SqlCommand("SELECT [Capacidade Macharia CMW2] FROM Planeamento.dbo.[CMW$Parametros]", connection);
+            SqlCommand cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Macharia CMW2'", connection);
             cmd.CommandType = CommandType.Text;
             res = (int) cmd.ExecuteScalar();
 

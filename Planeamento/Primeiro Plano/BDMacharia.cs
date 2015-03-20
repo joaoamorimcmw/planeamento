@@ -451,7 +451,6 @@ namespace Planeamento
             foreach (DataTable table in produtosCMW2.Tables)
                 foreach (DataRow row in table.Rows)
                 {
-
                     dr = prodCMW2.NewRow();
                     dr["linha"] = sumLinha;
                     dr["local"] = Convert.ToInt32(row[0]);

@@ -43,7 +43,7 @@ namespace Planeamento
             //recebe os planeamentos de macharia e preenche o plano de moldacao dos 3 locais de producao
             //os planeamentos dos 3 locais de producao estão em: planeamentoMoldacGF;planeamentoMoldacIMF;planeamentoMoldacMAN
 
-//des             PlanMold pMolde = new PlanMold(bdMac.getCMW1(), bdMac.getCMW2());
+            PlanMold pMolde = new PlanMold(bdMac.GetCMW1(), bdMac.GetCMW2());
 
             //imprimir os 3 planos de moldacao
             //pMolde.imprimePlan();
@@ -51,7 +51,7 @@ namespace Planeamento
 
             //***************************  DESCRICAO da FUNCAO  *********************************   5//
             //escrever os 3 planeamentos na B.D. tabela "Plan Mold"
-//des              BDMolde bdMolde = new BDMolde(pMolde.getPlanMoldGF(), pMolde.getPlanMoldIMF(), pMolde.getPlanMoldMAN());
+             BDMolde bdMolde = new BDMolde(pMolde.getPlanMoldGF(), pMolde.getPlanMoldIMF(), pMolde.getPlanMoldMAN());
 
             //**********************************************************************************//
 

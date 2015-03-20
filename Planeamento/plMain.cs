@@ -21,6 +21,7 @@ namespace Planeamento
             // - Na PlanModacao adicionar a restrição que só pode ser moldada no mesmo dia ou superior aos machos estarem prontos
             //*****************************************************************************************
 
+
             BDInit bd = new BDInit();
 
             //aqui são preenchidos os 3 primeiros planeamentos de macharia, moldação, fusao

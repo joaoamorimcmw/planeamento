@@ -29,21 +29,21 @@ namespace Planeamento
         private int horarioGF;
         private int accCaixasGF;
         private int accPesoGF;
-        private string diaGF;
+        private int diaGF;
         private int semanaGF;
         private int indexGF;
 
         private int horarioIMF;
         private int accCaixasIMF;
         private int accPesoIMF;
-        private string diaIMF;
+        private int diaIMF;
         private int semanaIMF;
         private int indexIMF;
 
         private int horarioMAN;
         private int accCaixasMAN;
         private int accPesoMAN;
-        private string diaMAN;
+        private int diaMAN;
         private int semanaMAN;
         private int indexMAN;
 
@@ -69,90 +69,72 @@ namespace Planeamento
             produtosCMW1.Columns.Add(new DataColumn("pesoTotal", typeof(int)));
             produtosCMW1.Columns.Add(new DataColumn("caixasACC", typeof(int)));
             produtosCMW1.Columns.Add(new DataColumn("pesoTotalACC", typeof(int)));
-            produtosCMW1.Columns.Add(new DataColumn("semanaGF", typeof(int)));
-            produtosCMW1.Columns.Add(new DataColumn("diaGF", typeof(String)));
+            produtosCMW1.Columns.Add(new DataColumn("semana", typeof(int)));
+            produtosCMW1.Columns.Add(new DataColumn("dia", typeof(int)));
+
             produtosCMW2.Columns.Add(new DataColumn("caixas", typeof(int)));
             produtosCMW2.Columns.Add(new DataColumn("pesoTotal", typeof(int)));
             produtosCMW2.Columns.Add(new DataColumn("caixasACC", typeof(int)));
             produtosCMW2.Columns.Add(new DataColumn("pesoTotalACC", typeof(int)));
-            produtosCMW2.Columns.Add(new DataColumn("semanaGF", typeof(int)));
-            produtosCMW2.Columns.Add(new DataColumn("diaGF", typeof(String)));
+            produtosCMW2.Columns.Add(new DataColumn("semana", typeof(int)));
+            produtosCMW2.Columns.Add(new DataColumn("dia", typeof(int)));
 
             planeamentoMoldacGF = produtosCMW1.Clone();
             planeamentoMoldacIMF = planeamentoMoldacGF.Clone();
             planeamentoMoldacMAN = planeamentoMoldacGF.Clone();
 
-            capMGF = GetCapacidadeMold(1);
-            capMIMF = GetCapacidadeMold(2);
-            capMMAN = GetCapacidadeMold(3);
-
-            capFGF = GetCapacidadeFus(1);
-            capFIMF = GetCapacidadeFus(2);
-            capFMAN = GetCapacidadeFus(3);
+            GetCapacidades();
 
             horarioGF = 1;
             indexGF = 0;
-            diaGF = "Segunda-feira";
+            diaGF = 0;
             semanaGF = 1;
 
             horarioIMF = 1;
             indexIMF = 0;
-            diaIMF = "Segunda-feira";
+            diaIMF = 0;
             semanaIMF = 1;
 
             horarioMAN = 1;
             indexMAN = 0;
-            diaMAN = "Segunda-feira";
+            diaMAN = 0;
             semanaMAN = 1;
 
             CalcParametros();
         }
 
-        private int GetCapacidadeMold(int local)
-        {
-            int res = 0;
+        private void GetCapacidades() {
+            SqlConnection connection = BDUtil.AbreBD();
+            if (connection == null)
+                return;
 
-            /*SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-
-            if (local == 1) {  SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold GF] FROM Planeamento.dbo.[CMW$Parametros]", con);}
-            else if (local == 2) { SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold IMF] FROM Planeamento.dbo.[CMW$Parametros]", con); }
-            else SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold MAN] FROM Planeamento.dbo.[CMW$Parametros]", con);
+            SqlCommand cmd;
             
+            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Mold GF'", connection);
             cmd.CommandType = CommandType.Text;
-            con.Open();
-            res = (int)cmd.ExecuteScalar();
-            con.Close(); */
+            capMGF = (int)cmd.ExecuteScalar(); ///420
 
-            if (local == 1) { res = 420; }
-            else if (local == 2) { res = 95; }
-            else res = 12;
-
-
-            return res;
-        }
-
-        private int GetCapacidadeFus(int local)
-        {
-            int res = 0;
-
-            /*SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-            
-            if (local == 1) {  SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold GF] FROM Planeamento.dbo.[CMW$Parametros]", con);}
-            else if (local == 2) { SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold IMF] FROM Planeamento.dbo.[CMW$Parametros]", con); }
-            else SqlCommand cmd = new SqlCommand("SELECT [Capacidade Mold MAN] FROM Planeamento.dbo.[CMW$Parametros]", con);
-            
+            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Mold IMF'", connection);
             cmd.CommandType = CommandType.Text;
-            con.Open();
-            res = (int)cmd.ExecuteScalar();
-            con.Close(); */
+            capMIMF = (int)cmd.ExecuteScalar(); //95
 
-            if (local == 1)
-                res = 8092;
-            else if (local == 2)
-                res = 5753;
-            else res = 5753;
+            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Mold Manual'", connection);
+            cmd.CommandType = CommandType.Text;
+            capMMAN = (int)cmd.ExecuteScalar(); //12
 
-            return res;
+            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Fusao GF'", connection);
+            cmd.CommandType = CommandType.Text;
+            capFGF = (int)cmd.ExecuteScalar(); //8092
+
+            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Fusao IMF'", connection);
+            cmd.CommandType = CommandType.Text;
+            capFIMF = (int)cmd.ExecuteScalar(); //5753
+
+            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Fusao Manual'", connection);
+            cmd.CommandType = CommandType.Text;
+            capFMAN = (int)cmd.ExecuteScalar(); //5753
+
+            BDUtil.FechaBD(connection);
         }
 
         private void CalcParametros() {
@@ -163,304 +145,266 @@ namespace Planeamento
                 row[10] = Convert.ToInt32(row[5]) * Convert.ToInt32(row[7]);
                 row[11] = 0;
                 row[12] = 0 ;
-
             }
 
             foreach (DataRow row in produtosCMW2.Rows)
             {
-
                 row[9] = Convert.ToInt32(row[5]) / Convert.ToInt32(row[8]);
                 row[10] = Convert.ToInt32(row[5]) * Convert.ToInt32(row[7]);
                 row[11] = 0;
                 row[12] = 0;
-
-
-            }
-
-        }
-
-        private void setDay(int local)
-        {
-
-
-            if (local == 1)
-            {
-                if (String.Compare("Segunda-feira", diaGF, true) == 0)
-                    diaGF = "Terça-feira";
-                else if (String.Compare("Terça-feira", diaGF, true) == 0)
-                    diaGF = "Quarta-feira";
-                else if (String.Compare("Quarta-feira", diaGF, true) == 0)
-                    diaGF = "Quinta-feira";
-                else if (String.Compare("Quinta-feira", diaGF, true) == 0)
-                    diaGF = "Sexta-feira";
-                else if (String.Compare("Sexta-feira", diaGF, true) == 0)
-                {
-                    diaGF = "Segunda-feira";
-                    semanaGF = semanaGF + 1;
-                }
-            }
-            
-            if (local == 2)
-            {
-                if (String.Compare("Segunda-feira", diaIMF, true) == 0)
-                    diaIMF = "Terça-feira";
-                else if (String.Compare("Terça-feira", diaIMF, true) == 0)
-                    diaIMF = "Quarta-feira";
-                else if (String.Compare("Quarta-feira", diaIMF, true) == 0)
-                    diaIMF = "Quinta-feira";
-                else if (String.Compare("Quinta-feira", diaIMF, true) == 0)
-                    diaIMF = "Sexta-feira";
-                else if (String.Compare("Sexta-feira", diaIMF, true) == 0)
-                {
-                    diaIMF = "Segunda-feira";
-                    semanaIMF = semanaIMF + 1;
-                }
-            }     
-            if (local == 3)
-            {
-                if (String.Compare("Segunda-feira", diaMAN, true) == 0)
-                    diaMAN = "Terça-feira";
-                else if (String.Compare("Terça-feira", diaMAN, true) == 0)
-                    diaMAN = "Quarta-feira";
-                else if (String.Compare("Quarta-feira", diaMAN, true) == 0)
-                    diaMAN = "Quinta-feira";
-                else if (String.Compare("Quinta-feira", diaMAN, true) == 0)
-                    diaMAN = "Sexta-feira";
-                else if (String.Compare("Sexta-feira", diaMAN, true) == 0)
-                {
-                    diaMAN = "Segunda-feira";
-                    semanaMAN = semanaMAN + 1;
-                }
-
             }
         }
 
-
-        private void splitRow(DataRow row,int local)
+        private void CalcPlan()
         {
-           
-            int espaço=0;
-            DataRow dr;
+            foreach (DataRow row in produtosCMW1.Rows)
+                InserePlaneamento(row, 1);
 
-            if (local == 1) {
-                espaço = accCaixasGF + Convert.ToInt32(row[9]) - (horarioGF * capMGF);
-                dr = planeamentoMoldacGF.NewRow();
-                indexGF += 1;
-                dr["linha"] = indexGF;
-            }
-            else if (local == 2) { espaço = accCaixasIMF + Convert.ToInt32(row[9]) - (horarioIMF * capMIMF);
-                dr = planeamentoMoldacIMF.NewRow();
-                indexGF += 1;
-                indexIMF += 1;
-                dr["linha"] = indexIMF; 
-            
-            }
-            else { espaço = accCaixasMAN + Convert.ToInt32(row[9]) - (horarioMAN * capMMAN);
-                dr = planeamentoMoldacMAN.NewRow();
-                indexMAN += 1;
-                dr["linha"] = indexMAN; 
-            
-            }
-            dr["local"] = Convert.ToInt32(row[1]);
-            if (local == 1) { dr["semanaGF"] = semanaGF; dr["diaGF"] = diaGF; }
-            else if (local == 2) { dr["semanaGF"] = semanaIMF; dr["diaGF"] = diaIMF; }
-            else { dr["semanaGF"] = semanaMAN; dr["diaGF"] = diaMAN; }
-            dr["noEnc"] = row[2].ToString();
-            dr["nolineEnc"] = row[3];
-            dr["noProd"] = row[4];
-            dr["noMolde"] = Convert.ToInt32(row[8]);
-            dr["pesoPeca"] = Convert.ToInt32(row[7]);
-            dr["liga"] = row[6].ToString();
-            int novasCaixas=0;
-            if (local == 1) { novasCaixas = (horarioGF * capMGF) - accCaixasGF; }
-            else if (local == 2) { novasCaixas = (horarioIMF * capMIMF) - accCaixasIMF; }
-            else { novasCaixas = (horarioMAN * capMMAN) - accCaixasMAN; }
-            dr["caixas"] = novasCaixas;
-            dr["qtd"] = novasCaixas * Convert.ToInt32(row[8]);
-            int pesoNovo = novasCaixas * Convert.ToInt32(row[8]) * Convert.ToInt32(row[7]);
-            if (local == 1) { dr["caixasACC"] = accCaixasGF + novasCaixas; }
-            else if (local == 2) { dr["caixasACC"] = accCaixasIMF + novasCaixas; }
-            else { dr["caixasACC"] = accCaixasMAN + novasCaixas; }
-            dr["pesoTotal"] = pesoNovo;
-            if (local == 1)
-            {
-                dr["pesoTotalACC"] = accPesoGF + pesoNovo;
-                accCaixasGF = 0;
-                accPesoGF = 0;
-                planeamentoMoldacGF.Rows.InsertAt(dr, indexGF);
-            }
-            else if (local == 2)
-            {
-                dr["pesoTotalACC"] = accPesoIMF + pesoNovo;
-                accCaixasIMF = 0;
-                accPesoIMF = 0;
-                planeamentoMoldacIMF.Rows.InsertAt(dr, indexIMF);
-            }
-            else
-            {
-                dr["pesoTotalACC"] = accPesoMAN + pesoNovo;
-                accCaixasMAN = 0;
-                accPesoMAN = 0;
-                planeamentoMoldacMAN.Rows.InsertAt(dr, indexMAN);
-            }
-            row["caixas"] = espaço;
-            row["qtd"] = espaço * Convert.ToInt32(row[8]);
-            row["pesoTotal"] = espaço * Convert.ToInt32(row[8]) * Convert.ToInt32(row[7]);
-            if (local == 1)
-            {
-                row["caixasACC"] = accCaixasGF;
-                row["pesoTotalACC"] = accPesoGF;
-                accPesoGF = Convert.ToInt32(row["pesoTotalACC"]);
-                setDay(1); inserePlaneamento(row, 1);
-            }
-            else if (local == 2)
-            {
-                row["caixasACC"] = accCaixasIMF;
-                row["pesoTotalACC"] = accPesoIMF;
-                accPesoIMF = Convert.ToInt32(row["pesoTotalACC"]);
-                setDay(2); inserePlaneamento(row, 2);
-            }
-            else
-            {
-                row["caixasACC"] = accCaixasMAN;
-                row["pesoTotalACC"] = accPesoMAN;
-                accPesoMAN = Convert.ToInt32(row["pesoTotalACC"]);
-                setDay(3); inserePlaneamento(row, 3);
-            }
+            foreach (DataRow row in produtosCMW2.Rows)
+                if (Convert.ToInt32(row["local"]) == 2) InserePlaneamento(row, 2);
+                else InserePlaneamento(row, 3);
         }
 
-
-
-
-        
-
-        private void inserePlaneamento(DataRow row, int local)
+        private void InserePlaneamento(DataRow row, int local)
         {
-
-            int cx =Convert.ToInt32(row[9]);
+            int cx = Convert.ToInt32(row[9]);
             int ps = Convert.ToInt32(row[10]);
 
             if (local == 1)
             {
-                if (accCaixasGF + cx > horarioGF * capMGF) splitRow(row, 1);
+                if (accCaixasGF + cx > horarioGF * capMGF) SeparaLinha(row, local);
                 else if (cx > 0 && ps > 0)
                 {
                     indexGF = indexGF + 1;
                     accCaixasGF = accCaixasGF + cx;
                     accPesoGF = accPesoGF + ps;
-                    DataRow dr = planeamentoMoldacGF.NewRow();
-                    dr["linha"] = indexGF;
-                    dr["semanaGF"] = semanaGF;
-                    dr["diaGF"] = diaGF;
-                    dr["noEnc"] = row[2].ToString();
-                    dr["nolineEnc"] = row[3];
-                    dr["pesoPeca"] = row[7];
-                    dr["noProd"] = row[4];
-                    dr["qtd"] = Convert.ToInt32(row[5]);
-                    dr["local"] = Convert.ToInt32(row[1]);
-                    dr["liga"] = row[6].ToString();
-                    dr["caixasACC"] = accCaixasGF;
-                    dr["noMolde"] = Convert.ToInt32(row[8]);
-                    dr["pesoTotal"] = ps;
-                    dr["caixas"] = cx;
-                    dr["pesoTotalACC"] = accPesoGF;
-                    planeamentoMoldacGF.Rows.Add(dr);
-
+                    InsereLinha(1, indexGF, semanaGF, diaGF, row[2].ToString(), Convert.ToInt32(row[3]), Convert.ToInt32(row[7]), row[4].ToString(), Convert.ToInt32(row[5]), row[6].ToString(), accCaixasGF, Convert.ToInt32(row[8]), ps, cx, accPesoGF);
                 }
             }
-            else if (local == 2) {
 
-                if (accCaixasIMF + cx > horarioIMF * capMIMF) splitRow(row, 2);
+            else if (local == 2)
+            {
+                if (accCaixasIMF + cx > horarioIMF * capMIMF) SeparaLinha(row, local);
                 else if (cx > 0 && ps > 0)
                 {
                     indexIMF = indexIMF + 1;
                     accCaixasIMF = accCaixasIMF + cx;
                     accPesoIMF = accPesoIMF + ps;
-                    DataRow dr = planeamentoMoldacIMF.NewRow();
-                    dr["linha"] = indexIMF;
-                    dr["semanaGF"] = semanaIMF;
-                    dr["diaGF"] = diaIMF;
-                    dr["noEnc"] = row[2].ToString();
-                    dr["nolineEnc"] = row[3];
-                    dr["pesoPeca"] = row[7];
-                    dr["noProd"] = row[4];
-                    dr["qtd"] = Convert.ToInt32(row[5]);
-                    dr["local"] = Convert.ToInt32(row[1]);
-                    dr["liga"] = row[6].ToString();
-                    dr["caixasACC"] = accCaixasIMF;
-                    dr["noMolde"] = Convert.ToInt32(row[8]);
-                    dr["pesoTotal"] = ps;
-                    dr["caixas"] = cx;
-                    dr["pesoTotalACC"] = accPesoIMF;
-                    planeamentoMoldacIMF.Rows.Add(dr);
-
+                    InsereLinha(2, indexIMF, semanaIMF, diaIMF, row[2].ToString(), Convert.ToInt32(row[3]), Convert.ToInt32(row[7]), row[4].ToString(), Convert.ToInt32(row[5]), row[6].ToString(), accCaixasIMF, Convert.ToInt32(row[8]), ps, cx, accPesoIMF);
                 }
-
-
             }
-            else if (local == 3)
-            {
 
-                if (accCaixasMAN + cx > horarioMAN * capMMAN) splitRow(row, 3);
+            else
+            {
+                if (accCaixasMAN + cx > horarioMAN * capMMAN) SeparaLinha(row, local);
                 else if (cx > 0 && ps > 0)
                 {
                     indexMAN = indexMAN + 1;
                     accCaixasMAN = accCaixasMAN + cx;
                     accPesoMAN = accPesoMAN + ps;
-                    DataRow dr = planeamentoMoldacMAN.NewRow();
-                    dr["linha"] = indexMAN;
-                    dr["semanaGF"] = semanaMAN;
-                    dr["diaGF"] = diaMAN;
-                    dr["noEnc"] = row[2].ToString();
-                    dr["nolineEnc"] = row[3];
-                    dr["pesoPeca"] = row[7];
-                    dr["noProd"] = row[4];
-                    dr["qtd"] = Convert.ToInt32(row[5]);
-                    dr["local"] = Convert.ToInt32(row[1]);
-                    dr["liga"] = row[6].ToString();
-                    dr["caixasACC"] = accCaixasMAN;
-                    dr["noMolde"] = Convert.ToInt32(row[8]);
-                    dr["pesoTotal"] = ps;
-                    dr["caixas"] = cx;
-                    dr["pesoTotalACC"] = accPesoMAN;
-                    planeamentoMoldacMAN.Rows.Add(dr);
-
+                    InsereLinha(3, indexMAN, semanaMAN, diaMAN, row[2].ToString(), Convert.ToInt32(row[3]), Convert.ToInt32(row[7]), row[4].ToString(), Convert.ToInt32(row[5]), row[6].ToString(), accCaixasMAN, Convert.ToInt32(row[8]), ps, cx, accPesoMAN);
                 }
+            }
+        }
 
+        private void SeparaLinha(DataRow row, int local)
+        {
+            int espaço = 0, novasCaixas = 0, caixasAcc, pesoNovo, pesoTotalAcc;
+            int index, semana, dia;
+            DataRow dr;
 
+            if (local == 1)
+            {
+                espaço = accCaixasGF + Convert.ToInt32(row[9]) - (horarioGF * capMGF);
+                dr = planeamentoMoldacGF.NewRow();
+                indexGF += 1;
+                index = indexGF;
+                semana = semanaGF;
+                dia = diaGF;
+                novasCaixas = (horarioGF * capMGF) - accCaixasGF;
+                caixasAcc = accCaixasGF + novasCaixas;
+                pesoNovo = novasCaixas * Convert.ToInt32(row[8]) * Convert.ToInt32(row[7]);
+                pesoTotalAcc = accPesoGF + pesoNovo;
+                accCaixasGF = 0;
+                accPesoGF = 0;
             }
 
+            else if (local == 2)
+            {
+                espaço = accCaixasIMF + Convert.ToInt32(row[9]) - (horarioIMF * capMIMF);
+                dr = planeamentoMoldacIMF.NewRow();
+                indexGF += 1; //Bug!!!!!
+                indexIMF += 1;
+                index = indexIMF;
+                semana = semanaIMF;
+                dia = diaIMF;
+                novasCaixas = (horarioIMF * capMIMF) - accCaixasIMF;
+                caixasAcc = accCaixasIMF + novasCaixas;
+                pesoNovo = novasCaixas * Convert.ToInt32(row[8]) * Convert.ToInt32(row[7]);
+                pesoTotalAcc = accPesoIMF + pesoNovo;
+                accCaixasIMF = 0;
+                accPesoIMF = 0;
+            }
+
+            else
+            {
+                espaço = accCaixasMAN + Convert.ToInt32(row[9]) - (horarioMAN * capMMAN);
+                dr = planeamentoMoldacMAN.NewRow();
+                indexMAN += 1;
+                index = indexMAN;
+                semana = semanaMAN;
+                dia = diaMAN;
+                novasCaixas = (horarioMAN * capMMAN) - accCaixasMAN;
+                caixasAcc = accCaixasMAN + novasCaixas;
+                pesoNovo = novasCaixas * Convert.ToInt32(row[8]) * Convert.ToInt32(row[7]);
+                pesoTotalAcc = accPesoMAN + pesoNovo;
+                accCaixasMAN = 0;
+                accPesoMAN = 0;
+            }
             
+            InsereLinha(local, index, semana, dia, row[2].ToString(), Convert.ToInt32(row[3]), Convert.ToInt32(row[7]),row[4].ToString(), novasCaixas * Convert.ToInt32(row[8]), row[6].ToString(), caixasAcc, Convert.ToInt32(row[8]), pesoNovo, novasCaixas, pesoTotalAcc);
+
+            if (local == 1)
+            {             
+                planeamentoMoldacGF.Rows.InsertAt(dr, indexGF);
+            }
             
+            else if (local == 2)
+            {
+                planeamentoMoldacIMF.Rows.InsertAt(dr, indexIMF);
+            }
+            
+            else
+            {
+                planeamentoMoldacMAN.Rows.InsertAt(dr, indexMAN);
+            }
+            
+            row["caixas"] = espaço;
+            row["qtd"] = espaço * Convert.ToInt32(row[8]);
+            row["pesoTotal"] = espaço * Convert.ToInt32(row[8]) * Convert.ToInt32(row[7]);
+            
+            if (local == 1)
+            {
+                row["caixasACC"] = accCaixasGF;
+                row["pesoTotalACC"] = accPesoGF;
+                accPesoGF = Convert.ToInt32(row["pesoTotalACC"]);
+                ProximoDia(1); 
+                InserePlaneamento(row, 1);
+            }
+
+            else if (local == 2)
+            {
+                row["caixasACC"] = accCaixasIMF;
+                row["pesoTotalACC"] = accPesoIMF;
+                accPesoIMF = Convert.ToInt32(row["pesoTotalACC"]);
+                ProximoDia(2); 
+                InserePlaneamento(row, 2);
+            }
+
+            else
+            {
+                row["caixasACC"] = accCaixasMAN;
+                row["pesoTotalACC"] = accPesoMAN;
+                accPesoMAN = Convert.ToInt32(row["pesoTotalACC"]);
+                ProximoDia(3); 
+                InserePlaneamento(row, 3);
+            }
         }
 
+        private void InsereLinha(int local, int index, int semana, int dia, String noEnc, int noLineEnc, int pesoPeca, String noProd, int qtd, String liga, int caixasAcc, int noMolde, int pesoTotal, int caixas, int pesoTotalAcc, bool insertAtIndex = false)
+        {
+            DataRow dr;
 
-        private void calcPlan()
-        {  
-            foreach (DataRow row in produtosCMW1.Rows)
-                inserePlaneamento(row,1);
-                        
+            switch (local)
+            {
+                case 1:
+                    dr = planeamentoMoldacGF.NewRow();
+                    break;
+                case 2:
+                    dr = planeamentoMoldacIMF.NewRow();
+                    break;
+                default:
+                    dr = planeamentoMoldacMAN.NewRow();
+                    break;
+            }
 
-            foreach (DataRow row in produtosCMW2.Rows)
-                if (Convert.ToInt32(row["local"]) == 2) inserePlaneamento(row, 2);
-                else inserePlaneamento(row, 3);
-                        
+            dr["linha"] = index;
+            dr["semana"] = semana;
+            dr["dia"] = dia;
+            dr["noEnc"] = noEnc;
+            dr["nolineEnc"] = noLineEnc;
+            dr["pesoPeca"] = pesoPeca;
+            dr["noProd"] = noProd;
+            dr["qtd"] = qtd;
+            dr["local"] = local;
+            dr["liga"] = liga;
+            dr["caixasACC"] = caixasAcc;
+            dr["noMolde"] = noMolde;
+            dr["pesoTotal"] = pesoTotal;
+            dr["caixas"] = caixas;
+            dr["pesoTotalACC"] = pesoTotalAcc;
+
+            switch (local)
+            {
+                case 1:
+                    if (insertAtIndex)
+                        planeamentoMoldacGF.Rows.InsertAt(dr, index);
+                    else
+                        planeamentoMoldacGF.Rows.Add(dr);
+                    break;
+                case 2:
+                    if (insertAtIndex)
+                        planeamentoMoldacIMF.Rows.InsertAt(dr, index);
+                    else
+                        planeamentoMoldacIMF.Rows.Add(dr);
+                    break;
+                default:
+                    if (insertAtIndex)
+                        planeamentoMoldacMAN.Rows.InsertAt(dr, index);
+                    else
+                        planeamentoMoldacMAN.Rows.Add(dr);
+                    break;
+            }
         }
 
+        private void ProximoDia(int local)
+        {
+            if (local == 1)
+            {
+                if (diaGF < 4)
+                    diaGF++;
+                else
+                {
+                    diaGF = 0;
+                    semanaGF++;
+                }
+            }
+            
+            else if (local == 2)
+            {
+                if (diaIMF < 4)
+                    diaIMF++;
+                else
+                {
+                    diaIMF = 0;
+                    semanaIMF++;
+                }
+            }     
 
-
-
-
-
-
-
-
-
-
+            else
+            {
+                if (diaMAN < 4)
+                    diaMAN++;
+                else
+                {
+                    diaMAN = 0;
+                    semanaMAN++;
+                }
+            }
+        }
 
 // ****************************************** PRINTS ********************************************************
-
-
 
         private void imprimeProd(){
 
@@ -475,7 +419,6 @@ namespace Planeamento
                 Console.WriteLine(" ");
             }
 
-
             Console.WriteLine(" ");
             Console.WriteLine(" ");
             Console.WriteLine(" ");
@@ -486,12 +429,9 @@ namespace Planeamento
                 foreach (DataColumn column in produtosCMW2.Columns)
                     Console.Write(column.ToString() + " -" + row[column] + "|");
 
-
                 Console.WriteLine(" ");
             }
-        
-        
-        
+
         }
 
 
@@ -553,14 +493,7 @@ namespace Planeamento
 
                 Console.WriteLine(" ");
             }
-
-            
         }
-            
-            
-
     }
-              
-           
 
 }
