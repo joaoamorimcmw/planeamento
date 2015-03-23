@@ -22,9 +22,10 @@ namespace Planeamento
         private int capMGF;
         private int capMIMF;
         private int capMMAN;
-        private int capFGF;
-        private int capFIMF;
-        private int capFMAN;
+        //Não estão a ser usados
+        //private int capFGF; 
+        //private int capFIMF;
+        //private int capFMAN;
 
         private int horarioGF;
         private int accCaixasGF;
@@ -54,8 +55,8 @@ namespace Planeamento
         {
             produtosCMW1 = prodCMW1.Copy();
             produtosCMW2 = prodCMW2.Copy();
-            //prodCMW1.Clear();
-            //prodCMW2.Clear();
+            prodCMW1.Clear();
+            prodCMW2.Clear();
 
             Inicializa();
             CalcPlan();
@@ -87,17 +88,17 @@ namespace Planeamento
 
             horarioGF = 1;
             indexGF = 0;
-            diaGF = 0;
+            diaGF = 1;
             semanaGF = 1;
 
             horarioIMF = 1;
             indexIMF = 0;
-            diaIMF = 0;
+            diaIMF = 1;
             semanaIMF = 1;
 
             horarioMAN = 1;
             indexMAN = 0;
-            diaMAN = 0;
+            diaMAN = 1;
             semanaMAN = 1;
 
             CalcParametros();
@@ -122,6 +123,7 @@ namespace Planeamento
             cmd.CommandType = CommandType.Text;
             capMMAN = (int)cmd.ExecuteScalar(); //12
 
+            /* O Figueiredo estava a ir buscar estes valores, mas não eram usados
             cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Fusao GF'", connection);
             cmd.CommandType = CommandType.Text;
             capFGF = (int)cmd.ExecuteScalar(); //8092
@@ -132,7 +134,7 @@ namespace Planeamento
 
             cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Fusao Manual'", connection);
             cmd.CommandType = CommandType.Text;
-            capFMAN = (int)cmd.ExecuteScalar(); //5753
+            capFMAN = (int)cmd.ExecuteScalar(); //5753 */
 
             BDUtil.FechaBD(connection);
         }
@@ -234,7 +236,6 @@ namespace Planeamento
             {
                 espaço = accCaixasIMF + Convert.ToInt32(row[9]) - (horarioIMF * capMIMF);
                 dr = planeamentoMoldacIMF.NewRow();
-                indexGF += 1; //Bug!!!!!
                 indexIMF += 1;
                 index = indexIMF;
                 semana = semanaIMF;
@@ -264,21 +265,6 @@ namespace Planeamento
             }
             
             InsereLinha(local, index, semana, dia, row[2].ToString(), Convert.ToInt32(row[3]), Convert.ToInt32(row[7]),row[4].ToString(), novasCaixas * Convert.ToInt32(row[8]), row[6].ToString(), caixasAcc, Convert.ToInt32(row[8]), pesoNovo, novasCaixas, pesoTotalAcc);
-
-            if (local == 1)
-            {             
-                planeamentoMoldacGF.Rows.InsertAt(dr, indexGF);
-            }
-            
-            else if (local == 2)
-            {
-                planeamentoMoldacIMF.Rows.InsertAt(dr, indexIMF);
-            }
-            
-            else
-            {
-                planeamentoMoldacMAN.Rows.InsertAt(dr, indexMAN);
-            }
             
             row["caixas"] = espaço;
             row["qtd"] = espaço * Convert.ToInt32(row[8]);
@@ -368,45 +354,60 @@ namespace Planeamento
             }
         }
 
-        private void ProximoDia(int local)
+        private void ProximoDia (int local)
         {
-            if (local == 1)
-            {
-                if (diaGF < 4)
-                    diaGF++;
-                else
-                {
-                    diaGF = 0;
+            if (local == 1) {
+                /*horarioGF = (horarioGF % numeroTurnos) + 1;
+                if (horarioGF == 1) {
+                    diaGF = (diaGF % 5) + 1;
+                    if (diaGF == 1)
+                        semanaGF++;
+                }*/
+                diaGF = (diaGF % 5) + 1;
+                if (diaGF == 1)
                     semanaGF++;
-                }
             }
             
             else if (local == 2)
             {
-                if (diaIMF < 4)
-                    diaIMF++;
-                else
-                {
-                    diaIMF = 0;
+                diaIMF = (diaIMF % 5) + 1;
+                if (diaIMF == 1)
                     semanaIMF++;
-                }
             }     
 
             else
             {
-                if (diaMAN < 4)
-                    diaMAN++;
-                else
-                {
-                    diaMAN = 0;
+                diaMAN = (diaMAN % 5) + 1;
+                if (diaMAN == 1)
                     semanaMAN++;
-                }
             }
         }
 
-// ****************************************** PRINTS ********************************************************
+        // ****************************************************************************************************************************************************
+        // ************************************************* GETs para o BDMolde *****************************************************************************
+        // ****************************************************************************************************************************************************
 
-        private void imprimeProd(){
+        public DataTable GetPlanMoldGF()
+        {
+            return planeamentoMoldacGF;
+        }
+
+        public DataTable GetPlanMoldIMF()
+        {
+            return planeamentoMoldacIMF;
+        }
+
+        public DataTable GetPlanMoldMAN()
+        {
+            return planeamentoMoldacMAN;
+        }
+
+
+        // ****************************************************************************************************************************************************
+        // ******************************************************************* Prints *************************************************************************
+        // ****************************************************************************************************************************************************
+
+        private void ImprimeProd(){
 
             Console.WriteLine("---- CMW1 ----");
 
@@ -431,35 +432,16 @@ namespace Planeamento
 
                 Console.WriteLine(" ");
             }
-
         }
 
-
-        public DataTable getPlanMoldGF() {
-            return planeamentoMoldacGF;
-        }
-
-        public DataTable getPlanMoldIMF()
+        public void ImprimePlan()
         {
-            return planeamentoMoldacIMF;
-        }
-
-        public DataTable getPlanMoldMAN()
-        {
-            return planeamentoMoldacMAN;
-        }
-
-
-        public void imprimePlan()
-        {
-
             Console.WriteLine("---- GF ----");
 
             foreach (DataRow row in planeamentoMoldacGF.Rows)
             {
                 foreach (DataColumn column in planeamentoMoldacGF.Columns)
                     Console.Write(column.ToString() + " " + row[column] + "|");
-
 
                 Console.WriteLine(" ");
             }
@@ -475,7 +457,6 @@ namespace Planeamento
                 foreach (DataColumn column in planeamentoMoldacIMF.Columns)
                     Console.Write(column.ToString() + " " + row[column] + "|");
 
-
                 Console.WriteLine(" ");
             }
 
@@ -489,7 +470,6 @@ namespace Planeamento
             {
                 foreach (DataColumn column in planeamentoMoldacMAN.Columns)
                     Console.Write(column.ToString() + " " + row[column] + "|");
-
 
                 Console.WriteLine(" ");
             }

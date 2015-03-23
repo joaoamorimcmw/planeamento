@@ -51,7 +51,7 @@ namespace Planeamento
 
             //***************************  DESCRICAO da FUNCAO  *********************************   5//
             //escrever os 3 planeamentos na B.D. tabela "Plan Mold"
-             BDMolde bdMolde = new BDMolde(pMolde.getPlanMoldGF(), pMolde.getPlanMoldIMF(), pMolde.getPlanMoldMAN());
+             BDMolde bdMolde = new BDMolde(pMolde.GetPlanMoldGF(), pMolde.GetPlanMoldIMF(), pMolde.GetPlanMoldMAN());
 
             //**********************************************************************************//
 

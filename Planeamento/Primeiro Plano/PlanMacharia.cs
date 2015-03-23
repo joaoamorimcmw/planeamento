@@ -30,12 +30,15 @@ namespace Planeamento
         {
             batchCMW1 = bdMacCMW1.Copy();
             batchCMW2 = bdMacCMW2.Copy();
-            //bdMacCMW1.Clear(); Provavelmente inútil, só mesmo para libertar espaço
-            //bdMacCMW2.Clear();
+            bdMacCMW1.Clear();
+            bdMacCMW2.Clear();
 
             Inicializa();
             Processa();
+            
             //ImprimePlano();
+            batchCMW1.Clear();
+            batchCMW2.Clear();
         }
 
         //Inicializa os parametros, variáveis e as DataTables planoCMW1 e 2
@@ -122,11 +125,8 @@ namespace Planeamento
 
             ResetGlobais();
 
-
-
             foreach (DataRow row in batchCMW2.Rows)
                 InserePlaneamento(row, 2);
-
         }
         
         //Por cada linha, se houver capacidade restante no dia, insere a linha completa, se não separa e insere no dia seguinte
@@ -138,7 +138,13 @@ namespace Planeamento
             else
                 capacidade = capacidadeCMW2;
 
-            if (acc + Convert.ToInt32(row[5]) > horario * capacidade) 
+            /*if (acc == horario * capacidade) //se o acumulado é exactamente a capacidade diária
+            {
+                ProximoDia();
+                InserePlaneamento(row, fabrica);
+            }
+
+            else*/ if (acc + Convert.ToInt32(row[5]) > horario * capacidade) //se a próxima linha excede a capacidade diária
                 SeparaLinha(row,fabrica);
             
             else if (Convert.ToInt32(row[4]) > 0 && Convert.ToInt32(row[5]) > 0)
@@ -226,6 +232,9 @@ namespace Planeamento
                 dia++;
         }
 
+        // ****************************************************************************************************************************************************
+        // ************************************************* GETs para o insert na BD *************************************************************************
+        // ****************************************************************************************************************************************************
 
         public DataTable GetPlanoCMW1() { 
             return planoCMW1;
@@ -235,6 +244,10 @@ namespace Planeamento
         {
             return planoCMW2;
         }
+
+        // ****************************************************************************************************************************************************
+        // ******************************************************************* Prints *************************************************************************
+        // ****************************************************************************************************************************************************
         
         private void ImprimePlano() {
 

@@ -26,8 +26,10 @@ namespace Planeamento
             InicializaTabelas();
             GetProdCMW1();
             GetProdCMW2();
-            //SetPlanMachariaCMW1();
-            //SetPlanMachariaCMW2();
+            int linhas = 0;
+            linhas += SetPlanMachariaCMW1();
+            linhas += SetPlanMachariaCMW2();
+            Console.WriteLine(linhas + " linhas inseridas na tabela Produtos Plan");
             //ImprimeP();
         }
 
@@ -126,29 +128,31 @@ namespace Planeamento
         //por cada produto a planear, verifica os machos associados e preenche machosCMW1
         //por cada macho, vê o tempo de fabrico, faz os calculos correspondentes em função da quantidade
         //insere na DataTable planMachariaCMW1 que é o plano final
-        private void SetPlanMachariaCMW1()
+        private int SetPlanMachariaCMW1()
         {
             machosCMW1 = new DataSet();
+            int linhas = 0;
             foreach (DataTable table in produtosCMW1.Tables)
                 foreach (DataRow row in table.Rows)
                 {
-                    InsereProdutosPlan(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString(), row[6].ToString(), row[7].ToString());
+                    linhas += InsereProdutosPlan(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString(), row[6].ToString(), row[7].ToString());
                     ExecutaMachoCMW1(row);
                 }
+            return linhas;
         }
 
         //igual ao setPlanMachariaCMW1, mas para a CMW2
-        private void SetPlanMachariaCMW2()
+        private int SetPlanMachariaCMW2()
         {
             machosCMW2 = new DataSet();
             int linhas = 0;
             foreach (DataTable table in produtosCMW2.Tables)
-
                 foreach (DataRow row in table.Rows)
                 {
                     linhas += InsereProdutosPlan(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString(), row[6].ToString(), row[7].ToString());
                     ExecutaMachoCMW2(row);
                 }
+            return linhas;
         }
 
 
@@ -332,6 +336,7 @@ namespace Planeamento
 
             foreach (DataRow row in pCMW2.Rows) linhas += ImportPlano(row);
 
+            Console.WriteLine(linhas + " linhas inseridas na tabela Plan Macharia");
         }
 
         private int ImportPlano(DataRow row) 
@@ -425,6 +430,8 @@ namespace Planeamento
                     prodCMW1.Rows.Add(dr);
                 }
 
+            produtosCMW1.Clear();
+
             return prodCMW1;
         }
 
@@ -467,6 +474,8 @@ namespace Planeamento
                     prodCMW2.Rows.Add(dr);
 
                 }
+
+            produtosCMW2.Clear();
 
             return prodCMW2;
         }

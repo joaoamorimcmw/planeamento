@@ -12,38 +12,33 @@ using System.Data.OleDb;
 
 namespace Planeamento
 {
-
     class BDMolde
     {
-        SqlConnection connection;
         SqlConnection con;
-        DataSet numeracao;
-        public String SQL;
-
-        // ************************* CONSTRUTORES ***********************************
 
         public BDMolde(DataTable pGF, DataTable pIMF, DataTable pMAN)
         {
             Inicializa();
 
-            con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-            con.Open();
+            con = BDUtil.AbreBD();
+
+            int linhas = 0;
 
             foreach (DataRow row in pGF.Rows)
-                Escreve(row);
+                linhas += Escreve(row);
 
             foreach (DataRow row in pIMF.Rows)
-                Escreve(row);
+                linhas += Escreve(row);
 
             foreach (DataRow row in pMAN.Rows)
-                Escreve(row);
+                linhas += Escreve(row);
 
-            con.Close();
+            BDUtil.FechaBD(con);
 
+            Console.WriteLine(linhas + " linhas inseridas na tabela Plan Mold");
             pGF.Clear();
             pIMF.Clear();
             pMAN.Clear();
-
         }
 
         private void Inicializa()
@@ -52,11 +47,11 @@ namespace Planeamento
             SqlCommand cmd2 = new SqlCommand("DELETE Planeamento.dbo.[CMW$Plan Mold]", connection);
             cmd2.CommandType = CommandType.Text;
             int linhas = cmd2.ExecuteNonQuery();
-            Console.WriteLine(linhas + " linhas apagadas da tabela Plan Mold");
+            Console.WriteLine(linhas + " linhas removidas da tabela Plan Mold");
             BDUtil.FechaBD(connection);
         }
 
-        private void Escreve(DataRow row)
+        private int Escreve(DataRow row)
         {
             int res = GetLinhaGeral(row);
 
@@ -79,24 +74,16 @@ namespace Planeamento
             cmd.Parameters.AddWithValue("@pesoTotalACC", row[12]);
             cmd.Parameters.AddWithValue("@semana", row[13]);
             cmd.Parameters.AddWithValue("@dia", row[14]);
-            cmd.ExecuteNonQuery();
-
+            return cmd.ExecuteNonQuery();
         }
 
         private int GetLinhaGeral(DataRow row)
         {
             int res = 0;
 
-            SqlConnection con = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
             SqlCommand cmd = new SqlCommand("SELECT linha FROM Planeamento.dbo.[CMW$Numeracao] WHERE noEnc LIKE '" + row[2].ToString() + "' AND noLine=" + Convert.ToInt32(row[3].ToString()) + " AND noProd LIKE '" + row[4].ToString() + "'", con);
-
             cmd.CommandType = CommandType.Text;
-            con.Open();
-            //cmd.ExecuteNonQuery();
-
             res = Convert.ToInt32(cmd.ExecuteScalar().ToString());
-
-            con.Close();
 
             return res;
         }
@@ -104,7 +91,6 @@ namespace Planeamento
 
         //pega na numeracao (linha) da moldacao e vai coloca-los na macharia para ficarem os 3 planos sincronizados com o mesmo numero
         /*public void adicionaNumPlanMacharia() {
-
             abreBD();
             numeracao = new DataSet();
             try
@@ -122,38 +108,6 @@ namespace Planeamento
             {
                 fechaBD();
             }
-        
-        
-        }
-
-
-        private void abreBD()
-        {
-            connection = new SqlConnection("Server=Sibelius;Database=Planeamento;Trusted_Connection=True;");
-
-            try
-            {
-                connection.Open();
-            }
-            catch (Exception ex)
-            {
-                System.Console.Write(ex);
-                System.Console.WriteLine("Erro na conecção.");
-            }
-        }
-
-        private void fechaBD()
-        {
-            try
-            {
-                connection.Close();
-            }
-            catch (Exception ex)
-            {
-                System.Console.Write(ex);
-                System.Console.WriteLine("Erro ao terminal conecção.");
-            }
-
         }*/
     }
 
