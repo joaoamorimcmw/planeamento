@@ -12,22 +12,55 @@ namespace Planeamento
     {
         public BDInit() 
         {
-            LimpaProdutosPlanBD();
+            SqlConnection con = BDUtil.AbreBD();
+            LimpaProdutos(con);
+            ReseedProdutos(con);
+            InicializaProdutos(con);
+            con.Close();
+            /*LimpaProdutosPlanBD();
             LimpaNumeracaoBD();
             ReseedNumeracaoBD();
-            InicializaNumeracaoBD();
+            InicializaNumeracaoBD();*/
         }
 
-        private void Teste()
+        //Limpa a tabela de Produtos
+        private void LimpaProdutos(SqlConnection con)
         {
-            SqlConnection connection = BDUtil.AbreBD();
-            SqlCommand cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Macharia CMW1'", connection);
+            SqlCommand cmd = new SqlCommand("DELETE Planeamento.dbo.[PlanCMW$Produtos]", con);
             cmd.CommandType = CommandType.Text;
-            Console.WriteLine((int)cmd.ExecuteScalar());
-            BDUtil.FechaBD(connection);
+            int linhas = cmd.ExecuteNonQuery();
+            Console.WriteLine(linhas + " linhas removidas da tabela Produtos");
+        }
+
+        //Reinicia o ID da tabela Produtos
+        private void ReseedProdutos(SqlConnection con)
+        {
+            SqlCommand cmd = new SqlCommand("DBCC CHECKIDENT ('Planeamento.dbo.[PlanCMW$Produtos]', RESEED, 0)", con);
+            cmd.CommandType = CommandType.Text;
+            cmd.ExecuteNonQuery();
+        }
+
+        //Inicializa Produtos e Plano
+        private void InicializaProdutos(SqlConnection con)
+        {
+            String query = "INSERT INTO dbo.[PlanCMW$Produtos] (NoEnc,NoLine,NoProd,Liga,Local,QtdPendente,DataPrevista,Urgente)" +
+            "SELECT A.[Document No_],A.[Line No_],A.[No_],B.[Liga Metalica],A.[Local de Producao],A.[Outstanding Quantity],A.[Planned Delivery Date],A.[Urgente] " +
+            "FROM dbo.[CMW$Sales Line] as A " +
+            "INNER JOIN dbo.[CMW$Item] as B " +
+            "on A.[No_] = B.[No_] " +
+            "WHERE ([Outstanding Quantity]>0) AND ([Posting Group]='PROD.ACABA') AND [Planned Delivery Date] >= '01-01-14' AND ([Local de Producao] >0) " +
+            "ORDER BY [Local de Producao] ASC,Urgente DESC,[Planned Delivery Date] ASC";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.CommandType = CommandType.Text;
+            int linhas = cmd.ExecuteNonQuery();
+            Console.WriteLine(linhas + " linhas inseridas na tabela Produtos");
         }
 
 
+
+        /* Funções de inicialização antigas
+         * 
         //Elimina todos os registos da tabela Produtos Plan
 
         private void LimpaProdutosPlanBD ()
@@ -76,11 +109,11 @@ namespace Planeamento
             SqlConnection con = BDUtil.AbreBD();
             if (con == null)
                 return;
-            SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Numeracao] " + BDUtil.QuerySalesLine("[Document No_],[Line No_], No_"), con);
+            SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Numeracao] " + BDUtil.QuerySalesLine("[Document No_],[Line No_], No_,"), con);
             cmd.CommandType = CommandType.Text;
             int linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas inseridas na tabela Numeracao");
             BDUtil.FechaBD(con);
-        }
+        }*/
     }
 }
