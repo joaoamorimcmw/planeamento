@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Planeamento
 {
-    class BDUtil
+    class Util
     {
         //Função auxiliar para abrir a ligação à BD de planeamento
 
@@ -29,6 +29,13 @@ namespace Planeamento
             }
 
             return connection;
+        }
+
+        public static void ProximoDia(ref int dia, ref int semana) 
+        {
+            dia = (dia % 5) + 1;
+            if (dia == 1)
+                semana++;
         }
 
         //Função auxiliar para fechar uma ligação à BD

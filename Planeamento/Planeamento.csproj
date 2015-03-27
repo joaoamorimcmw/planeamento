@@ -45,11 +45,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BDInit.cs" />
-    <Compile Include="BDUtil.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="Primeiro Plano\BDMacharia.cs" />
     <Compile Include="Primeiro Plano\BDFusao.cs" />
     <Compile Include="Primeiro Plano\BDMolde.cs" />
-    <Compile Include="PrimeiroPlano.cs" />
+    <Compile Include="Macharia.cs" />
+    <Compile Include="Primeiro Plano\PrimeiroPlano.cs" />
     <Compile Include="Primeiro Plano\PlanFusao.cs" />
     <Compile Include="Primeiro Plano\PlanMold.cs" />
     <Compile Include="Primeiro Plano\PlanMacharia.cs" />

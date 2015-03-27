@@ -44,14 +44,14 @@ namespace Planeamento
         //Inicializa os parametros, variáveis e as DataTables planoCMW1 e 2
         private void Inicializa() {
 
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return;
 
             capacidadeCMW1 = GetCapacidadeCMW1(connection);
             capacidadeCMW2 = GetCapacidadeCMW2(connection);
 
-            BDUtil.FechaBD(connection);
+            Util.FechaBD(connection);
 
             ResetGlobais();
 

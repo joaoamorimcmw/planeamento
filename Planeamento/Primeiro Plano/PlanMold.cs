@@ -105,7 +105,7 @@ namespace Planeamento
         }
 
         private void GetCapacidades() {
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return;
 
@@ -136,7 +136,7 @@ namespace Planeamento
             cmd.CommandType = CommandType.Text;
             capFMAN = (int)cmd.ExecuteScalar(); //5753 */
 
-            BDUtil.FechaBD(connection);
+            Util.FechaBD(connection);
         }
 
         private void CalcParametros() {

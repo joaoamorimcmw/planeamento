@@ -12,7 +12,7 @@ namespace Planeamento
     {
         public BDInit() 
         {
-            SqlConnection con = BDUtil.AbreBD();
+            SqlConnection con = Util.AbreBD();
             LimpaProdutos(con);
             ReseedProdutos(con);
             InicializaProdutos(con);
@@ -65,55 +65,55 @@ namespace Planeamento
 
         private void LimpaProdutosPlanBD ()
         {
-            SqlConnection con = BDUtil.AbreBD();
+            SqlConnection con = Util.AbreBD();
             if (con == null)
                 return;
             SqlCommand cmd2 = new SqlCommand("DELETE Planeamento.dbo.[CMW$Produtos Plan]", con);
             cmd2.CommandType = CommandType.Text;
             int linhas = cmd2.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas removidas da tabela Produtos Plan");
-            BDUtil.FechaBD(con);
+            Util.FechaBD(con);
         }
 
         //Elimina todos os registos existentes na tabela Numeracao
 
         private void LimpaNumeracaoBD ()
         {
-            SqlConnection con = BDUtil.AbreBD();
+            SqlConnection con = Util.AbreBD();
             if (con == null)
                 return;
             SqlCommand cmd2 = new SqlCommand("DELETE Planeamento.dbo.[CMW$Numeracao]", con);
             cmd2.CommandType = CommandType.Text;
             int linhas = cmd2.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas removidas da tabela Numeracao");
-            BDUtil.FechaBD(con);
+            Util.FechaBD(con);
         }
 
         //Reinicia o ID da tabela Numeracao
 
         private void ReseedNumeracaoBD ()
         {
-            SqlConnection con = BDUtil.AbreBD();
+            SqlConnection con = Util.AbreBD();
             if (con == null)
                 return;
             SqlCommand cmd2 = new SqlCommand("DBCC CHECKIDENT ('Planeamento.dbo.[CMW$Numeracao]', RESEED, 0)", con);
             cmd2.CommandType = CommandType.Text;
             cmd2.ExecuteNonQuery();
-            BDUtil.FechaBD(con);
+            Util.FechaBD(con);
         }
 
         //Inicializa a tabela Numeracao com os dados das encomendas pendentes
 
         private void InicializaNumeracaoBD ()
         {
-            SqlConnection con = BDUtil.AbreBD();
+            SqlConnection con = Util.AbreBD();
             if (con == null)
                 return;
-            SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Numeracao] " + BDUtil.QuerySalesLine("[Document No_],[Line No_], No_,"), con);
+            SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Numeracao] " + Util.QuerySalesLine("[Document No_],[Line No_], No_,"), con);
             cmd.CommandType = CommandType.Text;
             int linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas inseridas na tabela Numeracao");
-            BDUtil.FechaBD(con);
+            Util.FechaBD(con);
         }*/
     }
 }

@@ -36,14 +36,14 @@ namespace Planeamento
         //Apaga todos os registos da tabela Plan Macharia
         private void InicializaPlanMachariaBD ()
         {
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return;
             SqlCommand cmd = new SqlCommand("DELETE Planeamento.dbo.[CMW$Plan Macharia]", connection);
             cmd.CommandType = CommandType.Text;
             int linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas removidas da tabela Plan Macharia");
-            BDUtil.FechaBD(connection);
+            Util.FechaBD(connection);
         }
 
         //Inicializa DataTables planMachariaCMW1 e planMachariaCMW2
@@ -74,14 +74,14 @@ namespace Planeamento
         //da tabela Sales Line para o DataSet produtosCMW1
         private void GetProdCMW1()
         {
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return;
             produtosCMW1 = new DataSet();
 
             try
             {
-                String SQL = BDUtil.QuerySalesLine("[Local de Producao], [Line No_],[Document No_], No_,[Outstanding Quantity],Urgente,[Planned Delivery Date],Material,[Peso Peça [Kg]]],NumeroMoldes", local: 1);
+                String SQL = Util.QuerySalesLine("[Local de Producao], [Line No_],[Document No_], No_,[Outstanding Quantity],Urgente,[Planned Delivery Date],Material,[Peso Peça [Kg]]],NumeroMoldes", local: 1);
                 SqlDataAdapter res = new SqlDataAdapter(SQL, connection);
                 res.Fill(produtosCMW1);
                 res.Dispose();
@@ -92,7 +92,7 @@ namespace Planeamento
             }
             finally
             {
-                BDUtil.FechaBD(connection);
+                Util.FechaBD(connection);
             }
         }
 
@@ -100,14 +100,14 @@ namespace Planeamento
         //da tabela Sales Line para o DataSet produtosCMW2
         private void GetProdCMW2()
         {
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return;
             produtosCMW2 = new DataSet();
 
             try
             {
-                String SQL = BDUtil.QuerySalesLine("[Local de Producao], [Line No_],[Document No_], No_,[Outstanding Quantity],Urgente,[Planned Delivery Date],Material,[Peso Peça [Kg]]],NumeroMoldes", local: 2);
+                String SQL = Util.QuerySalesLine("[Local de Producao], [Line No_],[Document No_], No_,[Outstanding Quantity],Urgente,[Planned Delivery Date],Material,[Peso Peça [Kg]]],NumeroMoldes", local: 2);
                 SqlDataAdapter res = new SqlDataAdapter(SQL, connection);
                 res.Fill(produtosCMW2);
                 res.Dispose();
@@ -118,7 +118,7 @@ namespace Planeamento
             }
             finally
             {
-                BDUtil.FechaBD(connection);
+                Util.FechaBD(connection);
             }
 
        } 
@@ -159,7 +159,7 @@ namespace Planeamento
         //Insere cada linha dos DataSets produtosCMW1 e produtosCMW2 na tabela Produtos Plan
         private int InsereProdutosPlan(String lProd,String noLine,String noDoc, String noProd,String qtd,String urg,String planDev,String noL){
 
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return 0;
             SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Produtos Plan]([Local Producao],[Document No_],[Line No_],[Prod No_],[Quantidade Pendente],Urgencia,[Planned Delivery Date],[Liga Metalica]) VALUES(@local,@doc,@noLine, @noProd,@qtd,@urg,@planD,@lMet)", connection);
@@ -177,7 +177,7 @@ namespace Planeamento
         
             cmd.ExecuteNonQuery();
 
-            BDUtil.FechaBD(connection);
+            Util.FechaBD(connection);
 
             return 1;
         }
@@ -186,7 +186,7 @@ namespace Planeamento
         //Por cada macho, calcula o tempo total e insere no planMachariaCMW1
         private void ExecutaMachoCMW1(DataRow linha)
         {
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return;
             String SQL = "SELECT [No_],Quantity FROM Planeamento.dbo.[CMW$Production BOM Line] WHERE ([No_] NOT LIKE '" + SEM_MACHO + "') AND ([No_] LIKE 'M%') AND ([Production BOM No_] LIKE '" + linha[3] + "#" + "')";
@@ -213,7 +213,7 @@ namespace Planeamento
             }
             finally
             {
-                BDUtil.FechaBD(connection);
+                Util.FechaBD(connection);
             }
         }
 
@@ -222,7 +222,7 @@ namespace Planeamento
 
         private void ExecutaMachoCMW2(DataRow linha)
         {
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return;
             String SQL = "SELECT [No_],Quantity FROM Planeamento.dbo.[CMW$Production BOM Line] WHERE ([No_] NOT LIKE '" + SEM_MACHO + "') AND ([No_] LIKE 'M%') AND ([Production BOM No_] LIKE '" + linha[3] + "#" + "')";
@@ -249,7 +249,7 @@ namespace Planeamento
             }
             finally
             {
-                BDUtil.FechaBD(connection);
+                Util.FechaBD(connection);
             }
         }
 
@@ -258,7 +258,7 @@ namespace Planeamento
 
         private void ExecutaGO(DataRow macho,DataRow prod,int local) {
 
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return;
             
@@ -286,7 +286,7 @@ namespace Planeamento
                 InserePlanMach(codPlanMach,noD,nLine,noProd,totalMac,tempoMac,mach, nLig,local);
             }
 
-            BDUtil.FechaBD(connection);
+            Util.FechaBD(connection);
         }
 
         //Insere linha de macharia (macho e quantidade) na DataTable planMachariaCMW1 ou 2
@@ -341,7 +341,7 @@ namespace Planeamento
 
         private int ImportPlano(DataRow row) 
         {
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             if (connection == null)
                 return 0;
 
@@ -367,7 +367,7 @@ namespace Planeamento
 
             cmd.ExecuteNonQuery();
 
-            BDUtil.FechaBD(connection);
+            Util.FechaBD(connection);
 
             return 1;
         }

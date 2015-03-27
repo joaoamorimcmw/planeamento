@@ -20,7 +20,7 @@ namespace Planeamento
         {
             Inicializa();
 
-            con = BDUtil.AbreBD();
+            con = Util.AbreBD();
 
             int linhas = 0;
 
@@ -33,7 +33,7 @@ namespace Planeamento
             foreach (DataRow row in pMAN.Rows)
                 linhas += Escreve(row);
 
-            BDUtil.FechaBD(con);
+            Util.FechaBD(con);
 
             Console.WriteLine(linhas + " linhas inseridas na tabela Plan Mold");
             pGF.Clear();
@@ -43,12 +43,12 @@ namespace Planeamento
 
         private void Inicializa()
         {
-            SqlConnection connection = BDUtil.AbreBD();
+            SqlConnection connection = Util.AbreBD();
             SqlCommand cmd2 = new SqlCommand("DELETE Planeamento.dbo.[CMW$Plan Mold]", connection);
             cmd2.CommandType = CommandType.Text;
             int linhas = cmd2.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas removidas da tabela Plan Mold");
-            BDUtil.FechaBD(connection);
+            Util.FechaBD(connection);
         }
 
         private int Escreve(DataRow row)
