@@ -43,8 +43,8 @@ namespace Planeamento
         //Inicializa Produtos e Plano
         private void InicializaProdutos(SqlConnection con)
         {
-            String query = "INSERT INTO dbo.[PlanCMW$Produtos] (NoEnc,NoLine,NoProd,Liga,Local,QtdPendente,DataPrevista,Urgente)" +
-            "SELECT A.[Document No_],A.[Line No_],A.[No_],B.[Liga Metalica],A.[Local de Producao],A.[Outstanding Quantity],A.[Planned Delivery Date],A.[Urgente] " +
+            String query = "INSERT INTO dbo.[PlanCMW$Produtos] (NoEnc,NoLine,NoProd,Liga,PesoPeca,NoMoldes,Local,QtdPendente,DataPrevista,Urgente)" +
+            "SELECT A.[Document No_],A.[Line No_],A.[No_],B.[Liga Metalica],A.[Peso Peça [Kg]]],A.[NumeroMoldes],A.[Local de Producao],A.[Outstanding Quantity],A.[Planned Delivery Date],A.[Urgente] " +
             "FROM dbo.[CMW$Sales Line] as A " +
             "INNER JOIN dbo.[CMW$Item] as B " +
             "on A.[No_] = B.[No_] " +

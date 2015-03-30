@@ -14,11 +14,13 @@ namespace Planeamento
         private DataTable MachosCMW2;
         private DataTable PlanoCMW1;
         private DataTable PlanoCMW2;
+
         private int capacidadeCMW1;
         private int capacidadeCMW2;
         private int acc;
         private int dia;
         private int semana;
+
         private static int horario = 8 * 60; //capacidade diária em minutos
         private static String SEM_MACHO = "M002204";
 
@@ -69,6 +71,8 @@ namespace Planeamento
 
             EscreveBD(1);
             EscreveBD(2);
+
+            LimpaTabelas();
         }
 
         //Elimina plano antigo da Base de Dados.
@@ -89,13 +93,17 @@ namespace Planeamento
         public void LeituraBD(int Fabrica) 
         {
             List<int> produtosSemMacho = new List<int>();
-            String query = "select Prod.Id as Linha,Bom.[No_] as Macho,Prod.QtdPendente*Bom.Quantity as Quantidade,Item.[Tempo Fabrico Machos]/60 as Tempo from " + //Tempo está em segundos, dividir por 60
-            "dbo.PlanCMW$Produtos as Prod " +
-            "inner join dbo.[CMW$Production BOM Line] as Bom " +
-            "on Prod.[NoProd] + '#' = Bom.[Production BOM No_] " + //importante o #, pois é na Gama Operatória do sub-produto que estão os machos
-            "inner join dbo.[CMW$Item] as Item " +
-            "on Bom.[No_] = Item.[No_] " +
-            "where Bom.[No_] like 'M%' and dbo.GetFabrica(Prod.Local) = " + Fabrica + " " +
+            String query = "select " +
+                "Prod.Id as Linha, " +
+                "isnull(Bom.[No_],'" + SEM_MACHO + "') as Macho, " + //alguns produtos podem não tem os machos na lista de materiais, assume-se que não têm macho
+                "isnull(Prod.QtdPendente*Bom.Quantity,0.0) as Quantidade, " +
+                "isnull(Item.[Tempo Fabrico Machos]/60,0.0) as Tempo " + //Tempo está em segundos, dividir por 60
+            "from " +
+                "(select * from dbo.PlanCMW$Produtos where dbo.GetFabrica(Local) = " + Fabrica + ") Prod " +
+                "left join (select * from dbo.[CMW$Production BOM Line] where [No_] like 'M%') Bom " +
+                    "on Prod.[NoProd] + '#' = Bom.[Production BOM No_] " + //importante o #, pois é na Gama Operatória do sub-produto que estão os machos
+                "left join dbo.[CMW$Item] as Item " +
+                    "on Bom.[No_] = Item.[No_] " +
             "order by Linha asc";
 
             SqlConnection connection = Util.AbreBD();
@@ -106,11 +114,11 @@ namespace Planeamento
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                String macho = reader.GetString(1);
+                String macho = reader["Macho"].ToString();
                 if (macho == SEM_MACHO)
                     produtosSemMacho.Add(reader.GetInt32(0));
                 else
-                    InsereLinhaMacho (reader.GetInt32(0), macho, reader.GetDecimal(2), reader.GetDecimal(3), Fabrica, connection);
+                    InsereLinhaMacho (Convert.ToInt32(reader["Linha"]), macho, Convert.ToDecimal(reader["Quantidade"]), Convert.ToDecimal(reader["Tempo"]), Fabrica, connection);
             }
 
             reader.Close();
@@ -173,11 +181,11 @@ namespace Planeamento
         {
             ResetGlobais();
             foreach (DataRow row in MachosCMW1.Rows)
-                LinhaPlaneamento(1, row);
+                LinhaPlaneamento(1, row,capacidadeCMW1);
 
             ResetGlobais();
             foreach (DataRow row in MachosCMW2.Rows)
-                LinhaPlaneamento(2, row);
+                LinhaPlaneamento(2, row,capacidadeCMW2);
         }
 
         //Reinicia as variáveis globais.
@@ -190,22 +198,15 @@ namespace Planeamento
 
         //Trata cada linha a planear.
         //2 casos: linha cabe toda no dia actual ou não.
-        private void LinhaPlaneamento(int Fabrica, DataRow row)
+        private void LinhaPlaneamento(int Fabrica, DataRow row, int Capacidade)
         {
-            int capacidade;
-
-            if (Fabrica == 1)
-                capacidade = capacidadeCMW1;
-            else
-                capacidade = capacidadeCMW2;
-
             decimal qtd = (decimal) row["Qtd"];
             decimal tempo = (decimal) row ["Tempo"];
             int tempoTotal = (int) Math.Round(qtd * tempo);
 
-            if (acc + tempoTotal > capacidade) //Linha não cabe toda.
+            if (acc + tempoTotal > Capacidade) //Linha não cabe toda.
             {
-                int espaco = capacidade - acc;
+                int espaco = Capacidade - acc;
                 decimal qtdNova = Math.Floor ((decimal) espaco / tempo); //Verifica qual a quantidade que "cabe" no dia (arredonda para baixo).
 
                 if (qtdNova > 0) //Tem espaço para produzir alguns no dia actual. Separa a linha em 2.
@@ -216,14 +217,14 @@ namespace Planeamento
                     Util.ProximoDia(ref dia, ref semana);
                     acc = 0;
                     row ["Qtd"] = qtd - qtdNova;
-                    LinhaPlaneamento(Fabrica,row);
+                    LinhaPlaneamento(Fabrica, row, Capacidade);
                 }
 
                 else //Não tem espaço para produzir no dia actual. Passa tudo para o dia seguinte.
                 {
                     Util.ProximoDia (ref dia, ref semana);
                     acc = 0;
-                    LinhaPlaneamento(Fabrica,row);
+                    LinhaPlaneamento(Fabrica, row, Capacidade);
                 }
             }
 
@@ -275,25 +276,33 @@ namespace Planeamento
             {
                 SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[PlanCMW$Macharia] VALUES(@Id,@CodMach,@Fabrica,@Semana,@Dia,@Qtd,@Tempo,@Acc)", connection);
                 cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@ID", row[0]);
-                cmd.Parameters.AddWithValue("@CodMach", row[1]);
-                cmd.Parameters.AddWithValue("@Fabrica", row[2]);
-                cmd.Parameters.AddWithValue("@Semana", row[3]);
-                cmd.Parameters.AddWithValue("@Dia", row[4]);
-                cmd.Parameters.AddWithValue("@Qtd", row[5]);
-                cmd.Parameters.AddWithValue("@Tempo", row[6]);
-                cmd.Parameters.AddWithValue("@Acc", row[7]);
+                cmd.Parameters.AddWithValue("@ID", row["Id"]);
+                cmd.Parameters.AddWithValue("@CodMach", row["CodMach"]);
+                cmd.Parameters.AddWithValue("@Fabrica", row["Fabrica"]);
+                cmd.Parameters.AddWithValue("@Semana", row["Semana"]);
+                cmd.Parameters.AddWithValue("@Dia", row["Dia"]);
+                cmd.Parameters.AddWithValue("@Qtd", row["Qtd"]);
+                cmd.Parameters.AddWithValue("@Tempo", row["Tempo"]);
+                cmd.Parameters.AddWithValue("@Acc", row["Acc"]);
                 cmd.ExecuteNonQuery();
 
                 cmd = new SqlCommand("UPDATE Planeamento.dbo.[PlanCMW$Produtos] SET DiaMacharia = @Dia, SemanaMacharia = @Semana WHERE Id = @Id", connection);
-                cmd.Parameters.AddWithValue("@ID", row[0]);
-                cmd.Parameters.AddWithValue("@Semana", row[3]);
-                cmd.Parameters.AddWithValue("@Dia", row[4]);
+                cmd.Parameters.AddWithValue("@ID", row["Id"]);
+                cmd.Parameters.AddWithValue("@Semana", row["Semana"]);
+                cmd.Parameters.AddWithValue("@Dia", row["Dia"]);
                 cmd.ExecuteNonQuery();
                 linhas++;
             }
 
             Console.WriteLine("CMW" + Fabrica + ": " + linhas + " linhas inseridas na tabela Macharia");
+        }
+
+        private void LimpaTabelas()
+        {
+            MachosCMW1.Clear();
+            MachosCMW2.Clear();
+            PlanoCMW1.Clear();
+            PlanoCMW2.Clear();
         }
 
     }

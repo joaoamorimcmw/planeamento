@@ -31,6 +31,13 @@ namespace Planeamento
             return connection;
         }
 
+        public static void ProximoTurno(ref int turno, ref int dia, ref int semana, int nTurnos)
+        {
+            turno = (turno % nTurnos) + 1;
+            if (turno == 1)
+                ProximoDia(ref dia, ref semana);
+        }
+        
         public static void ProximoDia(ref int dia, ref int semana) 
         {
             dia = (dia % 5) + 1;
