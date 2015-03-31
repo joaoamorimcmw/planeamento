@@ -22,7 +22,6 @@ namespace Planeamento
         private int capacidadeManual;
 
         private int accCaixas = 0;
-        private int accPeso = 0;
         private int dia = 1;
         private int semana = 1;
         private int turno = 1;
@@ -36,30 +35,24 @@ namespace Planeamento
             MoldesGF = new DataTable("Moldes GF"); //Contem informação sobre os moldes a planear
             MoldesGF.Columns.Add(new DataColumn("Id", typeof(int))); //Linha da tabela Produtos associada
             MoldesGF.Columns.Add(new DataColumn("Qtd", typeof(int)));
-            MoldesGF.Columns.Add(new DataColumn("Peso", typeof(int)));
             MoldesGF.Columns.Add(new DataColumn("NoMoldes", typeof(int)));
             MoldesGF.Columns.Add(new DataColumn("Caixas", typeof(int)));
-            MoldesGF.Columns.Add(new DataColumn("PesoTotal", typeof(int)));
             MoldesGF.Columns.Add(new DataColumn("SemanaMacharia", typeof(int)));
             MoldesGF.Columns.Add(new DataColumn("DiaMacharia", typeof(int)));
 
             MoldesIMF = new DataTable("Moldes IMF");
             MoldesIMF.Columns.Add(new DataColumn("Id", typeof(int)));
             MoldesIMF.Columns.Add(new DataColumn("Qtd", typeof(int)));
-            MoldesIMF.Columns.Add(new DataColumn("Peso", typeof(int)));
             MoldesIMF.Columns.Add(new DataColumn("NoMoldes", typeof(int)));
             MoldesIMF.Columns.Add(new DataColumn("Caixas", typeof(int)));
-            MoldesIMF.Columns.Add(new DataColumn("PesoTotal", typeof(int)));
             MoldesIMF.Columns.Add(new DataColumn("SemanaMacharia", typeof(int)));
             MoldesIMF.Columns.Add(new DataColumn("DiaMacharia", typeof(int)));
 
             MoldesManual = new DataTable("Moldes Manual");
             MoldesManual.Columns.Add(new DataColumn("Id", typeof(int)));
             MoldesManual.Columns.Add(new DataColumn("Qtd", typeof(int)));
-            MoldesManual.Columns.Add(new DataColumn("Peso", typeof(int)));
             MoldesManual.Columns.Add(new DataColumn("NoMoldes", typeof(int)));
             MoldesManual.Columns.Add(new DataColumn("Caixas", typeof(int)));
-            MoldesManual.Columns.Add(new DataColumn("PesoTotal", typeof(int)));
             MoldesManual.Columns.Add(new DataColumn("SemanaMacharia", typeof(int)));
             MoldesManual.Columns.Add(new DataColumn("DiaMacharia", typeof(int)));
 
@@ -70,9 +63,8 @@ namespace Planeamento
             PlanoGF.Columns.Add(new DataColumn("Dia", typeof(int)));
             PlanoGF.Columns.Add(new DataColumn("Turno", typeof(int)));
             PlanoGF.Columns.Add(new DataColumn("Caixas", typeof(int)));
-            PlanoGF.Columns.Add(new DataColumn("PesoTotal", typeof(int)));
             PlanoGF.Columns.Add(new DataColumn("CaixasAcc", typeof(int)));
-            PlanoGF.Columns.Add(new DataColumn("PesoAcc", typeof(int)));
+
 
             PlanoIMF = new DataTable("Plano IMF");
             PlanoIMF.Columns.Add(new DataColumn("Id", typeof(int)));
@@ -81,9 +73,7 @@ namespace Planeamento
             PlanoIMF.Columns.Add(new DataColumn("Dia", typeof(int)));
             PlanoIMF.Columns.Add(new DataColumn("Turno", typeof(int)));
             PlanoIMF.Columns.Add(new DataColumn("Caixas", typeof(int)));
-            PlanoIMF.Columns.Add(new DataColumn("PesoTotal", typeof(int)));
             PlanoIMF.Columns.Add(new DataColumn("CaixasAcc", typeof(int)));
-            PlanoIMF.Columns.Add(new DataColumn("PesoAcc", typeof(int)));
 
             PlanoManual = new DataTable("Plano Manual");
             PlanoManual.Columns.Add(new DataColumn("Id", typeof(int)));
@@ -92,9 +82,7 @@ namespace Planeamento
             PlanoManual.Columns.Add(new DataColumn("Dia", typeof(int)));
             PlanoManual.Columns.Add(new DataColumn("Turno", typeof(int)));
             PlanoManual.Columns.Add(new DataColumn("Caixas", typeof(int)));
-            PlanoManual.Columns.Add(new DataColumn("PesoTotal", typeof(int)));
             PlanoManual.Columns.Add(new DataColumn("CaixasAcc", typeof(int)));
-            PlanoManual.Columns.Add(new DataColumn("PesoAcc", typeof(int)));
         }
 
         public void Executa()
@@ -130,7 +118,7 @@ namespace Planeamento
         public void LeituraBD(int Local)
         {
             List<int> produtosSemMacho = new List<int>();
-            String query = "select Id,QtdPendente,PesoPeca,NoMoldes,SemanaMacharia,DiaMacharia from dbo.PlanCMW$Produtos where Local = " + Local + "order by Id asc";
+            String query = "select Id,QtdPendente,NoMoldes,SemanaMacharia,DiaMacharia from dbo.PlanCMW$Produtos where Local = " + Local + "order by Id asc";
 
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -148,18 +136,15 @@ namespace Planeamento
                 else 
                     row = MoldesManual.NewRow();
 
-                decimal qtd = reader.GetInt32(1);
-                int peso = (int)reader.GetDecimal(2);
-                int nMoldes = reader.GetInt32(3);
+                int qtd = Convert.ToInt32(reader["QtdPendente"]);
+                int nMoldes = Convert.ToInt32(reader["NoMoldes"]);
 
-                row["Id"] = reader.GetInt32(0);
+                row["Id"] = Convert.ToInt32(reader["Id"]);
                 row["Qtd"] = qtd;
-                row["Peso"] = peso;
                 row["NoMoldes"] = nMoldes;
                 row["Caixas"] = (int)Math.Ceiling((decimal)qtd / (decimal)nMoldes);
-                row["PesoTotal"] = (int)qtd * peso;
-                row["SemanaMacharia"] = reader.GetInt32(4);
-                row["DiaMacharia"] = reader.GetInt32(5);
+                row["SemanaMacharia"] = Convert.ToInt32(reader["SemanaMacharia"]);
+                row["DiaMacharia"] = Convert.ToInt32(reader["DiaMacharia"]);
 
                 if (Local == 1)
                     MoldesGF.Rows.Add(row);
@@ -199,23 +184,30 @@ namespace Planeamento
         {
             ResetGlobais();
             PlaneamentoLocal(1,capacidadeGF, nTurnosGF,0,MoldesGF,new LinkedList<DataRow>());
+
+            ResetGlobais();
+            PlaneamentoLocal(2, capacidadeIMF, nTurnosIMF, 0, MoldesIMF, new LinkedList<DataRow>());
+
+            ResetGlobais();
+            PlaneamentoLocal(3, capacidadeManual, nTurnosManual, 0, MoldesManual, new LinkedList<DataRow>());
             
         }
 
         private void PlaneamentoLocal(int Local, int Capacidade, int nTurnos, int Index, DataTable Table, LinkedList<DataRow> RowList)
         {
-            Console.WriteLine("Index: " + Index + ", LinkedList : " + RowList.Count);
-
+            //Console.WriteLine("Index: " + Index + " List: " + RowList.Count + " Semana: " + semana + " Dia: " + dia + " Acc: " + accCaixas);
             DataRow row;
 
-            if (RowList.Count > 0 && RespeitaPrecedencia(RowList.First.Value))
-                row = Queue.Dequeue();
+            if (RowList.Count > 0 && RespeitaPrecedencia(RowList.First.Value)){
+                row = RowList.First.Value;
+                RowList.RemoveFirst();
+            }
 
             else 
             {
                 while (Index < Table.Rows.Count && !RespeitaPrecedencia(Table.Rows[Index]))
                 {
-                    Queue.Enqueue(Table.Rows[Index]);
+                    RowList.AddLast(Table.Rows[Index]);
                     Index++;
                 }
 
@@ -235,34 +227,33 @@ namespace Planeamento
                 }
             }
 
+            int caixas = Convert.ToInt32(row["Caixas"]);
+            int id = Convert.ToInt32(row["Id"]);
+
             if (accCaixas == Capacidade) //se o acumulado for exactamente igual à capacidade
             {
                 MudaTurno(nTurnos);
                 PlaneamentoLocal(Local, Capacidade, nTurnos, Index, Table, RowList);
             }
 
-            int caixas = Convert.ToInt32(row["Caixas"]);
-            int pesoTotal = Convert.ToInt32(row["PesoTotal"]);
-            int id = Convert.ToInt32(row["Id"]);
-
-            if (accCaixas + caixas > Capacidade)
+            else if (accCaixas + caixas > Capacidade) //se tiver de separar
             {
                 int qtd = Convert.ToInt32(row["Qtd"]);
                 int nMoldes = Convert.ToInt32(row["NoMoldes"]);
                 int caixasNovo = Capacidade - accCaixas;
-                int pesoNovo = caixasNovo * Convert.ToInt32(row["NoMoldes"]) * Convert.ToInt32(row["Peso"]);
-                InsereLinhaPlaneamento(id, Local, caixasNovo, pesoNovo);
+                accCaixas = Capacidade;
+                InsereLinhaPlaneamento(id, Local, caixasNovo);
 
                 row["Caixas"] = caixas - caixasNovo;
-                row["PesoTotal"] = pesoTotal - pesoNovo;
                 MudaTurno(nTurnos);
-                //Coloca na frente da queue
+                RowList.AddFirst(row);
                 PlaneamentoLocal(Local, Capacidade, nTurnos, Index, Table, RowList);
             }
 
-            else
+            else //se couber tudo no dia
             {
-                InsereLinhaPlaneamento(id, Local, caixas, pesoTotal);
+                accCaixas += caixas;
+                InsereLinhaPlaneamento(id, Local, caixas);
                 PlaneamentoLocal(Local, Capacidade, nTurnos, Index, Table, RowList);
             }
 
@@ -271,7 +262,6 @@ namespace Planeamento
         private void ResetGlobais()
         {
             accCaixas = 0;
-            accPeso = 0;
             dia = 1;
             semana = 1;
             turno = 1;
@@ -281,7 +271,6 @@ namespace Planeamento
         {
             Util.ProximoTurno(ref turno, ref dia, ref semana, nTurnos);
             accCaixas = 0;
-            accPeso = 0;
         }
 
 
@@ -304,7 +293,7 @@ namespace Planeamento
             return true;
         }
 
-        private void InsereLinhaPlaneamento(int Id, int Local, int Caixas, int PesoTotal)
+        private void InsereLinhaPlaneamento(int Id, int Local, int Caixas)
         {
             DataRow row;
 
@@ -321,9 +310,7 @@ namespace Planeamento
             row["Dia"] = dia;
             row["Turno"] = turno;
             row["Caixas"] = Caixas;
-            row["PesoTotal"] = PesoTotal;
             row["CaixasAcc"] = accCaixas;
-            row["PesoAcc"] = accPeso;
 
             if (Local == 1)
                 PlanoGF.Rows.Add(row);
@@ -349,7 +336,7 @@ namespace Planeamento
 
             foreach (DataRow row in Plano.Rows)
             {
-                SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[PlanCMW$Moldacao] VALUES(@Id,@Local,@Semana,@Dia,@Turno,@Caixas,@PesoTotal,@CaixasAcc,@PesoAcc)", connection);
+                SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[PlanCMW$Moldacao] VALUES(@Id,@Local,@Semana,@Dia,@Turno,@Caixas,@CaixasAcc)", connection);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@Id", row["Id"]);
                 cmd.Parameters.AddWithValue("@Local", row["Local"]);
@@ -357,9 +344,7 @@ namespace Planeamento
                 cmd.Parameters.AddWithValue("@Dia", row["Dia"]);
                 cmd.Parameters.AddWithValue("@Turno", row["Turno"]);
                 cmd.Parameters.AddWithValue("@Caixas", row["Caixas"]);
-                cmd.Parameters.AddWithValue("@PesoTotal", row["PesoTotal"]);
                 cmd.Parameters.AddWithValue("@CaixasAcc", row["CaixasAcc"]);
-                cmd.Parameters.AddWithValue("@PesoAcc", row["PesoAcc"]);
                 cmd.ExecuteNonQuery();
 
                 cmd = new SqlCommand("UPDATE Planeamento.dbo.[PlanCMW$Produtos] SET DiaMoldacao = @Dia, SemanaMoldacao = @Semana, TurnoMoldacao = @Turno WHERE Id = @Id", connection);

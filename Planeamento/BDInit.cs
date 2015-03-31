@@ -49,7 +49,7 @@ namespace Planeamento
             "INNER JOIN dbo.[CMW$Item] as B " +
             "on A.[No_] = B.[No_] " +
             "WHERE ([Outstanding Quantity]>0) AND ([Posting Group]='PROD.ACABA') AND [Planned Delivery Date] >= '01-01-14' AND ([Local de Producao] >0) " +
-            "ORDER BY [Local de Producao] ASC,Urgente DESC,[Planned Delivery Date] ASC";
+            "ORDER BY dbo.GetFabrica([Local de Producao]) ASC,Urgente DESC,[Planned Delivery Date] ASC";
 
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.CommandType = CommandType.Text;
