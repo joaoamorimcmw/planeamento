@@ -26,9 +26,9 @@ namespace Planeamento
         private int semana = 1;
         private int turno = 1;
 
-        private static int nTurnosGF = 1;
-        private static int nTurnosIMF = 1;
-        private static int nTurnosManual = 1;
+        private static int nTurnosGF = 3;
+        private static int nTurnosIMF = 3;
+        private static int nTurnosManual = 3;
 
         public Moldacao()
         {

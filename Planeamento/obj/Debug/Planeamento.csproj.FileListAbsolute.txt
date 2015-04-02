@@ -33,3 +33,11 @@ C:\Users\joao.amorim\Documents\Visual Studio 2012\Projects\Planeamento\Planeamen
 C:\Users\joao.amorim\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.csprojResolveAssemblyReference.cache
 C:\Users\joao.amorim\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.Properties.Resources.resources
 C:\Users\joao.amorim\Documents\Visual Studio 2012\Projects\Planeamento\Planeamento\obj\Debug\Planeamento.csproj.GenerateResource.Cache
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\bin\Debug\Planeamento.exe.config
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.exe
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.pdb
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\bin\Debug\Planeamento.exe
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\bin\Debug\Planeamento.pdb
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.csprojResolveAssemblyReference.cache
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.Properties.Resources.resources
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.csproj.GenerateResource.Cache
