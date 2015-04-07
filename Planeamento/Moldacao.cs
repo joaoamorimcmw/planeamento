@@ -17,9 +17,9 @@ namespace Planeamento
         private DataTable PlanoIMF;
         private DataTable PlanoManual;
 
-        private int capacidadeGF;
-        private int capacidadeIMF;
-        private int capacidadeManual;
+        private static int capacidadeGF = 420;
+        private static int capacidadeIMF = 95;
+        private static int capacidadeManual = 12;
 
         private int accCaixas = 0;
         private int dia = 1;
@@ -93,7 +93,7 @@ namespace Planeamento
             LeituraBD(2);
             LeituraBD(3);
 
-            GetCapacidades();
+            //GetCapacidades();
             Planeamento();
 
             EscreveBD(1);

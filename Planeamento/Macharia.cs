@@ -15,8 +15,8 @@ namespace Planeamento
         private DataTable PlanoCMW1;
         private DataTable PlanoCMW2;
 
-        private int capacidadeCMW1;
-        private int capacidadeCMW2;
+        private static int capacidadeCMW1 = 5;
+        private static int capacidadeCMW2 = 4;
         private int acc;
         private int dia;
         private int semana;
@@ -66,7 +66,7 @@ namespace Planeamento
             LeituraBD(1);
             LeituraBD(2);
 
-            GetCapacidades();
+            //GetCapacidades();
             Planeamento();
 
             EscreveBD(1);
