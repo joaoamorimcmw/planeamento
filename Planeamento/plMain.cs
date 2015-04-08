@@ -23,17 +23,17 @@ namespace Planeamento
 
             //BDInit bd = new BDInit();
 
-            Macharia macharia = new Macharia();
-            macharia.Executa();
+            //Macharia macharia = new Macharia();
+            //macharia.Executa();
 
             //Moldacao moldacao = new Moldacao();
             //moldacao.Executa();
 
-            //aqui são preenchidos os 3 primeiros planeamentos de macharia, moldação, fusao
+            Fusao fusao = new Fusao();
+            fusao.Executa();
+
+            //Método antigo (Figueiredo)
             //PrimeiroPlano pl = new PrimeiroPlano();
-
-            //aqui são verificadas as precedências entre macharia,moldacao,fusao
-
         }
     }
 }

@@ -115,10 +115,10 @@ namespace Planeamento
             connection.Close();
         }
 
-        public void LeituraBD(int Local)
+        private void LeituraBD(int Local)
         {
             List<int> produtosSemMacho = new List<int>();
-            String query = "select Id,QtdPendente,NoMoldes,SemanaMacharia,DiaMacharia from dbo.PlanCMW$Produtos where Local = " + Local + "order by Id asc";
+            String query = "select Id,QtdPendente,NoMoldes,SemanaMacharia,DiaMacharia from dbo.PlanCMW$Produtos where Local = " + Local + " order by Id asc";
 
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -233,6 +233,7 @@ namespace Planeamento
             if (accCaixas == Capacidade) //se o acumulado for exactamente igual à capacidade
             {
                 MudaTurno(nTurnos);
+                RowList.AddFirst(row);
                 PlaneamentoLocal(Local, Capacidade, nTurnos, Index, Table, RowList);
             }
 

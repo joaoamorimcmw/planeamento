@@ -76,7 +76,7 @@ namespace Planeamento
         }
 
         //Elimina plano antigo da Base de Dados.
-        public void LimpaBDMacharia() 
+        private void LimpaBDMacharia() 
         {
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -90,7 +90,7 @@ namespace Planeamento
 
         //Lê da BD os machos associados a cada produto, e qual a quantidade total desse macho a produzir (qtdProduto * qtdMacho p/ produto).
         //Os produtos que nâo têm macho são actualizados directamente na tabela Produtos com DiaMacharia e SemanaMacharia = 0.
-        public void LeituraBD(int Fabrica) 
+        private void LeituraBD(int Fabrica) 
         {
             List<int> produtosSemMacho = new List<int>();
             String query = "select " +
@@ -100,9 +100,9 @@ namespace Planeamento
                 "isnull(Item.[Tempo Fabrico Machos]/60,0.0) as Tempo " + //Tempo está em segundos, dividir por 60
             "from " +
                 "(select * from dbo.PlanCMW$Produtos where dbo.GetFabrica(Local) = " + Fabrica + ") Prod " +
-                "left join (select * from dbo.[CMW$Production BOM Line] where [No_] like 'M%') Bom " +
+                "left join (select * from Navision.dbo.[CMW$Production BOM Line] where [No_] like 'M%') Bom " +
                     "on Prod.[NoProd] + '#' = Bom.[Production BOM No_] " + //importante o #, pois é na Gama Operatória do sub-produto que estão os machos
-                "left join dbo.[CMW$Item] as Item " +
+                "left join Navision.dbo.[CMW$Item] as Item " +
                     "on Bom.[No_] = Item.[No_] " +
             "order by Linha asc";
 
@@ -134,7 +134,7 @@ namespace Planeamento
         }
 
         //Insere cada macho a produzir na DataTable MachosCMW.
-        public void InsereLinhaMacho(int Id, string CodMach, decimal Qtd, decimal Tempo, int Fabrica, SqlConnection connection)
+        private void InsereLinhaMacho(int Id, string CodMach, decimal Qtd, decimal Tempo, int Fabrica, SqlConnection connection)
         {
             DataRow dr;
             if (Fabrica == 1)
@@ -181,11 +181,11 @@ namespace Planeamento
         {
             ResetGlobais();
             foreach (DataRow row in MachosCMW1.Rows)
-                LinhaPlaneamento(1, row,capacidadeCMW1);
+                LinhaPlaneamento(1, row,capacidadeCMW1 * horario);
 
             ResetGlobais();
             foreach (DataRow row in MachosCMW2.Rows)
-                LinhaPlaneamento(2, row,capacidadeCMW2);
+                LinhaPlaneamento(2, row,capacidadeCMW2 * horario);
         }
 
         //Reinicia as variáveis globais.
