@@ -14,15 +14,19 @@ namespace Planeamento
         private DataTable MachosCMW2;
         private DataTable PlanoCMW1;
         private DataTable PlanoCMW2;
-
-        private static int capacidadeCMW1 = 5;
-        private static int capacidadeCMW2 = 4;
+        
         private int acc;
         private int dia;
         private int semana;
 
+        /**** Parametros ****/
+
+        private static int capacidadeCMW1 = 5;
+        private static int capacidadeCMW2 = 4;
         private static int horario = 8 * 60; //capacidade diária em minutos
         private static String SEM_MACHO = "M002204";
+
+        /*********************/
 
         public Macharia()
         {
@@ -64,12 +68,11 @@ namespace Planeamento
             LimpaBDMacharia();
 
             LeituraBD(1);
-            LeituraBD(2);
-
-            //GetCapacidades();
-            Planeamento();
-
+            Planeamento(1);
             EscreveBD(1);
+
+            LeituraBD(2);
+            Planeamento(2);
             EscreveBD(2);
 
             LimpaTabelas();
@@ -95,7 +98,7 @@ namespace Planeamento
             List<int> produtosSemMacho = new List<int>();
             String query = "select " +
                 "Prod.Id as Linha, " +
-                "isnull(Bom.[No_],'" + SEM_MACHO + "') as Macho, " + //alguns produtos podem não tem os machos na lista de materiais, assume-se que não têm macho
+                "isnull(Bom.[No_],'" + SEM_MACHO + "') as Macho, " + //alguns produtos podem não ter os machos na lista de materiais, assume-se que não têm macho
                 "isnull(Prod.QtdPendente*Bom.Quantity,0.0) as Quantidade, " +
                 "isnull(Item.[Tempo Fabrico Machos]/60,0.0) as Tempo " + //Tempo está em segundos, dividir por 60
             "from " +
@@ -177,15 +180,16 @@ namespace Planeamento
             connection.Close();
         }
 
-        private void Planeamento()
+        private void Planeamento(int Local)
         {
             ResetGlobais();
-            foreach (DataRow row in MachosCMW1.Rows)
-                LinhaPlaneamento(1, row,capacidadeCMW1 * horario);
 
-            ResetGlobais();
-            foreach (DataRow row in MachosCMW2.Rows)
-                LinhaPlaneamento(2, row,capacidadeCMW2 * horario);
+            if(Local == 1)
+                foreach (DataRow row in MachosCMW1.Rows)
+                    LinhaPlaneamento(1, row,capacidadeCMW1 * horario);
+            else
+                foreach (DataRow row in MachosCMW2.Rows)
+                    LinhaPlaneamento(2, row,capacidadeCMW2 * horario);
         }
 
         //Reinicia as variáveis globais.

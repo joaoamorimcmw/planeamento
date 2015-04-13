@@ -17,18 +17,22 @@ namespace Planeamento
         private DataTable PlanoIMF;
         private DataTable PlanoManual;
 
-        private static int capacidadeGF = 420;
-        private static int capacidadeIMF = 95;
-        private static int capacidadeManual = 12;
-
         private int accCaixas = 0;
         private int dia = 1;
         private int semana = 1;
         private int turno = 1;
 
+        /**** Parametros ****/
+        
+        private static int capacidadeGF = 420;
+        private static int capacidadeIMF = 95;
+        private static int capacidadeManual = 12;
+
         private static int nTurnosGF = 3;
         private static int nTurnosIMF = 3;
         private static int nTurnosManual = 3;
+        
+        /*********************/
 
         public Moldacao()
         {
@@ -90,14 +94,15 @@ namespace Planeamento
             LimpaBDMoldacao();
 
             LeituraBD(1);
-            LeituraBD(2);
-            LeituraBD(3);
-
-            //GetCapacidades();
-            Planeamento();
-
+            Planeamento(1);
             EscreveBD(1);
+
+            LeituraBD(2);
+            Planeamento(2);
             EscreveBD(2);
+
+            LeituraBD(3);
+            Planeamento(3);
             EscreveBD(3);
 
             LimpaTabelas();
@@ -158,44 +163,20 @@ namespace Planeamento
             connection.Close();
         }
 
-        private void GetCapacidades()
-        {
-            SqlConnection connection = Util.AbreBD();
-
-            SqlCommand cmd;
-
-            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Mold GF'", connection);
-            cmd.CommandType = CommandType.Text;
-            capacidadeGF = (int)cmd.ExecuteScalar(); ///420
-
-            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Mold IMF'", connection);
-            cmd.CommandType = CommandType.Text;
-            capacidadeIMF = (int)cmd.ExecuteScalar(); //95
-
-            cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Mold Manual'", connection);
-            cmd.CommandType = CommandType.Text;
-            capacidadeManual = (int)cmd.ExecuteScalar(); //12
-
-            connection.Close();
-        }
-
-
-        private void Planeamento()
+        private void Planeamento(int Local)
         {
             ResetGlobais();
-            PlaneamentoLocal(1,capacidadeGF, nTurnosGF,0,MoldesGF,new LinkedList<DataRow>());
-
-            ResetGlobais();
-            PlaneamentoLocal(2, capacidadeIMF, nTurnosIMF, 0, MoldesIMF, new LinkedList<DataRow>());
-
-            ResetGlobais();
-            PlaneamentoLocal(3, capacidadeManual, nTurnosManual, 0, MoldesManual, new LinkedList<DataRow>());
+            if (Local == 1)
+                PlaneamentoLocal(1,capacidadeGF, nTurnosGF,0,MoldesGF,new LinkedList<DataRow>());
+            else if (Local == 2)
+                PlaneamentoLocal(2, capacidadeIMF, nTurnosIMF, 0, MoldesIMF, new LinkedList<DataRow>());
+            else
+                PlaneamentoLocal(3, capacidadeManual, nTurnosManual, 0, MoldesManual, new LinkedList<DataRow>());
             
         }
 
         private void PlaneamentoLocal(int Local, int Capacidade, int nTurnos, int Index, DataTable Table, LinkedList<DataRow> RowList)
         {
-            //Console.WriteLine("Index: " + Index + " List: " + RowList.Count + " Semana: " + semana + " Dia: " + dia + " Acc: " + accCaixas);
             DataRow row;
 
             if (RowList.Count > 0 && RespeitaPrecedencia(RowList.First.Value)){

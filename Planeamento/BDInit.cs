@@ -10,12 +10,15 @@ namespace Planeamento
 {
     class BDInit
     {
-        public BDInit() 
+        public BDInit(bool IniciaLigas = false) 
         {
             SqlConnection con = Util.AbreBD();
             LimpaProdutos(con);
             ReseedProdutos(con);
             InicializaProdutos(con);
+            EliminaProdutosBaixaCarga(con);
+            if (IniciaLigas)
+                InicializaLigas(con);
             con.Close();
             /*LimpaProdutosPlanBD();
             LimpaNumeracaoBD();
@@ -57,7 +60,46 @@ namespace Planeamento
             Console.WriteLine(linhas + " linhas inseridas na tabela Produtos");
         }
 
+        private void EliminaProdutosBaixaCarga(SqlConnection con)
+        {
+            String query = "delete from dbo.[PlanCMW$Produtos] " +
+            "output deleted.NoEnc as Enc,deleted.NoProd as Prod " +
+            "where Id in " +
+            "(select Id " +
+            "from dbo.[PlanCMW$Produtos] Prod " +
+            "inner join " +
+            "(select dbo.GetFabrica(Local) as Fabrica,Liga,sum(PesoPeca * QtdPendente) as PesoTotal " +
+            "from dbo.[PlanCMW$Produtos] " +
+            "group by dbo.GetFabrica(Local),Liga " +
+            "having sum(PesoPeca * QtdPendente) < (CASE WHEN dbo.GetFabrica(Local) = 1 THEN @MinimoCMW1 ELSE @MinimoCMW2 END)) Soma " +
+            "on dbo.GetFabrica(Prod.Local) = Soma.Fabrica and Prod.Liga = Soma.Liga)";
 
+            Console.WriteLine("Produtos ignorados por falta de carga");
+            SqlCommand command = new SqlCommand(query, con);
+            command.Parameters.AddWithValue("@MinimoCMW1", Fusao.FusaoMinima(1));
+            command.Parameters.AddWithValue("@MinimoCMW2", Fusao.FusaoMinima(2));
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+                Console.WriteLine ("Encomenda: " + reader["Enc"] + ", Produto: " + reader["Prod"]);
+            reader.Close();
+        }
+
+        private void InicializaLigas(SqlConnection con)
+        {
+            String query = "insert into dbo.PlanCMW$Ligas " +
+            "select Ligas.No_,Ligas.Description,Classes.Code,Classes.Descricao as Liga " +
+            "from Navision.dbo.CMW$Item Ligas " +
+            "left join Navision.dbo.CMW$Item Item " +
+            "on Ligas.[Liga Metalica] = Item.No_ " +
+            "inner join " +
+            "(select Code, Descricao from Navision.dbo.[CMW$Parametrizações Extra] where Tabela = 10) Classes " +
+            "on Ligas.[Code Classe Metais] = Classes.Code " +
+            "where Ligas.No_ like 'LIG%' ";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.CommandType = CommandType.Text;
+            int linhas = cmd.ExecuteNonQuery();
+            Console.WriteLine(linhas + " linhas inseridas na tabela Ligas");
+        }
 
         /* Funções de inicialização antigas
          * 

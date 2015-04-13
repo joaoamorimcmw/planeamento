@@ -16,10 +16,33 @@ namespace Planeamento
         private DataTable PlanoCMW2;
         private DataTable Produtos;
 
-        public Fusao () {
+        private int semana;
+        private int dia;
+        private int turno;
+
+        /**** Parametros ****/
+
+        private static int TurnosCMW1 = 3;
+        private static int TurnosCMW2 = 3;
+        private static int FusoesTurno = 2;
+        private static decimal Minimo = 0.66M;
+        private static decimal CapacidadeCMW1Forno1 = 1000;
+        private static decimal CapacidadeCMW1Forno2 = 1000;
+        private static decimal CapacidadeCMW1Forno3 = 3000;
+        private static decimal CapacidadeCMW1Forno4 = 3000;
+        private static decimal CapacidadeCMW2Forno1 = 1100;
+        private static decimal CapacidadeCMW2Forno2 = 1100;
+        private static decimal CapacidadeCMW2Forno3 = 800;
+        private static decimal CapacidadeCMW2Forno4 = 1750;
+
+        /*********************/
+
+        public Fusao()
+        {
             FusaoCMW1 = new DataTable("Fusao CMW1");
             FusaoCMW1.Columns.Add(new DataColumn("Id", typeof(int)));
             FusaoCMW1.Columns.Add(new DataColumn("Liga", typeof(string)));
+            FusaoCMW1.Columns.Add(new DataColumn("Classe", typeof(string)));
             FusaoCMW1.Columns.Add(new DataColumn("Qtd", typeof(int)));
             FusaoCMW1.Columns.Add(new DataColumn("PesoPeca", typeof(decimal)));
             FusaoCMW1.Columns.Add(new DataColumn("SemanaMoldacao", typeof(int)));
@@ -29,6 +52,7 @@ namespace Planeamento
             FusaoCMW2 = new DataTable("Fusao CMW2");
             FusaoCMW2.Columns.Add(new DataColumn("Id", typeof(int)));
             FusaoCMW2.Columns.Add(new DataColumn("Liga", typeof(string)));
+            FusaoCMW2.Columns.Add(new DataColumn("Classe", typeof(string)));
             FusaoCMW2.Columns.Add(new DataColumn("Qtd", typeof(int)));
             FusaoCMW2.Columns.Add(new DataColumn("PesoPeca", typeof(decimal)));
             FusaoCMW2.Columns.Add(new DataColumn("SemanaMoldacao", typeof(int)));
@@ -44,7 +68,7 @@ namespace Planeamento
             PlanoCMW1.Columns.Add(new DataColumn("NoFusao", typeof(int)));
             PlanoCMW1.Columns.Add(new DataColumn("PesoTotal", typeof(decimal)));
 
-            PlanoCMW2 = new DataTable("Plano CMW2"); 
+            PlanoCMW2 = new DataTable("Plano CMW2");
             PlanoCMW2.Columns.Add(new DataColumn("Semana", typeof(int)));
             PlanoCMW2.Columns.Add(new DataColumn("Dia", typeof(int)));
             PlanoCMW2.Columns.Add(new DataColumn("Turno", typeof(int)));
@@ -61,13 +85,15 @@ namespace Planeamento
 
         }
 
-        public void Executa (){
+        public void Executa()
+        {
             LimpaBDFusao();
 
             LeituraBD(1);
-            LeituraBD(2);
+            Planeamento(1);
 
-            TotalPesos();
+            LeituraBD(2);
+            Planeamento(2);
         }
 
         private void LimpaBDFusao()
@@ -84,7 +110,11 @@ namespace Planeamento
 
         private void LeituraBD(int Fabrica)
         {
-            String query = "select Id,Liga,QtdPendente,PesoPeca,SemanaMoldacao,DiaMoldacao,TurnoMoldacao from dbo.PlanCMW$Produtos where dbo.GetFabrica(Local) = " + Fabrica + " order by Id asc";
+            String query = "select Prod.Id as Id,Prod.Liga as Liga,Ligas.[Codigo Classe] as Classe,QtdPendente,PesoPeca,SemanaMoldacao,DiaMoldacao,TurnoMoldacao " + 
+            "from dbo.PlanCMW$Produtos Prod " + 
+            "inner join dbo.PlanCMW$Ligas Ligas " +
+            "on Prod.Liga = Ligas.Liga " +
+            "where dbo.GetFabrica(Local) = " + Fabrica + " order by Prod.Id asc";
 
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -104,8 +134,9 @@ namespace Planeamento
 
                 row["Id"] = Convert.ToInt32(reader["Id"]);
                 row["Liga"] = reader["Liga"].ToString();
+                row["Classe"] = reader["Classe"].ToString();
                 row["Qtd"] = Convert.ToInt32(reader["QtdPendente"]);
-                row["PesoPeca"] =  Convert.ToDecimal(reader["PesoPeca"]);
+                row["PesoPeca"] = Convert.ToDecimal(reader["PesoPeca"]);
                 row["SemanaMoldacao"] = Convert.ToInt32(reader["SemanaMoldacao"]);
                 row["DiaMoldacao"] = Convert.ToInt32(reader["DiaMoldacao"]);
                 row["TurnoMoldacao"] = Convert.ToInt32(reader["TurnoMoldacao"]);
@@ -120,43 +151,95 @@ namespace Planeamento
             connection.Close();
         }
 
-        private void TotalPesos()
+        private void Planeamento(int Local)
         {
-            Dictionary<String, Decimal> PesosCMW1 = new Dictionary<String, Decimal>();
-            Dictionary<String, Decimal> PesosCMW2 = new Dictionary<String, Decimal>();
-            
-            foreach (DataRow row in FusaoCMW1.Rows) {
-                String liga = row["Liga"].ToString();
-                decimal peso = Convert.ToDecimal(row["PesoPeca"]) * Convert.ToInt32(row["Qtd"]);
+            ResetGlobais();
+            if (Local == 1)
+                PlaneamentoLocal (Local,FusaoCMW1,TurnosCMW1,new Dictionary<string,LigaFusao>(),0);
+            else
+                PlaneamentoLocal (Local,FusaoCMW2,TurnosCMW2,new Dictionary<string,LigaFusao>(),0);
+        }
 
-                if (PesosCMW1.ContainsKey(liga))
-                    PesosCMW1[liga] += peso;
-                else
-                    PesosCMW1.Add(liga, peso);
-            }
-
-            foreach (DataRow row in FusaoCMW2.Rows)
+        private void PlaneamentoLocal(int Local,DataTable Table, int nTurnos, Dictionary<String, LigaFusao> Cargas, int Index)
+        {
+            while (Index < Table.Rows.Count && RespeitaPrecendencia(Table.Rows[Index]))
             {
-                String liga = row["Liga"].ToString();
-                decimal peso = Convert.ToDecimal(row["PesoPeca"]) * Convert.ToInt32(row["Qtd"]);
-
-                if (PesosCMW2.ContainsKey(liga))
-                    PesosCMW2[liga] += peso;
+                DataRow row = Table.Rows[Index];
+                string liga = row["Liga"].ToString();
+                if (Cargas.ContainsKey(liga))
+                    Cargas[liga].AdicionaLinha(row);
                 else
-                    PesosCMW2.Add(liga, peso);
+                {
+                    LigaFusao lFusao = new LigaFusao(liga, row["Classe"].ToString());
+                    lFusao.AdicionaLinha(row);
+                    Cargas.Add(liga, lFusao);
+                }
+                Index++;
             }
-            
-            Console.WriteLine("Pesos CMW1");
-            Console.WriteLine("----------------");
 
-            foreach (String liga in PesosCMW1.Keys)
-                Console.WriteLine(liga + ": " + PesosCMW1[liga] + " kgs");
+            PlaneamentoTurno(Local,Cargas);
+            bool continua = false;
 
-            Console.WriteLine("\n\nPesos CMW2");
-            Console.WriteLine("----------------");
+            if (Index < Table.Rows.Count)
+                continua = true;
+            else {
+                foreach (LigaFusao lFusao in Cargas.Values)
+                    if (lFusao.Peso > Fusao.FusaoMinima(Local))
+                        continua = true;
+            }
 
-            foreach (String liga in PesosCMW2.Keys)
-                Console.WriteLine(liga + ": " + PesosCMW2[liga] + " kgs");
-        } 
+            if (continua)
+                Util.ProximoTurno(ref turno, ref dia, ref semana, nTurnos);
+            //else 
+                //Listar produtos que não têm fusão planeada
+
+        }
+
+        private void PlaneamentoTurno(int Local,Dictionary<String,LigaFusao> Cargas){
+            //Aqui é que vai acontecer a magia...
+        }
+
+        private bool RespeitaPrecendencia(DataRow row)
+        {
+            int semanaMoldacao = Convert.ToInt32(row["SemanaMoldacao"]);
+            int diaMoldacao = Convert.ToInt32(row["DiaMoldacao"]);
+
+            if (semana < semanaMoldacao)
+                return false;
+
+            if (semana == semanaMoldacao)
+            {
+                if (dia < diaMoldacao)
+                    return false;
+                if (dia == diaMoldacao)
+                    return turno > 1;
+            }
+
+            return true;
+        }
+
+        private void ResetGlobais()
+        {
+            semana = 1;
+            dia = 1;
+            turno = 1;
+        }
+
+        private decimal PesoProdutos(LinkedList<DataRow> Lista)
+        {
+            decimal total = 0;
+
+            foreach (DataRow row in Lista)
+                total += Convert.ToDecimal(row["Qtd"]) * Convert.ToDecimal(row["PesoPeca"]);
+
+            return total;
+        }
+
+        public static decimal FusaoMinima (int Fabrica){
+            if (Fabrica == 1)
+                return (new[] { CapacidadeCMW1Forno1, CapacidadeCMW1Forno2, CapacidadeCMW1Forno3, CapacidadeCMW1Forno4 }).Min() * Minimo;
+            else
+                return (new[] { CapacidadeCMW2Forno1, CapacidadeCMW2Forno2, CapacidadeCMW2Forno3, CapacidadeCMW2Forno4 }).Min() * Minimo;
+        }
     }
 }

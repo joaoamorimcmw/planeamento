@@ -33,7 +33,7 @@ namespace Planeamento
         int numfus2;
         int numfus3;
         int numfus4;
-        int conFus;     //contador diario de fusões
+        //int conFus;     //contador diario de fusões
 
 
 
@@ -70,7 +70,7 @@ namespace Planeamento
         }
 
         private void putCapacidadesCMW1(){
-            conFus = 1;
+            //conFus = 1;
             mudDia = 1;
             cm = 1;
             cforno1 = 500;

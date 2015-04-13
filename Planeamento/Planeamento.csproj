@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="BDInit.cs" />
     <Compile Include="Fusao.cs" />
+    <Compile Include="LigaFusao.cs" />
     <Compile Include="Moldacao.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Primeiro Plano\BDMacharia.cs" />

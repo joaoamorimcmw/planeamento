@@ -8,20 +8,14 @@ namespace Planeamento
 {
     static class plMain
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        /// 
-
         [STAThread]
         static void Main()
         {
-            //***********************************      TAREFAS     ************************************
-            // - Falta adicionar a restrição no PlanFusao do número de fusões por dia em cada fabrica
-            // - Na PlanModacao adicionar a restrição que só pode ser moldada no mesmo dia ou superior aos machos estarem prontos
-            //*****************************************************************************************
-
-            //BDInit bd = new BDInit();
+            /**
+             * Todas as classes na pasta "Primeiro Plano" fazem parte do modelo antigo do Figueiredo.
+             * A classe BDInit também tem algum código comentado que fazia parte desse modelo.
+             */
+            //BDInit bd = new BDInit(true);
 
             //Macharia macharia = new Macharia();
             //macharia.Executa();
