@@ -10,15 +10,14 @@ namespace Planeamento
 {
     class BDInit
     {
-        public BDInit(bool IniciaLigas = false) 
+        public BDInit() 
         {
             SqlConnection con = Util.AbreBD();
             LimpaProdutos(con);
             ReseedProdutos(con);
             InicializaProdutos(con);
             EliminaProdutosBaixaCarga(con);
-            if (IniciaLigas)
-                InicializaLigas(con);
+            InicializaLigas(con);
             con.Close();
             /*LimpaProdutosPlanBD();
             LimpaNumeracaoBD();
@@ -86,7 +85,13 @@ namespace Planeamento
 
         private void InicializaLigas(SqlConnection con)
         {
-            String query = "insert into dbo.PlanCMW$Ligas " +
+            String query = "delete from dbo.PlanCMW$Ligas";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.CommandType = CommandType.Text;
+            int linhas = cmd.ExecuteNonQuery();
+            Console.WriteLine(linhas + " linhas removidas da tabela Ligas");
+
+            query = "insert into dbo.PlanCMW$Ligas " +
             "select Ligas.No_,Ligas.Description,Classes.Code,Classes.Descricao as Liga " +
             "from Navision.dbo.CMW$Item Ligas " +
             "left join Navision.dbo.CMW$Item Item " +
@@ -95,9 +100,9 @@ namespace Planeamento
             "(select Code, Descricao from Navision.dbo.[CMW$Parametrizações Extra] where Tabela = 10) Classes " +
             "on Ligas.[Code Classe Metais] = Classes.Code " +
             "where Ligas.No_ like 'LIG%' ";
-            SqlCommand cmd = new SqlCommand(query, con);
+            cmd = new SqlCommand(query, con);
             cmd.CommandType = CommandType.Text;
-            int linhas = cmd.ExecuteNonQuery();
+            linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas inseridas na tabela Ligas");
         }
 

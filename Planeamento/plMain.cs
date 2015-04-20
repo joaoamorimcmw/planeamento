@@ -15,7 +15,7 @@ namespace Planeamento
              * Todas as classes na pasta "Primeiro Plano" fazem parte do modelo antigo do Figueiredo.
              * A classe BDInit também tem algum código comentado que fazia parte desse modelo.
              */
-            //BDInit bd = new BDInit(true);
+            //BDInit bd = new BDInit();
 
             //Macharia macharia = new Macharia();
             //macharia.Executa();
