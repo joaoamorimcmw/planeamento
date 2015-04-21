@@ -10,24 +10,35 @@ namespace Planeamento
     {
         [STAThread]
         static void Main()
-        {
-            /**
-             * Todas as classes na pasta "Primeiro Plano" fazem parte do modelo antigo do Figueiredo.
-             * A classe BDInit também tem algum código comentado que fazia parte desse modelo.
-             */
-            //BDInit bd = new BDInit();
+        {            
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Interface());
 
-            //Macharia macharia = new Macharia();
-            //macharia.Executa();
+            /*Init.UpdateProdutos();
+            Init.ExcluiProdutosBaixaCarga();
+            Init.InicializaLigas();
 
-            //Moldacao moldacao = new Moldacao();
-            //moldacao.Executa();
+            Macharia macharia = new Macharia();
+            macharia.LimpaBDMacharia();
+            macharia.Executa(1);
+            macharia.Executa(2);
+            macharia.LimpaTabelas();
+
+            Moldacao moldacao = new Moldacao();
+            moldacao.LimpaBDMoldacao();
+            moldacao.Executa(1);
+            moldacao.Executa(2);
+            moldacao.Executa(3);
+            moldacao.LimpaTabelas();
 
             Fusao fusao = new Fusao();
-            fusao.Executa();
-
-            //Método antigo (Figueiredo)
-            //PrimeiroPlano pl = new PrimeiroPlano();
+            fusao.LimpaBDFusao();
+            fusao.Executa(1);
+            fusao.Executa(2);
+            fusao.EscreveBD();
+            fusao.ListaProdutosEmFalta();
+            fusao.LimpaTabelas();*/
         }
     }
 }

@@ -89,26 +89,7 @@ namespace Planeamento
             PlanoManual.Columns.Add(new DataColumn("CaixasAcc", typeof(int)));
         }
 
-        public void Executa()
-        {
-            LimpaBDMoldacao();
-
-            LeituraBD(1);
-            Planeamento(1);
-            EscreveBD(1);
-
-            LeituraBD(2);
-            Planeamento(2);
-            EscreveBD(2);
-
-            LeituraBD(3);
-            Planeamento(3);
-            EscreveBD(3);
-
-            LimpaTabelas();
-        }
-
-        private void LimpaBDMoldacao() 
+        public void LimpaBDMoldacao()
         {
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -120,10 +101,16 @@ namespace Planeamento
             connection.Close();
         }
 
+        public void Executa(int Local)
+        {
+            LeituraBD(Local);
+            Planeamento(Local);
+            EscreveBD(Local);
+        }
+
         private void LeituraBD(int Local)
         {
-            List<int> produtosSemMacho = new List<int>();
-            String query = "select Id,QtdPendente,NoMoldes,SemanaMacharia,DiaMacharia from dbo.PlanCMW$Produtos where Local = " + Local + " order by Id asc";
+            String query = "select Id,QtdPendente,NoMoldes,SemanaMacharia,DiaMacharia from dbo.PlanCMW$Produtos where Include = 1 and Local = " + Local + " order by Id asc";
 
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -350,7 +337,7 @@ namespace Planeamento
             Console.WriteLine(nome +": " + linhas + " linhas inseridas na tabela Moldacao");
         }
 
-        private void LimpaTabelas()
+        public void LimpaTabelas()
         {
             MoldesGF.Clear();
             MoldesIMF.Clear();

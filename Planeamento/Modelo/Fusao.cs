@@ -88,22 +88,7 @@ namespace Planeamento
 
         }
 
-        public void Executa()
-        {
-            LimpaBDFusao();
-
-            LeituraBD(1);
-            Planeamento(1);
-
-            LeituraBD(2);
-            Planeamento(2);
-
-            EscreveBD();
-            ListaProdutosEmFalta();
-            LimpaTabelas();
-        }
-
-        private void LimpaBDFusao()
+        public void LimpaBDFusao()
         {
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -113,11 +98,17 @@ namespace Planeamento
             int linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas removidas da tabela Fusao");
 
-            cmd = new SqlCommand("UPDATE dbo.[PlanCMW$Produtos] set PesoVazadas = 0",connection);
+            cmd = new SqlCommand("UPDATE dbo.[PlanCMW$Produtos] set PesoVazadas = 0", connection);
             linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas actualizadas na tabela Produtos (PesoVazadas = 0)");
 
             connection.Close();
+        }
+
+        public void Executa(int Fabrica)
+        {
+            LeituraBD(Fabrica);
+            Planeamento(Fabrica);
         }
 
         private void LeituraBD(int Fabrica)
@@ -126,7 +117,7 @@ namespace Planeamento
             "from dbo.PlanCMW$Produtos Prod " + 
             "inner join dbo.PlanCMW$Ligas Ligas " +
             "on Prod.Liga = Ligas.Liga " +
-            "where dbo.GetFabrica(Local) = " + Fabrica + " order by Prod.Id asc";
+            "where Include = 1 and dbo.GetFabrica(Local) = " + Fabrica + " order by Prod.Id asc";
 
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -390,7 +381,7 @@ namespace Planeamento
             return total;
         }
 
-        private void EscreveBD()
+        public void EscreveBD()
         {
             SqlConnection connection = Util.AbreBD();
             int linhas = 0;
@@ -446,7 +437,7 @@ namespace Planeamento
             Console.WriteLine("CMW" + Fabrica + " : " + linhas + " inseridas na tabela Fusao");
         }
 
-        private void ListaProdutosEmFalta()
+        public void ListaProdutosEmFalta()
         {
             String query = "select NoEnc,NoProd,floor(PesoEmFalta/PesoPeca) as QtdEmFalta from dbo.PlanCMW$Produtos Prod where PesoEmFalta > 0";
 
@@ -466,7 +457,7 @@ namespace Planeamento
             connection.Close();
         }
 
-        private void LimpaTabelas()
+        public void LimpaTabelas()
         {
             FusaoCMW1.Clear();
             FusaoCMW2.Clear();

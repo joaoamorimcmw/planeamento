@@ -44,21 +44,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BDInit.cs" />
-    <Compile Include="Fusao.cs" />
-    <Compile Include="LigaFusao.cs" />
-    <Compile Include="Moldacao.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="Primeiro Plano\BDMacharia.cs" />
-    <Compile Include="Primeiro Plano\BDFusao.cs" />
-    <Compile Include="Primeiro Plano\BDMolde.cs" />
-    <Compile Include="Macharia.cs" />
-    <Compile Include="Primeiro Plano\PrimeiroPlano.cs" />
-    <Compile Include="Primeiro Plano\PlanFusao.cs" />
-    <Compile Include="Primeiro Plano\PlanMold.cs" />
-    <Compile Include="Primeiro Plano\PlanMacharia.cs" />
+    <Compile Include="Modelo\Init.cs" />
+    <Compile Include="Modelo\Fusao.cs" />
+    <Compile Include="Interface.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interface.Designer.cs">
+      <DependentUpon>Interface.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modelo\LigaFusao.cs" />
+    <Compile Include="Modelo\Moldacao.cs" />
+    <Compile Include="Modelo\Util.cs" />
+    <Compile Include="Modelo\Macharia.cs" />
     <Compile Include="plMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Interface.resx">
+      <DependentUpon>Interface.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

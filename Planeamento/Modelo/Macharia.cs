@@ -63,23 +63,8 @@ namespace Planeamento
             PlanoCMW2.Columns.Add(new DataColumn("Acc", typeof(int)));
         }
 
-        public void Executa()
-        {
-            LimpaBDMacharia();
-
-            LeituraBD(1);
-            Planeamento(1);
-            EscreveBD(1);
-
-            LeituraBD(2);
-            Planeamento(2);
-            EscreveBD(2);
-
-            LimpaTabelas();
-        }
-
         //Elimina plano antigo da Base de Dados.
-        private void LimpaBDMacharia() 
+        public void LimpaBDMacharia() 
         {
             SqlConnection connection = Util.AbreBD();
             if (connection == null)
@@ -89,6 +74,13 @@ namespace Planeamento
             int linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas removidas da tabela Macharia");
             connection.Close();
+        }
+
+        public void Executa(int Fabrica)
+        {
+            LeituraBD(Fabrica);
+            Planeamento(Fabrica);
+            EscreveBD(Fabrica);
         }
 
         //Lê da BD os machos associados a cada produto, e qual a quantidade total desse macho a produzir (qtdProduto * qtdMacho p/ produto).
@@ -102,7 +94,7 @@ namespace Planeamento
                 "isnull(Prod.QtdPendente*Bom.Quantity,0.0) as Quantidade, " +
                 "isnull(Item.[Tempo Fabrico Machos]/60,0.0) as Tempo " + //Tempo está em segundos, dividir por 60
             "from " +
-                "(select * from dbo.PlanCMW$Produtos where dbo.GetFabrica(Local) = " + Fabrica + ") Prod " +
+                "(select * from dbo.PlanCMW$Produtos where Include = 1 and dbo.GetFabrica(Local) = " + Fabrica + ") Prod " +
                 "left join (select * from Navision.dbo.[CMW$Production BOM Line] where [No_] like 'M%') Bom " +
                     "on Prod.[NoProd] + '#' = Bom.[Production BOM No_] " + //importante o #, pois é na Gama Operatória do sub-produto que estão os machos
                 "left join Navision.dbo.[CMW$Item] as Item " +
@@ -301,7 +293,7 @@ namespace Planeamento
             Console.WriteLine("CMW" + Fabrica + ": " + linhas + " linhas inseridas na tabela Macharia");
         }
 
-        private void LimpaTabelas()
+        public void LimpaTabelas()
         {
             MachosCMW1.Clear();
             MachosCMW2.Clear();

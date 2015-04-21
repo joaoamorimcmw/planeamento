@@ -8,25 +8,29 @@ using System.Threading.Tasks;
 
 namespace Planeamento
 {
-    class BDInit
+    class Init
     {
-        public BDInit() 
+        public static DataTable GetProdutos()
+        {
+            DataTable table = new DataTable();
+            SqlConnection con = Util.AbreBD();
+            SqlCommand cmd = new SqlCommand("Select Include,Id,NoEnc as Encomenda,NoProd as Produto,QtdPendente,DataPrevista from Planeamento.dbo.[PlanCMW$Produtos] order by Id", con);
+            table.Load(cmd.ExecuteReader());
+            con.Close();
+            return table;
+        }
+
+        public static void UpdateProdutos()
         {
             SqlConnection con = Util.AbreBD();
             LimpaProdutos(con);
             ReseedProdutos(con);
             InicializaProdutos(con);
-            EliminaProdutosBaixaCarga(con);
-            InicializaLigas(con);
             con.Close();
-            /*LimpaProdutosPlanBD();
-            LimpaNumeracaoBD();
-            ReseedNumeracaoBD();
-            InicializaNumeracaoBD();*/
         }
 
         //Limpa a tabela de Produtos
-        private void LimpaProdutos(SqlConnection con)
+        private static void LimpaProdutos(SqlConnection con)
         {
             SqlCommand cmd = new SqlCommand("DELETE Planeamento.dbo.[PlanCMW$Produtos]", con);
             cmd.CommandType = CommandType.Text;
@@ -35,7 +39,7 @@ namespace Planeamento
         }
 
         //Reinicia o ID da tabela Produtos
-        private void ReseedProdutos(SqlConnection con)
+        private static void ReseedProdutos(SqlConnection con)
         {
             SqlCommand cmd = new SqlCommand("DBCC CHECKIDENT ('Planeamento.dbo.[PlanCMW$Produtos]', RESEED, 0)", con);
             cmd.CommandType = CommandType.Text;
@@ -43,7 +47,7 @@ namespace Planeamento
         }
 
         //Inicializa Produtos e Plano
-        private void InicializaProdutos(SqlConnection con)
+        private static void InicializaProdutos(SqlConnection con)
         {
             String query = "INSERT INTO dbo.[PlanCMW$Produtos] (NoEnc,NoLine,NoProd,Liga,PesoPeca,NoMoldes,Local,QtdPendente,DataPrevista,Urgente)" +
             "SELECT A.[Document No_],A.[Line No_],A.[No_],B.[Liga Metalica],A.[Peso Peça [Kg]]],A.[NumeroMoldes],A.[Local de Producao],A.[Outstanding Quantity],A.[Planned Delivery Date],A.[Urgente] " +
@@ -59,10 +63,29 @@ namespace Planeamento
             Console.WriteLine(linhas + " linhas inseridas na tabela Produtos");
         }
 
-        private void EliminaProdutosBaixaCarga(SqlConnection con)
+        public static void ExcluirProdutosLista(DataTable table)
         {
-            String query = "delete from dbo.[PlanCMW$Produtos] " +
-            "output deleted.NoEnc as Enc,deleted.NoProd as Prod " +
+            SqlConnection con = Util.AbreBD();
+            
+            foreach (DataRow row in table.Rows)
+            {
+                int bit = ((bool)row["Include"]) ? 1 : 0;
+                int id = Convert.ToInt32(row["Id"]);
+                string query = "update dbo.[PlanCMW$Produtos] set Include = @bit where Id = @id";
+                SqlCommand command = new SqlCommand(query, con);
+                command.Parameters.AddWithValue("@bit", bit);
+                command.Parameters.AddWithValue("@id", id);
+                command.ExecuteNonQuery();
+            }
+
+            con.Close();
+        }
+
+        public static void ExcluiProdutosBaixaCarga()
+        {
+            String query = "update dbo.[PlanCMW$Produtos] " +
+            "set Include = 0 " +
+            "output inserted.NoEnc as Enc,inserted.NoProd as Prod " +
             "where Id in " +
             "(select Id " +
             "from dbo.[PlanCMW$Produtos] Prod " +
@@ -74,6 +97,8 @@ namespace Planeamento
             "on dbo.GetFabrica(Prod.Local) = Soma.Fabrica and Prod.Liga = Soma.Liga)";
 
             Console.WriteLine("Produtos ignorados por falta de carga");
+            
+            SqlConnection con = Util.AbreBD();
             SqlCommand command = new SqlCommand(query, con);
             command.Parameters.AddWithValue("@MinimoCMW1", Fusao.FusaoMinima(1));
             command.Parameters.AddWithValue("@MinimoCMW2", Fusao.FusaoMinima(2));
@@ -81,11 +106,13 @@ namespace Planeamento
             while (reader.Read())
                 Console.WriteLine ("Encomenda: " + reader["Enc"] + ", Produto: " + reader["Prod"]);
             reader.Close();
+            con.Close();
         }
 
-        private void InicializaLigas(SqlConnection con)
+        public static void InicializaLigas()
         {
             String query = "delete from dbo.PlanCMW$Ligas";
+            SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.CommandType = CommandType.Text;
             int linhas = cmd.ExecuteNonQuery();
@@ -105,62 +132,5 @@ namespace Planeamento
             linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas inseridas na tabela Ligas");
         }
-
-        /* Funções de inicialização antigas
-         * 
-        //Elimina todos os registos da tabela Produtos Plan
-
-        private void LimpaProdutosPlanBD ()
-        {
-            SqlConnection con = Util.AbreBD();
-            if (con == null)
-                return;
-            SqlCommand cmd2 = new SqlCommand("DELETE Planeamento.dbo.[CMW$Produtos Plan]", con);
-            cmd2.CommandType = CommandType.Text;
-            int linhas = cmd2.ExecuteNonQuery();
-            Console.WriteLine(linhas + " linhas removidas da tabela Produtos Plan");
-            Util.FechaBD(con);
-        }
-
-        //Elimina todos os registos existentes na tabela Numeracao
-
-        private void LimpaNumeracaoBD ()
-        {
-            SqlConnection con = Util.AbreBD();
-            if (con == null)
-                return;
-            SqlCommand cmd2 = new SqlCommand("DELETE Planeamento.dbo.[CMW$Numeracao]", con);
-            cmd2.CommandType = CommandType.Text;
-            int linhas = cmd2.ExecuteNonQuery();
-            Console.WriteLine(linhas + " linhas removidas da tabela Numeracao");
-            Util.FechaBD(con);
-        }
-
-        //Reinicia o ID da tabela Numeracao
-
-        private void ReseedNumeracaoBD ()
-        {
-            SqlConnection con = Util.AbreBD();
-            if (con == null)
-                return;
-            SqlCommand cmd2 = new SqlCommand("DBCC CHECKIDENT ('Planeamento.dbo.[CMW$Numeracao]', RESEED, 0)", con);
-            cmd2.CommandType = CommandType.Text;
-            cmd2.ExecuteNonQuery();
-            Util.FechaBD(con);
-        }
-
-        //Inicializa a tabela Numeracao com os dados das encomendas pendentes
-
-        private void InicializaNumeracaoBD ()
-        {
-            SqlConnection con = Util.AbreBD();
-            if (con == null)
-                return;
-            SqlCommand cmd = new SqlCommand("INSERT INTO Planeamento.dbo.[CMW$Numeracao] " + Util.QuerySalesLine("[Document No_],[Line No_], No_,"), con);
-            cmd.CommandType = CommandType.Text;
-            int linhas = cmd.ExecuteNonQuery();
-            Console.WriteLine(linhas + " linhas inseridas na tabela Numeracao");
-            Util.FechaBD(con);
-        }*/
     }
 }
