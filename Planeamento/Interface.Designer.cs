@@ -30,7 +30,7 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.funçõesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.obterProdutosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuBtnActualizar = new System.Windows.Forms.ToolStripMenuItem();
             this.produtosView = new System.Windows.Forms.DataGridView();
             this.btnIniciar = new System.Windows.Forms.Button();
             this.groupOpcoes = new System.Windows.Forms.GroupBox();
@@ -44,6 +44,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.menuBtnParametros = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.produtosView)).BeginInit();
             this.groupOpcoes.SuspendLayout();
@@ -64,17 +65,18 @@
             // funçõesToolStripMenuItem
             // 
             this.funçõesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.obterProdutosToolStripMenuItem});
+            this.menuBtnActualizar,
+            this.menuBtnParametros});
             this.funçõesToolStripMenuItem.Name = "funçõesToolStripMenuItem";
             this.funçõesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
             this.funçõesToolStripMenuItem.Text = "Funções";
             // 
-            // obterProdutosToolStripMenuItem
+            // menuBtnActualizar
             // 
-            this.obterProdutosToolStripMenuItem.Name = "obterProdutosToolStripMenuItem";
-            this.obterProdutosToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.obterProdutosToolStripMenuItem.Text = "Actualizar Produtos";
-            this.obterProdutosToolStripMenuItem.Click += new System.EventHandler(this.obterProdutosToolStripMenuItem_Click);
+            this.menuBtnActualizar.Name = "menuBtnActualizar";
+            this.menuBtnActualizar.Size = new System.Drawing.Size(177, 22);
+            this.menuBtnActualizar.Text = "Actualizar Produtos";
+            this.menuBtnActualizar.Click += new System.EventHandler(this.obterProdutosToolStripMenuItem_Click);
             // 
             // produtosView
             // 
@@ -223,6 +225,13 @@
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(400, 16);
             // 
+            // menuBtnParametros
+            // 
+            this.menuBtnParametros.Name = "menuBtnParametros";
+            this.menuBtnParametros.Size = new System.Drawing.Size(177, 22);
+            this.menuBtnParametros.Text = "Parametros";
+            this.menuBtnParametros.Click += new System.EventHandler(this.menuBtnParametros_Click);
+            // 
             // Interface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -256,7 +265,7 @@
 
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem funçõesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem obterProdutosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuBtnActualizar;
         private System.Windows.Forms.DataGridView produtosView;
         private System.Windows.Forms.Button btnIniciar;
         private System.Windows.Forms.GroupBox groupOpcoes;
@@ -270,5 +279,6 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.ToolStripProgressBar progressBar;
+        private System.Windows.Forms.ToolStripMenuItem menuBtnParametros;
     }
 }

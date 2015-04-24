@@ -12,9 +12,14 @@ namespace Planeamento
     {
         public static DataTable GetProdutos()
         {
+            String query = "select Include,Id,NoEnc as Encomenda,NoProd as Produto,Ligas.Descricao as Liga,QtdPendente,DataPrevista " +
+            "from Planeamento.dbo.[PlanCMW$Produtos] Produtos " +
+            "inner join Planeamento.dbo.[PlanCMW$Ligas] Ligas " +
+            "on Produtos.Liga = Ligas.Liga " +
+            "order by Id";
             DataTable table = new DataTable();
             SqlConnection con = Util.AbreBD();
-            SqlCommand cmd = new SqlCommand("Select Include,Id,NoEnc as Encomenda,NoProd as Produto,QtdPendente,DataPrevista from Planeamento.dbo.[PlanCMW$Produtos] order by Id", con);
+            SqlCommand cmd = new SqlCommand(query,con);
             table.Load(cmd.ExecuteReader());
             con.Close();
             return table;

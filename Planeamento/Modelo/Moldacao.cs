@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Planeamento
 {
-    class Moldacao
+    public class Moldacao
     {
         private DataTable MoldesGF;
         private DataTable MoldesIMF;
@@ -23,14 +23,54 @@ namespace Planeamento
         private int turno = 1;
 
         /**** Parametros ****/
-        
-        private static int capacidadeGF = 420;
-        private static int capacidadeIMF = 95;
-        private static int capacidadeManual = 12;
 
-        private static int nTurnosGF = 3;
-        private static int nTurnosIMF = 3;
-        private static int nTurnosManual = 3;
+        private int capacidadeGF;
+
+        public int CapacidadeGF
+        {
+            get { return capacidadeGF; }
+            set { capacidadeGF = value; }
+        }
+
+        private int capacidadeIMF;
+
+        public int CapacidadeIMF
+        {
+            get { return capacidadeIMF; }
+            set { capacidadeIMF = value; }
+        }
+
+        private int capacidadeManual;
+
+        public int CapacidadeManual
+        {
+            get { return capacidadeManual; }
+            set { capacidadeManual = value; }
+        }
+
+        private int nTurnosGF;
+
+        public int NTurnosGF
+        {
+            get { return nTurnosGF; }
+            set { nTurnosGF = value; }
+        }
+
+        private int nTurnosIMF;
+
+        public int NTurnosIMF
+        {
+            get { return nTurnosIMF; }
+            set { nTurnosIMF = value; }
+        }
+
+        private int nTurnosManual;
+
+        public int NTurnosManual
+        {
+            get { return nTurnosManual; }
+            set { nTurnosManual = value; }
+        }
         
         /*********************/
 
@@ -69,7 +109,6 @@ namespace Planeamento
             PlanoGF.Columns.Add(new DataColumn("Caixas", typeof(int)));
             PlanoGF.Columns.Add(new DataColumn("CaixasAcc", typeof(int)));
 
-
             PlanoIMF = new DataTable("Plano IMF");
             PlanoIMF.Columns.Add(new DataColumn("Id", typeof(int)));
             PlanoIMF.Columns.Add(new DataColumn("Local", typeof(int)));
@@ -87,6 +126,14 @@ namespace Planeamento
             PlanoManual.Columns.Add(new DataColumn("Turno", typeof(int)));
             PlanoManual.Columns.Add(new DataColumn("Caixas", typeof(int)));
             PlanoManual.Columns.Add(new DataColumn("CaixasAcc", typeof(int)));
+
+            CapacidadeGF = 420;
+            CapacidadeIMF = 95;
+            CapacidadeManual = 12;
+
+            NTurnosGF = 3;
+            NTurnosIMF = 3;
+            NTurnosManual = 3;
         }
 
         public void LimpaBDMoldacao()

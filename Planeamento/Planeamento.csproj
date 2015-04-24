@@ -56,10 +56,19 @@
     <Compile Include="Modelo\Moldacao.cs" />
     <Compile Include="Modelo\Util.cs" />
     <Compile Include="Modelo\Macharia.cs" />
+    <Compile Include="Parametros.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Parametros.Designer.cs">
+      <DependentUpon>Parametros.cs</DependentUpon>
+    </Compile>
     <Compile Include="plMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Interface.resx">
       <DependentUpon>Interface.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parametros.resx">
+      <DependentUpon>Parametros.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

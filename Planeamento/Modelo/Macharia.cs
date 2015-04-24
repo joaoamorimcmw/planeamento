@@ -6,9 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ * 
+ * 
+ */
+
 namespace Planeamento
 {
-    class Macharia
+    public class Macharia
     {
         private DataTable MachosCMW1;
         private DataTable MachosCMW2;
@@ -21,9 +26,27 @@ namespace Planeamento
 
         /**** Parametros ****/
 
-        private static int capacidadeCMW1 = 5;
-        private static int capacidadeCMW2 = 4;
-        private static int horario = 8 * 60; //capacidade diária em minutos
+        private int capacidadeCMW1;
+
+        public int CapacidadeCMW1
+        {
+            get { return capacidadeCMW1; }
+            set { capacidadeCMW1 = value; }
+        }
+        private int capacidadeCMW2;
+
+        public int CapacidadeCMW2
+        {
+            get { return capacidadeCMW2; }
+            set { capacidadeCMW2 = value; }
+        }
+        private int horario = 8 * 60; //capacidade diária em minutos
+
+        public int Horario
+        {
+            get { return horario; }
+            set { horario = value; }
+        }
         private static String SEM_MACHO = "M002204";
 
         /*********************/
@@ -61,6 +84,10 @@ namespace Planeamento
             PlanoCMW2.Columns.Add(new DataColumn("Qtd", typeof(decimal)));
             PlanoCMW2.Columns.Add(new DataColumn("Tempo", typeof(int)));
             PlanoCMW2.Columns.Add(new DataColumn("Acc", typeof(int)));
+
+            CapacidadeCMW1 = 5;
+            CapacidadeCMW2 = 4;
+            Horario = 8 * 60;
         }
 
         //Elimina plano antigo da Base de Dados.

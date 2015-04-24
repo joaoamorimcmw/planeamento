@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Planeamento
 {
-    class Fusao
+    public class Fusao
     {
         private DataTable FusaoCMW1;
         private DataTable FusaoCMW2;
@@ -36,6 +36,22 @@ namespace Planeamento
         private static decimal CapacidadeCMW2Forno2 = 1100;
         private static decimal CapacidadeCMW2Forno3 = 1100;
         private static decimal CapacidadeCMW2Forno4 = 800;
+
+        private decimal[] capacidadesCMW1;
+
+        public decimal[] CapacidadesCMW1
+        {
+            get { return capacidadesCMW1; }
+            set { capacidadesCMW1 = value; }
+        }
+
+        private decimal[] capacidadesCMW2;
+
+        public decimal[] CapacidadesCMW2
+        {
+            get { return capacidadesCMW2; }
+            set { capacidadesCMW2 = value; }
+        }
 
         /*********************/
 
@@ -85,6 +101,9 @@ namespace Planeamento
             Produtos.Columns.Add(new DataColumn("Dia", typeof(int)));
             Produtos.Columns.Add(new DataColumn("Turno", typeof(int)));
             Produtos.Columns.Add(new DataColumn("PesoVazadas", typeof(decimal)));
+
+            CapacidadesCMW1 = new decimal [] { 3000, 3000, 1000, 1000 };
+            CapacidadesCMW2 = new decimal [] { 1750, 1100, 1100, 800 };
 
         }
 
