@@ -22,36 +22,52 @@ namespace Planeamento
 
         /**** Parametros ****/
 
-        private static int TurnosCMW1 = 3;
-        private static int TurnosCMW2 = 3;
-        private static int FusoesTurno = 2;
-        private static decimal Minimo = 0.66M;
+        private int turnosCMW1 = 3;
 
-        private static decimal CapacidadeCMW1Forno1 = 3000; //É importante para o algoritmo que os fornos estejam ordenados por capacidade, do maior para o menor!
-        private static decimal CapacidadeCMW1Forno2 = 3000;
-        private static decimal CapacidadeCMW1Forno3 = 1000;
-        private static decimal CapacidadeCMW1Forno4 = 1000;
+        public int TurnosCMW1
+        {
+            get { return turnosCMW1; }
+            set { turnosCMW1 = value; }
+        }
 
-        private static decimal CapacidadeCMW2Forno1 = 1750;
-        private static decimal CapacidadeCMW2Forno2 = 1100;
-        private static decimal CapacidadeCMW2Forno3 = 1100;
-        private static decimal CapacidadeCMW2Forno4 = 800;
+        private int turnosCMW2 = 3;
 
-        private decimal[] capacidadesCMW1;
+        public int TurnosCMW2
+        {
+            get { return turnosCMW2; }
+            set { turnosCMW2 = value; }
+        }
 
-        public decimal[] CapacidadesCMW1
+        private int fusoesTurno = 2;
+
+        public int FusoesTurno
+        {
+            get { return fusoesTurno; }
+            set { fusoesTurno = value; }
+        }
+
+        private decimal minimo = 0.66M;
+
+        public decimal Minimo
+        {
+            get { return minimo; }
+            set { minimo = value; }
+        }
+
+        private Dictionary<Int32, Decimal> capacidadesCMW1;
+
+        public Dictionary<Int32, Decimal> CapacidadesCMW1
         {
             get { return capacidadesCMW1; }
-            set { capacidadesCMW1 = value; }
         }
 
-        private decimal[] capacidadesCMW2;
+        private Dictionary<Int32, Decimal> capacidadesCMW2;
 
-        public decimal[] CapacidadesCMW2
+        public Dictionary<Int32, Decimal> CapacidadesCMW2
         {
             get { return capacidadesCMW2; }
-            set { capacidadesCMW2 = value; }
         }
+
 
         /*********************/
 
@@ -102,9 +118,32 @@ namespace Planeamento
             Produtos.Columns.Add(new DataColumn("Turno", typeof(int)));
             Produtos.Columns.Add(new DataColumn("PesoVazadas", typeof(decimal)));
 
-            CapacidadesCMW1 = new decimal [] { 3000, 3000, 1000, 1000 };
-            CapacidadesCMW2 = new decimal [] { 1750, 1100, 1100, 800 };
+            capacidadesCMW1 = new Dictionary<Int32, Decimal>();
+            capacidadesCMW2 = new Dictionary<Int32, Decimal>();
 
+            SetCapacidadesCMW1(3000, 3000, 1000, 1000);
+            SetCapacidadesCMW2(1750, 1100, 1100, 800);
+
+        }
+
+        public void SetCapacidadesCMW1(decimal forno1, decimal forno2, decimal forno3, decimal forno4)
+        {
+            capacidadesCMW1.Clear();
+            capacidadesCMW1.Add(1, forno1);
+            capacidadesCMW1.Add(2, forno2);
+            capacidadesCMW1.Add(3, forno3);
+            capacidadesCMW1.Add(4, forno4);
+            capacidadesCMW1 = capacidadesCMW1.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public void SetCapacidadesCMW2(decimal forno1, decimal forno2, decimal forno3, decimal forno4)
+        {
+            capacidadesCMW2.Clear();
+            capacidadesCMW2.Add(1, forno1);
+            capacidadesCMW2.Add(2, forno2);
+            capacidadesCMW2.Add(3, forno3);
+            capacidadesCMW2.Add(4, forno4);
+            capacidadesCMW2 = capacidadesCMW2.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
         }
 
         public void LimpaBDFusao()
@@ -216,7 +255,7 @@ namespace Planeamento
                 continua = true;
             else {
                 foreach (LigaFusao lFusao in Cargas.Values)
-                    if (lFusao.Peso > Fusao.FusaoMinima(Local))
+                    if (lFusao.Peso > FusaoMinima(Local))
                         continua = true;
             }
 
@@ -233,9 +272,9 @@ namespace Planeamento
             
             decimal maiorCap, menorCap;
             if (Local == 1)
-                maiorCap = (new[] { CapacidadeCMW1Forno1, CapacidadeCMW1Forno2, CapacidadeCMW1Forno3, CapacidadeCMW1Forno4 }).Max() * Minimo;
+                maiorCap = capacidadesCMW1.Values.ToArray().Max() * Minimo;
             else
-                maiorCap = (new[] { CapacidadeCMW2Forno1, CapacidadeCMW2Forno2, CapacidadeCMW2Forno3, CapacidadeCMW2Forno4 }).Max() * Minimo;
+                maiorCap = capacidadesCMW2.Values.ToArray().Max() * Minimo;
             menorCap = FusaoMinima(Local);
 
             int possiveisMenor = 0, possiveisMaior = 0;
@@ -259,25 +298,16 @@ namespace Planeamento
 
         private void DistribuiFusoes(int Local, List<LigaFusao> lista)
         {
-            int fusoesForno1 = 0, fusoesForno2 = 0, fusoesForno3 = 0, fusoesForno4 = 0, totalFusoes = 0;
+            int [] fusoesFornos = { 0, 0, 0, 0 };
+            int totalFusoes = 0;
             bool existeCarga = true;
-            decimal capForno1,capForno2,capForno3,capForno4;
+            Dictionary<Int32, Decimal> caps;
 
             if (Local == 1)
-            {
-                capForno1 = CapacidadeCMW1Forno1;
-                capForno2 = CapacidadeCMW1Forno2;
-                capForno3 = CapacidadeCMW1Forno3;
-                capForno4 = CapacidadeCMW1Forno4;
-            }
+                caps = capacidadesCMW1;
 
             else
-            {
-                capForno1 = CapacidadeCMW2Forno1;
-                capForno2 = CapacidadeCMW2Forno2;
-                capForno3 = CapacidadeCMW2Forno3;
-                capForno4 = CapacidadeCMW2Forno4;
-            }
+                caps = capacidadesCMW2;
 
             while (totalFusoes < FusoesTurno * 4 && existeCarga)
             {
@@ -285,36 +315,17 @@ namespace Planeamento
                 existeCarga = false;
                 foreach (LigaFusao liga in lista)
                 {
-                    if (liga.Peso >= capForno1 * Minimo && fusoesForno1 < FusoesTurno)
+                    bool stop = false;
+                    foreach (int forno in caps.Keys)
                     {
-                        fusoesForno1++;
-                        RegistaFusao(Local, liga, 1, fusoesForno1, Math.Min(liga.Peso, capForno1));
-                        totalFusoes++;
-                        existeCarga = true;
-                    }
-
-                    else if (liga.Peso >= capForno2 * Minimo && fusoesForno2 < FusoesTurno)
-                    {
-                        fusoesForno2++;
-                        RegistaFusao(Local, liga, 2, fusoesForno1, Math.Min(liga.Peso, capForno2));
-                        totalFusoes++;
-                        existeCarga = true;
-                    }
-
-                    else if (liga.Peso >= capForno3 * Minimo && fusoesForno3 < FusoesTurno)
-                    {
-                        fusoesForno3++;
-                        RegistaFusao(Local, liga, 3, fusoesForno3, Math.Min(liga.Peso, capForno3));
-                        totalFusoes++;
-                        existeCarga = true;
-                    }
-
-                    else if (liga.Peso >= capForno4 * Minimo && fusoesForno4 < FusoesTurno)
-                    {
-                        fusoesForno4++;
-                        RegistaFusao(Local, liga, 4, fusoesForno4, Math.Min(liga.Peso, capForno4));
-                        totalFusoes++;
-                        existeCarga = true;
+                        if (!stop && liga.Peso >= caps[forno] * minimo && fusoesFornos[forno-1] < FusoesTurno)
+                        {
+                            fusoesFornos[forno - 1]++;
+                            RegistaFusao(Local, liga, 1, fusoesFornos[forno - 1], Math.Min(liga.Peso, caps[forno]));
+                            totalFusoes++;
+                            existeCarga = true;
+                            stop = true;
+                        }
                     }
                 }
             }
@@ -485,11 +496,11 @@ namespace Planeamento
             Produtos.Clear();            
         }
 
-        public static decimal FusaoMinima (int Fabrica){
+        public decimal FusaoMinima (int Fabrica){
             if (Fabrica == 1)
-                return (new[] { CapacidadeCMW1Forno1, CapacidadeCMW1Forno2, CapacidadeCMW1Forno3, CapacidadeCMW1Forno4 }).Min() * Minimo;
+                return capacidadesCMW1.Values.ToArray().Min() * Minimo;
             else
-                return (new[] { CapacidadeCMW2Forno1, CapacidadeCMW2Forno2, CapacidadeCMW2Forno3, CapacidadeCMW2Forno4 }).Min() * Minimo;
+                return capacidadesCMW2.Values.ToArray().Min() * Minimo;
         }
     }
 }

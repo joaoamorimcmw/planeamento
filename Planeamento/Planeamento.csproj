@@ -54,6 +54,7 @@
     </Compile>
     <Compile Include="Modelo\LigaFusao.cs" />
     <Compile Include="Modelo\Moldacao.cs" />
+    <Compile Include="Modelo\Rebarbagem.cs" />
     <Compile Include="Modelo\Util.cs" />
     <Compile Include="Modelo\Macharia.cs" />
     <Compile Include="Parametros.cs">

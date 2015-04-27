@@ -36,6 +36,43 @@ namespace Planeamento
             pickerMoldacaoGF.Value = moldacao.CapacidadeGF;
             pickerMoldacaoIMF.Value = moldacao.CapacidadeIMF;
             pickerMoldacaoManual.Value = moldacao.CapacidadeManual;
+
+            pickerMinimoFusao.Value = 100 * fusao.Minimo;
+            pickerFusoesTurno.Value = fusao.FusoesTurno;
+
+            pickerForno11.Value = fusao.CapacidadesCMW1[1];
+            pickerForno12.Value = fusao.CapacidadesCMW1[2];
+            pickerForno13.Value = fusao.CapacidadesCMW1[3];
+            pickerForno14.Value = fusao.CapacidadesCMW1[4];
+
+            pickerForno21.Value = fusao.CapacidadesCMW2[1];
+            pickerForno22.Value = fusao.CapacidadesCMW2[2];
+            pickerForno23.Value = fusao.CapacidadesCMW2[3];
+            pickerForno24.Value = fusao.CapacidadesCMW2[4];
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            macharia.Horario = (int) pickerHoras.Value * 60;
+            macharia.CapacidadeCMW1 = (int) pickerMacharia1.Value;
+            macharia.CapacidadeCMW2 = (int) pickerMacharia2.Value;
+
+            moldacao.CapacidadeGF = (int) pickerMoldacaoGF.Value;
+            moldacao.CapacidadeIMF = (int) pickerMoldacaoIMF.Value;
+            moldacao.CapacidadeManual = (int) pickerMoldacaoManual.Value;
+            moldacao.NTurnosGF = (int) boxTurnosGeral.SelectedItem;
+            moldacao.NTurnosIMF = (int) boxTurnosGeral.SelectedItem;
+            moldacao.NTurnosManual = (int) boxTurnosGeral.SelectedItem;
+
+            fusao.Minimo = pickerMinimoFusao.Value / 100;
+            fusao.FusoesTurno = (int) pickerFusoesTurno.Value;
+            fusao.TurnosCMW1 = (int) boxTurnosGeral.SelectedItem;
+            fusao.TurnosCMW2 = (int) boxTurnosGeral.SelectedItem;
+
+            fusao.SetCapacidadesCMW1(pickerForno11.Value, pickerForno12.Value, pickerForno13.Value, pickerForno14.Value);
+            fusao.SetCapacidadesCMW2(pickerForno21.Value, pickerForno22.Value, pickerForno23.Value, pickerForno24.Value);
+
+            this.Dispose();
         }
     }
 }

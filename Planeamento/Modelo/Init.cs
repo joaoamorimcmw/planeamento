@@ -86,7 +86,7 @@ namespace Planeamento
             con.Close();
         }
 
-        public static void ExcluiProdutosBaixaCarga()
+        public static void ExcluiProdutosBaixaCarga(Fusao fusao)
         {
             String query = "update dbo.[PlanCMW$Produtos] " +
             "set Include = 0 " +
@@ -105,8 +105,8 @@ namespace Planeamento
             
             SqlConnection con = Util.AbreBD();
             SqlCommand command = new SqlCommand(query, con);
-            command.Parameters.AddWithValue("@MinimoCMW1", Fusao.FusaoMinima(1));
-            command.Parameters.AddWithValue("@MinimoCMW2", Fusao.FusaoMinima(2));
+            command.Parameters.AddWithValue("@MinimoCMW1", fusao.FusaoMinima(1));
+            command.Parameters.AddWithValue("@MinimoCMW2", fusao.FusaoMinima(2));
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
                 Console.WriteLine ("Encomenda: " + reader["Enc"] + ", Produto: " + reader["Prod"]);
