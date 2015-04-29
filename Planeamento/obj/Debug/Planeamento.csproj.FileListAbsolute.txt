@@ -43,3 +43,4 @@ C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeame
 C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.csproj.GenerateResource.Cache
 C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.Interface.resources
 C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.Parametros.resources
+C:\Users\joao.amorim.CMW\Source\Repos\planeamento\Planeamento\obj\Debug\Planeamento.Resultados.resources

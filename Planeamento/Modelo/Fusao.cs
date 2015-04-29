@@ -68,7 +68,6 @@ namespace Planeamento
             get { return capacidadesCMW2; }
         }
 
-
         /*********************/
 
         public Fusao()

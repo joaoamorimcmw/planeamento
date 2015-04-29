@@ -29,8 +29,10 @@
         private void InitializeComponent()
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.funçõesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFuncoes = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBtnActualizar = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuBtnParametros = new System.Windows.Forms.ToolStripMenuItem();
+            this.resultadosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.produtosView = new System.Windows.Forms.DataGridView();
             this.btnIniciar = new System.Windows.Forms.Button();
             this.groupOpcoes = new System.Windows.Forms.GroupBox();
@@ -44,7 +46,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.menuBtnParametros = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.produtosView)).BeginInit();
             this.groupOpcoes.SuspendLayout();
@@ -55,21 +56,22 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.funçõesToolStripMenuItem});
+            this.menuFuncoes});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(798, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // funçõesToolStripMenuItem
+            // menuFuncoes
             // 
-            this.funçõesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuFuncoes.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuBtnActualizar,
-            this.menuBtnParametros});
-            this.funçõesToolStripMenuItem.Name = "funçõesToolStripMenuItem";
-            this.funçõesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
-            this.funçõesToolStripMenuItem.Text = "Funções";
+            this.menuBtnParametros,
+            this.resultadosToolStripMenuItem});
+            this.menuFuncoes.Name = "menuFuncoes";
+            this.menuFuncoes.Size = new System.Drawing.Size(63, 20);
+            this.menuFuncoes.Text = "Funções";
             // 
             // menuBtnActualizar
             // 
@@ -77,6 +79,20 @@
             this.menuBtnActualizar.Size = new System.Drawing.Size(177, 22);
             this.menuBtnActualizar.Text = "Actualizar Produtos";
             this.menuBtnActualizar.Click += new System.EventHandler(this.obterProdutosToolStripMenuItem_Click);
+            // 
+            // menuBtnParametros
+            // 
+            this.menuBtnParametros.Name = "menuBtnParametros";
+            this.menuBtnParametros.Size = new System.Drawing.Size(177, 22);
+            this.menuBtnParametros.Text = "Parametros";
+            this.menuBtnParametros.Click += new System.EventHandler(this.menuBtnParametros_Click);
+            // 
+            // resultadosToolStripMenuItem
+            // 
+            this.resultadosToolStripMenuItem.Name = "resultadosToolStripMenuItem";
+            this.resultadosToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.resultadosToolStripMenuItem.Text = "Resultados";
+            this.resultadosToolStripMenuItem.Click += new System.EventHandler(this.resultadosToolStripMenuItem_Click);
             // 
             // produtosView
             // 
@@ -129,8 +145,6 @@
             // chckActLigas
             // 
             this.chckActLigas.AutoSize = true;
-            this.chckActLigas.Checked = true;
-            this.chckActLigas.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chckActLigas.Location = new System.Drawing.Point(7, 20);
             this.chckActLigas.Name = "chckActLigas";
             this.chckActLigas.Size = new System.Drawing.Size(100, 17);
@@ -225,13 +239,6 @@
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(400, 16);
             // 
-            // menuBtnParametros
-            // 
-            this.menuBtnParametros.Name = "menuBtnParametros";
-            this.menuBtnParametros.Size = new System.Drawing.Size(177, 22);
-            this.menuBtnParametros.Text = "Parametros";
-            this.menuBtnParametros.Click += new System.EventHandler(this.menuBtnParametros_Click);
-            // 
             // Interface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -264,7 +271,7 @@
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem funçõesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuFuncoes;
         private System.Windows.Forms.ToolStripMenuItem menuBtnActualizar;
         private System.Windows.Forms.DataGridView produtosView;
         private System.Windows.Forms.Button btnIniciar;
@@ -280,5 +287,6 @@
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.ToolStripProgressBar progressBar;
         private System.Windows.Forms.ToolStripMenuItem menuBtnParametros;
+        private System.Windows.Forms.ToolStripMenuItem resultadosToolStripMenuItem;
     }
 }

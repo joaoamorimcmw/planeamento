@@ -94,7 +94,26 @@ using System.Windows.Forms;
  *              NoFusao (int) - Qual o número da fusão feita por forno e turno
  *              Liga (string) - Código da liga
  *              PesoTotal (decimal)  - Carga total da fusão
- *           
+ *              
+ * PlanCMW$Rebarbagem
+ *          Plano da rebarbagem
+ *          Colunas
+ *              Id (int) - Id do produto associado
+ *              Semana (int) - Semana de rebarbagem
+ *              Dia (int) - Dia de rebarbagem
+ *              Turno (int) - Turno de rebarbagem
+ *              Posto (string) - Centro máquina onde passa o produto
+ *              QtdPecas (int) - Quantidade de peças feitas por máquina, turno e produto
+ *              Tempo (decimal) - Tempo total gasto nas peças por máquina e turno
+ *              
+ * PlanCMW$PostosRebarbagem
+ *          Lista os vários centros máquinas e quais os postos de trabalho associados, bem como a quantidade existente desse posto
+ *          Colunas
+ *              CodCentroMaquina - Código do centro máquina
+ *              DescCentroMaquina - Descricao do centro máquina
+ *              CodPosto - Código do posto de trabalho
+ *              DescPosto - Descrição do posto de trabalho
+ *              QtdPosto - Quantidade existe do posto de trabalho           
  * 
  * ** Ordem do planeamento **
  * 
