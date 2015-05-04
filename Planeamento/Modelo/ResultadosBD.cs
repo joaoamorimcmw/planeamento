@@ -21,13 +21,11 @@ namespace Planeamento
             return max;
         }
 
-        public static DataTable GetMacharia(int fabrica, int semana, int dia)
+        public static DataTable GetMacharia(string fabrica, int semana, int dia)
         {
-            String query = "select Prod.NoEnc as Encomenda,Prod.NoProd as Produto,Macho.CodMach as Macho,Macho.Qtd as Quantidade " +
-            "from Planeamento.dbo.[PlanCMW$Produtos] Prod " +
-            "inner join Planeamento.dbo.[PlanCMW$Macharia] Macho " +
-            "on Prod.Id = Macho.Id " +
-            "where Macho.Fabrica = @fabrica and Macho.Semana = @semana and Macho.Dia = @dia";
+            String query = "select Encomenda, Produto, Macho, Quantidade " +
+            "from Planeamento.dbo.PlanoMacharia " +
+            "where Fabrica = @fabrica and Semana = @semana and Dia = @dia";
 
             DataTable table = new DataTable();
             SqlConnection con = Util.AbreBD();
@@ -52,13 +50,11 @@ namespace Planeamento
             return max;
         }
 
-        public static DataTable GetMoldacao(int local, int semana, int dia, int turno)
+        public static DataTable GetMoldacao(string local, int semana, int dia, int turno)
         {
-            String query = "select Prod.NoEnc as Encomenda,Prod.NoProd as Produto,Mold.Caixas " +
-            "from Planeamento.dbo.[PlanCMW$Produtos] Prod " +
-            "inner join Planeamento.dbo.[PlanCMW$Moldacao] Mold " +
-            "on Prod.Id = Mold.Id " +
-            "where Mold.Local = @local and Mold.Semana = @semana and Mold.Dia = @dia and Mold.Turno = @turno";
+            String query = "select Encomenda, Produto, Caixas " +
+            "from Planeamento.dbo.PlanoMoldacao " +
+            "where Local = @local and Semana = @semana and Dia = @dia and Turno = @turno";
 
             DataTable table = new DataTable();
             SqlConnection con = Util.AbreBD();
@@ -84,10 +80,10 @@ namespace Planeamento
             return max;
         }
 
-        public static DataTable GetFusao(int fabrica, int semana, int dia, int turno)
+        public static DataTable GetFusao(string fabrica, int semana, int dia, int turno)
         {
-            String query = "select Forno, NoFusao, Liga, PesoTotal as Carga " +
-            "from Planeamento.dbo.[PlanCMW$Fusao] " +
+            String query = "select Forno, NoFusao, Liga, Descricao, Carga " +
+            "from Planeamento.dbo.PlanoFusao " +
             "where Fabrica = @fabrica and Semana = @semana and Dia = @dia and Turno = @turno";
 
             DataTable table = new DataTable();
@@ -116,11 +112,9 @@ namespace Planeamento
 
         public static DataTable GetRebarbagem(int semana, int dia, int turno)
         {
-            String query = "select Prod.NoEnc as Encomenda,Prod.NoProd as Produto,Reb.Posto as Posto, Reb.QtdPecas as Quantidade, Reb.Tempo as Tempo " +
-            "from Planeamento.dbo.[PlanCMW$Produtos] Prod " +
-            "inner join Planeamento.dbo.[PlanCMW$Rebarbagem] Reb " +
-            "on Prod.Id = Reb.Id " +
-            "where Reb.Semana = @semana and Reb.Dia = @dia and Reb.Turno = @turno";
+            String query = "select Encomenda, Produto, Posto, Quantidade, Tempo " +
+            "from Planeamento.dbo.PlanoRebarbagem " +
+            "where Semana = @semana and Dia = @dia and Turno = @turno";
 
             DataTable table = new DataTable();
             SqlConnection con = Util.AbreBD();

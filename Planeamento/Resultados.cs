@@ -18,6 +18,12 @@ namespace Planeamento
         private static string strFusao = "Fusão";
         private static string strRebarbagem = "Rebarbagem";
 
+        private static string strCMW1 = "CMW1";
+        private static string strCMW2 = "CMW2";
+        private static string strGF = "GF";
+        private static string strIMF = "IMF";
+        private static string strManual = "Manual";
+
         private static string[] diasSemana = { "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira" };
 
         private bool actualizar;
@@ -53,13 +59,13 @@ namespace Planeamento
             }
 
             if (fase == strMacharia)
-                resultadosView.DataSource = ResultadosBD.GetMacharia(boxLocal.SelectedIndex + 1, boxSemana.SelectedIndex + 1, boxDia.SelectedIndex + 1);
+                resultadosView.DataSource = ResultadosBD.GetMacharia(boxLocal.SelectedItem.ToString(), Convert.ToInt32(boxSemana.SelectedItem), boxDia.SelectedIndex + 1);
             if (fase == strMoldacao)
-                resultadosView.DataSource = ResultadosBD.GetMoldacao(boxLocal.SelectedIndex + 1, boxSemana.SelectedIndex + 1, boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
+                resultadosView.DataSource = ResultadosBD.GetMoldacao(boxLocal.SelectedItem.ToString(), Convert.ToInt32(boxSemana.SelectedItem), boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
             if (fase == strFusao)
-                resultadosView.DataSource = ResultadosBD.GetFusao(boxLocal.SelectedIndex + 1, boxSemana.SelectedIndex + 1, boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
+                resultadosView.DataSource = ResultadosBD.GetFusao(boxLocal.SelectedItem.ToString(), Convert.ToInt32(boxSemana.SelectedItem), boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
             if (fase == strRebarbagem)
-                resultadosView.DataSource = ResultadosBD.GetRebarbagem(boxSemana.SelectedIndex + 1, boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
+                resultadosView.DataSource = ResultadosBD.GetRebarbagem(Convert.ToInt32(boxSemana.SelectedItem), boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
                 
 
             foreach (DataGridViewColumn column in resultadosView.Columns)
@@ -110,15 +116,15 @@ namespace Planeamento
 
             if (nLocais == 3)
             {
-                boxLocal.Items.Add("GF");
-                boxLocal.Items.Add("IMF");
-                boxLocal.Items.Add("Manual");
+                boxLocal.Items.Add(strGF);
+                boxLocal.Items.Add(strIMF);
+                boxLocal.Items.Add(strManual);
             }
 
             else
             {
-                boxLocal.Items.Add("CMW 1");
-                boxLocal.Items.Add("CMW 2");
+                boxLocal.Items.Add(strCMW1);
+                boxLocal.Items.Add(strCMW2);
             }
 
             boxLocal.SelectedIndex = 0;

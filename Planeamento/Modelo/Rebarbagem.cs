@@ -193,7 +193,7 @@ namespace Planeamento
 
                     if (tempoTotal <= tempoLivre)
                     {
-                        InsereLinhaPlaneamento(id, posto, qtd, tempoTotal);
+                        InsereLinhaPlaneamento(id, maquina, qtd, tempoTotal);
                         toRemove.Add(row);
                         tempoUsado += tempoTotal;
                         CapacidadeUsada[posto] += tempoTotal;
@@ -203,7 +203,7 @@ namespace Planeamento
                     else
                     {
                         int qtdLivre = (int) Math.Floor(tempoLivre / tempo);
-                        InsereLinhaPlaneamento(id, posto, qtdLivre, qtdLivre * tempo);
+                        InsereLinhaPlaneamento(id, maquina, qtdLivre, qtdLivre * tempo);
                         tempoUsado += qtdLivre * tempo;
                         CapacidadeUsada[posto] += qtdLivre * tempo;
                         row["Qtd"] = qtd - qtdLivre;
