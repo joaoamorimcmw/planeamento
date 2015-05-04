@@ -12,7 +12,7 @@ namespace Planeamento
     {
         public static int MaxSemanaMacharia()
         {
-            String query = "select max(Semana) from PlanCMW$Macharia";
+            String query = "select isnull(max(Semana),0) from PlanCMW$Macharia";
             SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             int max = (int) cmd.ExecuteScalar();
@@ -43,7 +43,7 @@ namespace Planeamento
 
         public static int MaxSemanaMoldacao()
         {
-            String query = "select max(Semana) from PlanCMW$Moldacao";
+            String query = "select isnull(max(Semana),0) from PlanCMW$Moldacao";
             SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             int max = (int)cmd.ExecuteScalar();
@@ -75,7 +75,7 @@ namespace Planeamento
 
         public static int MaxSemanaFusao()
         {
-            String query = "select max(Semana) from PlanCMW$Fusao";
+            String query = "select isnull(max(Semana),0) from PlanCMW$Fusao";
             SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             int max = (int)cmd.ExecuteScalar();
@@ -94,6 +94,37 @@ namespace Planeamento
             SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@fabrica", fabrica);
+            cmd.Parameters.AddWithValue("@semana", semana);
+            cmd.Parameters.AddWithValue("@dia", dia);
+            cmd.Parameters.AddWithValue("@turno", turno);
+
+            table.Load(cmd.ExecuteReader());
+            con.Close();
+            return table;
+        }
+
+        public static int MaxSemanaRebarbagem()
+        {
+            String query = "select isnull(max(Semana),0) from PlanCMW$Rebarbagem";
+            SqlConnection con = Util.AbreBD();
+            SqlCommand cmd = new SqlCommand(query, con);
+            int max = (int)cmd.ExecuteScalar();
+            con.Close();
+
+            return max;
+        }
+
+        public static DataTable GetRebarbagem(int semana, int dia, int turno)
+        {
+            String query = "select Prod.NoEnc as Encomenda,Prod.NoProd as Produto,Reb.Posto as Posto, Reb.QtdPecas as Quantidade, Reb.Tempo as Tempo " +
+            "from Planeamento.dbo.[PlanCMW$Produtos] Prod " +
+            "inner join Planeamento.dbo.[PlanCMW$Rebarbagem] Reb " +
+            "on Prod.Id = Reb.Id " +
+            "where Reb.Semana = @semana and Reb.Dia = @dia and Reb.Turno = @turno";
+
+            DataTable table = new DataTable();
+            SqlConnection con = Util.AbreBD();
+            SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@semana", semana);
             cmd.Parameters.AddWithValue("@dia", dia);
             cmd.Parameters.AddWithValue("@turno", turno);

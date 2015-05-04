@@ -45,12 +45,22 @@ namespace Planeamento
         {
             String fase = boxFase.SelectedItem.ToString();
 
+            if (boxSemana.Items.Count == 0)
+            {
+                MessageBox.Show("Não foi calculado o planeamento para a " + fase);
+                resultadosView.DataSource = new DataTable();
+                return;
+            }
+
             if (fase == strMacharia)
                 resultadosView.DataSource = ResultadosBD.GetMacharia(boxLocal.SelectedIndex + 1, boxSemana.SelectedIndex + 1, boxDia.SelectedIndex + 1);
-            else if (fase == strMoldacao)
+            if (fase == strMoldacao)
                 resultadosView.DataSource = ResultadosBD.GetMoldacao(boxLocal.SelectedIndex + 1, boxSemana.SelectedIndex + 1, boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
-            else if (fase == strFusao)
+            if (fase == strFusao)
                 resultadosView.DataSource = ResultadosBD.GetFusao(boxLocal.SelectedIndex + 1, boxSemana.SelectedIndex + 1, boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
+            if (fase == strRebarbagem)
+                resultadosView.DataSource = ResultadosBD.GetRebarbagem(boxSemana.SelectedIndex + 1, boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
+                
 
             foreach (DataGridViewColumn column in resultadosView.Columns)
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -71,7 +81,7 @@ namespace Planeamento
             else if (fase == strFusao)
                 ChangeBoxes(2, ResultadosBD.MaxSemanaFusao(), 3);
             else
-                ChangeBoxes(1, 10, 3);
+                ChangeBoxes(1, ResultadosBD.MaxSemanaRebarbagem(), 3);
 
             actualizar = stateActualizar;
 
@@ -123,7 +133,8 @@ namespace Planeamento
             for (int i = 1; i <= semana; i++)
                 boxSemana.Items.Add(i + semanaActual);
 
-            boxSemana.SelectedIndex = 0;
+            if (boxSemana.Items.Count > 0)
+                boxSemana.SelectedIndex = 0;
         }
 
         private void FillBoxTurno(int nTurnos)

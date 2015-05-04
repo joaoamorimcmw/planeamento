@@ -26,27 +26,10 @@ namespace Planeamento
 
         /**** Parametros ****/
 
-        private int capacidadeCMW1;
+        private int CapacidadeCMW1;
+        private int CapacidadeCMW2;
+        private int Horario; //capacidade diária em minutos
 
-        public int CapacidadeCMW1
-        {
-            get { return capacidadeCMW1; }
-            set { capacidadeCMW1 = value; }
-        }
-        private int capacidadeCMW2;
-
-        public int CapacidadeCMW2
-        {
-            get { return capacidadeCMW2; }
-            set { capacidadeCMW2 = value; }
-        }
-        private int horario = 8 * 60; //capacidade diária em minutos
-
-        public int Horario
-        {
-            get { return horario; }
-            set { horario = value; }
-        }
         private static String SEM_MACHO = "M002204";
 
         /*********************/
@@ -84,10 +67,14 @@ namespace Planeamento
             PlanoCMW2.Columns.Add(new DataColumn("Qtd", typeof(decimal)));
             PlanoCMW2.Columns.Add(new DataColumn("Tempo", typeof(int)));
             PlanoCMW2.Columns.Add(new DataColumn("Acc", typeof(int)));
+        }
 
-            CapacidadeCMW1 = 5;
-            CapacidadeCMW2 = 4;
-            Horario = 8 * 60;
+        //Lê os parametros da BD
+        public void GetParametros()
+        {
+            CapacidadeCMW1 = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Macharia1));
+            CapacidadeCMW2 = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Macharia2));
+            Horario = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Horario));
         }
 
         //Elimina plano antigo da Base de Dados.
@@ -190,11 +177,11 @@ namespace Planeamento
             
             SqlCommand cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Macharia CMW1'", connection);
             cmd.CommandType = CommandType.Text;
-            capacidadeCMW1 = (int)cmd.ExecuteScalar() * horario;
+            CapacidadeCMW1 = (int)cmd.ExecuteScalar() * Horario;
 
             cmd = new SqlCommand("SELECT [Valor] FROM Planeamento.dbo.[CMW$Parametros] where [Parametro] = 'Capacidade Macharia CMW2'", connection);
             cmd.CommandType = CommandType.Text;
-            capacidadeCMW2 = (int)cmd.ExecuteScalar() * horario;
+            CapacidadeCMW2 = (int)cmd.ExecuteScalar() * Horario;
 
             connection.Close();
         }
@@ -205,10 +192,10 @@ namespace Planeamento
 
             if(Local == 1)
                 foreach (DataRow row in MachosCMW1.Rows)
-                    LinhaPlaneamento(1, row,capacidadeCMW1 * horario);
+                    LinhaPlaneamento(1, row,CapacidadeCMW1 * Horario);
             else
                 foreach (DataRow row in MachosCMW2.Rows)
-                    LinhaPlaneamento(2, row,capacidadeCMW2 * horario);
+                    LinhaPlaneamento(2, row,CapacidadeCMW2 * Horario);
         }
 
         //Reinicia as variáveis globais.

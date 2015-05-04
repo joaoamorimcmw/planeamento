@@ -10,6 +10,8 @@ namespace Planeamento
 {
     public class Moldacao
     {
+        #region Variáveis e Construtor
+
         private DataTable MoldesGF;
         private DataTable MoldesIMF;
         private DataTable MoldesManual;
@@ -24,53 +26,13 @@ namespace Planeamento
 
         /**** Parametros ****/
 
-        private int capacidadeGF;
-
-        public int CapacidadeGF
-        {
-            get { return capacidadeGF; }
-            set { capacidadeGF = value; }
-        }
-
-        private int capacidadeIMF;
-
-        public int CapacidadeIMF
-        {
-            get { return capacidadeIMF; }
-            set { capacidadeIMF = value; }
-        }
-
-        private int capacidadeManual;
-
-        public int CapacidadeManual
-        {
-            get { return capacidadeManual; }
-            set { capacidadeManual = value; }
-        }
+        private int CapacidadeGF;
+        private int CapacidadeIMF;
+        private int CapacidadeManual;
 
         private int nTurnosGF;
-
-        public int NTurnosGF
-        {
-            get { return nTurnosGF; }
-            set { nTurnosGF = value; }
-        }
-
         private int nTurnosIMF;
-
-        public int NTurnosIMF
-        {
-            get { return nTurnosIMF; }
-            set { nTurnosIMF = value; }
-        }
-
         private int nTurnosManual;
-
-        public int NTurnosManual
-        {
-            get { return nTurnosManual; }
-            set { nTurnosManual = value; }
-        }
         
         /*********************/
 
@@ -126,15 +88,11 @@ namespace Planeamento
             PlanoManual.Columns.Add(new DataColumn("Turno", typeof(int)));
             PlanoManual.Columns.Add(new DataColumn("Caixas", typeof(int)));
             PlanoManual.Columns.Add(new DataColumn("CaixasAcc", typeof(int)));
-
-            CapacidadeGF = 420;
-            CapacidadeIMF = 95;
-            CapacidadeManual = 12;
-
-            NTurnosGF = 3;
-            NTurnosIMF = 3;
-            NTurnosManual = 3;
         }
+
+        #endregion
+
+        #region Pré-Execução
 
         public void LimpaBDMoldacao()
         {
@@ -147,6 +105,21 @@ namespace Planeamento
             Console.WriteLine(linhas + " linhas removidas da tabela Moldacao");
             connection.Close();
         }
+
+        public void GetParametros()
+        {
+            CapacidadeGF = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoGF));
+            CapacidadeIMF = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoIMF));
+            CapacidadeManual = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoManual));
+            int turnos = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Turnos));
+            nTurnosGF = turnos;
+            nTurnosIMF = turnos;
+            nTurnosManual = turnos;
+        }
+
+        #endregion
+
+        #region Execução
 
         public void Executa(int Local)
         {
@@ -201,11 +174,11 @@ namespace Planeamento
         {
             ResetGlobais();
             if (Local == 1)
-                PlaneamentoLocal(1,capacidadeGF, nTurnosGF,0,MoldesGF,new LinkedList<DataRow>());
+                PlaneamentoLocal(1, CapacidadeGF, nTurnosGF,0,MoldesGF,new LinkedList<DataRow>());
             else if (Local == 2)
-                PlaneamentoLocal(2, capacidadeIMF, nTurnosIMF, 0, MoldesIMF, new LinkedList<DataRow>());
+                PlaneamentoLocal(2, CapacidadeIMF, nTurnosIMF, 0, MoldesIMF, new LinkedList<DataRow>());
             else
-                PlaneamentoLocal(3, capacidadeManual, nTurnosManual, 0, MoldesManual, new LinkedList<DataRow>());
+                PlaneamentoLocal(3, CapacidadeManual, nTurnosManual, 0, MoldesManual, new LinkedList<DataRow>());
             
         }
 
@@ -336,6 +309,10 @@ namespace Planeamento
                 PlanoManual.Rows.Add(row);
         }
 
+        #endregion
+
+        #region Pós-Execução
+
         //Escreve as linhas de plano de Macharia na tabela Macharia, e actualiza a tabela Produtos com o Dia e Semana da Macharia
         private void EscreveBD(int Local)
         {
@@ -393,6 +370,8 @@ namespace Planeamento
             PlanoIMF.Clear();
             PlanoManual.Clear();
         }
+
+        #endregion
 
     }
 }

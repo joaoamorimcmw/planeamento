@@ -72,6 +72,9 @@
             this.pickerForno22 = new System.Windows.Forms.NumericUpDown();
             this.label18 = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.pickerRebFuncionarios = new System.Windows.Forms.NumericUpDown();
+            this.postosView = new System.Windows.Forms.DataGridView();
+            this.label19 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pickerMacharia2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pickerMacharia1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pickerMoldacaoManual)).BeginInit();
@@ -95,6 +98,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.pickerForno21)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pickerForno23)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pickerForno22)).BeginInit();
+            this.tabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pickerRebFuncionarios)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.postosView)).BeginInit();
             this.SuspendLayout();
             // 
             // pickerMacharia2
@@ -586,6 +592,9 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.pickerRebFuncionarios);
+            this.tabPage5.Controls.Add(this.postosView);
+            this.tabPage5.Controls.Add(this.label19);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -593,6 +602,40 @@
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Rebarbagem";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // pickerRebFuncionarios
+            // 
+            this.pickerRebFuncionarios.Location = new System.Drawing.Point(142, 18);
+            this.pickerRebFuncionarios.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.pickerRebFuncionarios.Name = "pickerRebFuncionarios";
+            this.pickerRebFuncionarios.Size = new System.Drawing.Size(72, 20);
+            this.pickerRebFuncionarios.TabIndex = 2;
+            this.pickerRebFuncionarios.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // postosView
+            // 
+            this.postosView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.postosView.Location = new System.Drawing.Point(9, 57);
+            this.postosView.Name = "postosView";
+            this.postosView.Size = new System.Drawing.Size(378, 202);
+            this.postosView.TabIndex = 1;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 20);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(101, 13);
+            this.label19.TabIndex = 0;
+            this.label19.Text = "Funcionários Turno:";
             // 
             // Parametros
             // 
@@ -636,6 +679,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.pickerForno21)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pickerForno23)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pickerForno22)).EndInit();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pickerRebFuncionarios)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.postosView)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -686,5 +733,8 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.NumericUpDown pickerFusoesTurno;
         private System.Windows.Forms.NumericUpDown pickerMinimoFusao;
+        private System.Windows.Forms.NumericUpDown pickerRebFuncionarios;
+        private System.Windows.Forms.DataGridView postosView;
+        private System.Windows.Forms.Label label19;
     }
 }
