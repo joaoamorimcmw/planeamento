@@ -20,7 +20,8 @@ namespace Planeamento
         public static string MoldacaoManual = "Capacidade Moldação Manual";
 
         public static string FusoesTurnoForno = "Fusões por forno";
-        public static string FusoesTurnoTotal = "Fusões por turno";
+        public static string FusoesTurnoTotalCMW1 = "Fusões por turno CMW1";
+        public static string FusoesTurnoTotalCMW2 = "Fusões por turno CMW2";
         public static string MinimoFusao = "Mínimo Fusão";
         public static string Forno1CMW1 = "Capacidade Forno 1 CMW1";
         public static string Forno2CMW1 = "Capacidade Forno 2 CMW1";
@@ -43,7 +44,8 @@ namespace Planeamento
             AddParametroIfNull(MoldacaoIMF, 95);
             AddParametroIfNull(MoldacaoManual, 12);
             AddParametroIfNull(FusoesTurnoForno, 2);
-            AddParametroIfNull(FusoesTurnoTotal, 8);
+            AddParametroIfNull(FusoesTurnoTotalCMW1, 4);
+            AddParametroIfNull(FusoesTurnoTotalCMW2, 3);
             AddParametroIfNull(MinimoFusao, 0.66);
             AddParametroIfNull(Forno1CMW1, 3000);
             AddParametroIfNull(Forno2CMW1, 3000);

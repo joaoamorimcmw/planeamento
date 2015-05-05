@@ -75,6 +75,10 @@
             this.pickerRebFuncionarios = new System.Windows.Forms.NumericUpDown();
             this.postosView = new System.Windows.Forms.DataGridView();
             this.label19 = new System.Windows.Forms.Label();
+            this.pickerFusoesCMW1 = new System.Windows.Forms.NumericUpDown();
+            this.pickerFusoesCMW2 = new System.Windows.Forms.NumericUpDown();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pickerMacharia2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pickerMacharia1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pickerMoldacaoManual)).BeginInit();
@@ -101,6 +105,8 @@
             this.tabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pickerRebFuncionarios)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.postosView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pickerFusoesCMW1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pickerFusoesCMW2)).BeginInit();
             this.SuspendLayout();
             // 
             // pickerMacharia2
@@ -322,9 +328,9 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(6, 20);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(89, 13);
+            this.label8.Size = new System.Drawing.Size(122, 13);
             this.label8.TabIndex = 0;
-            this.label8.Text = "Fusões por turno:";
+            this.label8.Text = "Fusões por forno (turno):";
             // 
             // pickerHoras
             // 
@@ -440,6 +446,10 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.pickerFusoesCMW1);
+            this.tabPage4.Controls.Add(this.pickerFusoesCMW2);
+            this.tabPage4.Controls.Add(this.label20);
+            this.tabPage4.Controls.Add(this.label21);
             this.tabPage4.Controls.Add(this.pickerFusoesTurno);
             this.tabPage4.Controls.Add(this.pickerMinimoFusao);
             this.tabPage4.Controls.Add(this.groupBox1);
@@ -464,7 +474,7 @@
             0,
             0});
             this.pickerFusoesTurno.Name = "pickerFusoesTurno";
-            this.pickerFusoesTurno.Size = new System.Drawing.Size(72, 20);
+            this.pickerFusoesTurno.Size = new System.Drawing.Size(50, 20);
             this.pickerFusoesTurno.TabIndex = 17;
             this.pickerFusoesTurno.Value = new decimal(new int[] {
             1,
@@ -481,7 +491,7 @@
             0,
             0});
             this.pickerMinimoFusao.Name = "pickerMinimoFusao";
-            this.pickerMinimoFusao.Size = new System.Drawing.Size(72, 20);
+            this.pickerMinimoFusao.Size = new System.Drawing.Size(50, 20);
             this.pickerMinimoFusao.TabIndex = 16;
             this.pickerMinimoFusao.Value = new decimal(new int[] {
             10,
@@ -637,6 +647,58 @@
             this.label19.TabIndex = 0;
             this.label19.Text = "Funcionários Turno:";
             // 
+            // pickerFusoesCMW1
+            // 
+            this.pickerFusoesCMW1.Location = new System.Drawing.Point(334, 18);
+            this.pickerFusoesCMW1.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.pickerFusoesCMW1.Name = "pickerFusoesCMW1";
+            this.pickerFusoesCMW1.Size = new System.Drawing.Size(50, 20);
+            this.pickerFusoesCMW1.TabIndex = 21;
+            this.pickerFusoesCMW1.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // pickerFusoesCMW2
+            // 
+            this.pickerFusoesCMW2.Location = new System.Drawing.Point(334, 46);
+            this.pickerFusoesCMW2.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.pickerFusoesCMW2.Name = "pickerFusoesCMW2";
+            this.pickerFusoesCMW2.Size = new System.Drawing.Size(50, 20);
+            this.pickerFusoesCMW2.TabIndex = 20;
+            this.pickerFusoesCMW2.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(198, 20);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(131, 13);
+            this.label20.TabIndex = 18;
+            this.label20.Text = "Fusões por turno (CMW1):";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(198, 48);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(131, 13);
+            this.label21.TabIndex = 19;
+            this.label21.Text = "Fusões por turno (CMW2):";
+            // 
             // Parametros
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -683,6 +745,8 @@
             this.tabPage5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pickerRebFuncionarios)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.postosView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pickerFusoesCMW1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pickerFusoesCMW2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -736,5 +800,9 @@
         private System.Windows.Forms.NumericUpDown pickerRebFuncionarios;
         private System.Windows.Forms.DataGridView postosView;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.NumericUpDown pickerFusoesCMW1;
+        private System.Windows.Forms.NumericUpDown pickerFusoesCMW2;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label21;
     }
 }

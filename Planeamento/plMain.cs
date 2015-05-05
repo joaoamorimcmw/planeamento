@@ -152,6 +152,8 @@ namespace Planeamento
         [STAThread]
         static void Main()
         {
+            ParametrosBD.ParametrosDefault();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Interface());

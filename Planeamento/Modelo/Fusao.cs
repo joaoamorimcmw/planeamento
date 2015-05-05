@@ -24,7 +24,9 @@ namespace Planeamento
 
         private int TurnosCMW1;
         private int TurnosCMW2;
-        private int FusoesTurno;
+        private int FusoesForno;
+        private int FusoesCMW1;
+        private int FusoesCMW2;
         private decimal Minimo;
         private Dictionary<Int32, Decimal> CapacidadesCMW1;
         private Dictionary<Int32, Decimal> CapacidadesCMW2;
@@ -83,7 +85,9 @@ namespace Planeamento
 
         public void GetParametros()
         {
-            FusoesTurno = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoForno));
+            FusoesForno = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoForno));
+            FusoesCMW1 = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoTotalCMW1));
+            FusoesCMW2 = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoTotalCMW2));
             Minimo = (decimal) ParametrosBD.GetParametro(ParametrosBD.MinimoFusao);
             int turnos = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Turnos));
             TurnosCMW1 = turnos;
@@ -191,12 +195,12 @@ namespace Planeamento
         {
             ResetGlobais();
             if (Local == 1)
-                PlaneamentoLocal (Local,FusaoCMW1,TurnosCMW1,new Dictionary<string,LigaFusao>(),0);
+                PlaneamentoLocal (Local,FusoesCMW1,FusaoCMW1,TurnosCMW1,new Dictionary<string,LigaFusao>(),0);
             else
-                PlaneamentoLocal (Local,FusaoCMW2,TurnosCMW2,new Dictionary<string,LigaFusao>(),0);
+                PlaneamentoLocal (Local,FusoesCMW2,FusaoCMW2,TurnosCMW2,new Dictionary<string,LigaFusao>(),0);
         }
 
-        private void PlaneamentoLocal(int Local,DataTable Table, int nTurnos, Dictionary<String, LigaFusao> Cargas, int Index)
+        private void PlaneamentoLocal(int Local, int Fusoes, DataTable Table, int nTurnos, Dictionary<String, LigaFusao> Cargas, int Index)
         {
             while (Index < Table.Rows.Count && RespeitaPrecendencia(Table.Rows[Index]))
             {
@@ -224,7 +228,7 @@ namespace Planeamento
                 
             Console.WriteLine("---------------------"); */
 
-            PlaneamentoTurno(Local,Cargas);
+            PlaneamentoTurno(Local,Fusoes,Cargas);
             bool continua = false;
 
             if (Index < Table.Rows.Count)
@@ -238,12 +242,12 @@ namespace Planeamento
             if (continua)
             {
                 Util.ProximoTurno(ref turno, ref dia, ref semana, nTurnos);
-                PlaneamentoLocal(Local, Table, nTurnos, Cargas, Index);
+                PlaneamentoLocal(Local, Fusoes, Table, nTurnos, Cargas, Index);
             }
                 
         }
 
-        private void PlaneamentoTurno(int Local,Dictionary<String,LigaFusao> Cargas){
+        private void PlaneamentoTurno(int Local, int Fusoes, Dictionary<String,LigaFusao> Cargas){
             Cargas = Cargas.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
             
             decimal maiorCap, menorCap;
@@ -265,14 +269,14 @@ namespace Planeamento
                     lista.Add(liga);
                 }
                     
-                if (possiveisMaior >= FusoesTurno && possiveisMenor >= FusoesTurno * 4)
+                if (possiveisMaior >= FusoesForno && possiveisMenor >= Fusoes)
                     break;
             }
 
-            DistribuiFusoes(Local,lista);
+            DistribuiFusoes(Local,Fusoes,lista);
         }
 
-        private void DistribuiFusoes(int Local, List<LigaFusao> lista)
+        private void DistribuiFusoes(int Local, int Fusoes, List<LigaFusao> lista)
         {
             int [] fusoesFornos = { 0, 0, 0, 0 };
             int totalFusoes = 0;
@@ -285,7 +289,7 @@ namespace Planeamento
             else
                 caps = CapacidadesCMW2;
 
-            while (totalFusoes < FusoesTurno * 4 && existeCarga)
+            while (totalFusoes < Fusoes && existeCarga)
             {
                 lista = lista.OrderByDescending(x => x.Peso).ToList();
                 existeCarga = false;
@@ -294,7 +298,7 @@ namespace Planeamento
                     bool stop = false;
                     foreach (int forno in caps.Keys)
                     {
-                        if (!stop && liga.Peso >= caps[forno] * Minimo && fusoesFornos[forno-1] < FusoesTurno)
+                        if (!stop && liga.Peso >= caps[forno] * Minimo && fusoesFornos[forno-1] < FusoesForno)
                         {
                             fusoesFornos[forno - 1]++;
                             RegistaFusao(Local, liga, forno, fusoesFornos[forno - 1], Math.Min(liga.Peso, caps[forno]));
