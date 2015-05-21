@@ -10,6 +10,7 @@ namespace Planeamento
 {
     class Init
     {
+        //Carrega a tabela Produtos da BD do Planeamento para um DataTable
         public static DataTable GetProdutos()
         {
             String query = "select Include,Id,NoEnc as Encomenda,NoProd as Produto,Ligas.Descricao as Liga,QtdPendente,DataPrevista " +
@@ -25,6 +26,7 @@ namespace Planeamento
             return table;
         }
 
+        //Faz o reset da tabela dos produtos com base nas encomendas abertas do Navision
         public static void UpdateProdutos()
         {
             SqlConnection con = Util.AbreBD();
@@ -54,12 +56,12 @@ namespace Planeamento
         //Inicializa Produtos e Plano
         private static void InicializaProdutos(SqlConnection con)
         {
-            String query = "INSERT INTO dbo.[PlanCMW$Produtos] (NoEnc,NoLine,NoProd,Liga,PesoPeca,NoMoldes,Local,QtdPendente,DataPrevista,Urgente)" +
-            "SELECT A.[Document No_],A.[Line No_],A.[No_],B.[Liga Metalica],A.[Peso Peça [Kg]]],A.[NumeroMoldes],A.[Local de Producao],A.[Outstanding Quantity],A.[Planned Delivery Date],A.[Urgente] " +
+            String query = "INSERT INTO dbo.[PlanCMW$Produtos] (NoEnc,NoProd,NoMolde,Liga,PesoPeca,[Peso Gitos],NoMoldes,Local,QtdPendente,DataPrevista,Urgente)" +
+            "SELECT A.[Document No_],A.[No_],B.[No_ Molde],B.[Liga Metalica],A.[Peso Peça [Kg]]],B.[Peso com Gitos [Kg]]],A.[NumeroMoldes],A.[Local de Producao],A.[Outstanding Quantity],A.[Planned Delivery Date],A.[Urgente] " +
             "FROM Navision.dbo.[CMW$Sales Line] as A " +
             "INNER JOIN Navision.dbo.[CMW$Item] as B " +
             "on A.[No_] = B.[No_] " +
-            "WHERE ([Outstanding Quantity]>0) AND ([Posting Group]='PROD.ACABA') AND [Planned Delivery Date] >= '01-01-15' AND ([Local de Producao] >0) " +
+            "WHERE ([Document No_] LIKE 'VE1%') AND ([Outstanding Quantity]>0) AND ([Posting Group]='PROD.ACABA') AND [Planned Delivery Date] >= '01-01-15' AND ([Local de Producao] >0) " +
             "ORDER BY Urgente DESC,[Planned Delivery Date] ASC";
 
             SqlCommand cmd = new SqlCommand(query, con);
