@@ -9,6 +9,7 @@ namespace Planeamento
 {
     class ParametrosBD
     {
+        public static string PercentagemGitos = "Gitos";
         public static string Horario = "Horas";
         public static string Turnos = "Turnos";
 
@@ -34,8 +35,10 @@ namespace Planeamento
 
         public static string FuncionariosTurnoRebarbagem = "Funcionários por turno rebarbagem";
 
+        //Adiciona os valores default à tabela de parametros caso estes não estejam definidos
         public static void ParametrosDefault()
         {
+            AddParametroIfNull(PercentagemGitos, 1.45);
             AddParametroIfNull(Horario, 400);
             AddParametroIfNull(Turnos, 3);
             AddParametroIfNull(Macharia1, 5);
@@ -58,6 +61,7 @@ namespace Planeamento
             AddParametroIfNull(FuncionariosTurnoRebarbagem, 25);
         }
 
+        //Vai buscar o valor de um parametro
         public static Object GetParametro (string parametro)
         {
             String query = "select Valor from PlanCMW$Parametros where Parametro = @Param";
@@ -70,6 +74,7 @@ namespace Planeamento
             return valor;
         }
 
+        //Altera o valor de um parametro
         public static void SetParametro(string parametro, Object valor)
         {
             String query = "update PlanCMW$Parametros set Valor = @Valor where Parametro = @Param";
@@ -81,12 +86,14 @@ namespace Planeamento
             con.Close();
         }
 
+        //Adiciona o valor de um parametro caso este nao exista
         private static void AddParametroIfNull(string parametro, Object valor)
         {
             if (GetParametro(parametro) == null)
                 AddParametro(parametro, valor);
         }
 
+        //Adiciona um parametro novo
         private static void AddParametro(string parametro, Object valor)
         {
             String query = "insert into PlanCMW$Parametros values (@Param,@Valor)";

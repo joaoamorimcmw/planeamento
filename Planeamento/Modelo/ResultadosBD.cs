@@ -10,6 +10,7 @@ namespace Planeamento
 {
     public class ResultadosBD
     {
+        //Procura na tabela do plano da Macharia qual a maior Semana
         public static int MaxSemanaMacharia()
         {
             String query = "select isnull(max(Semana),0) from PlanCMW$Macharia";
@@ -21,6 +22,7 @@ namespace Planeamento
             return max;
         }
 
+        //Devolve todas as linhas na tabela do plano da Macharia
         public static DataTable GetMacharia(string fabrica, int semana, int dia)
         {
             String query = "select Encomenda, Produto, Macho, Quantidade " +
@@ -39,6 +41,7 @@ namespace Planeamento
             return table;
         }
 
+        //Procura na tabela do plano da Moldação qual a maior Semana
         public static int MaxSemanaMoldacao()
         {
             String query = "select isnull(max(Semana),0) from PlanCMW$Moldacao";
@@ -50,6 +53,7 @@ namespace Planeamento
             return max;
         }
 
+        //Devolve todas as linhas na tabela do plano da Moldação
         public static DataTable GetMoldacao(string local, int semana, int dia, int turno)
         {
             String query = "select Encomenda, Produto, Caixas " +
@@ -69,6 +73,7 @@ namespace Planeamento
             return table;
         }
 
+        //Procura na tabela do plano da Fusão qual a maior Semana
         public static int MaxSemanaFusao()
         {
             String query = "select isnull(max(Semana),0) from PlanCMW$Fusao";
@@ -80,6 +85,7 @@ namespace Planeamento
             return max;
         }
 
+        //Devolve todas as linhas na tabela do plano da Fusão
         public static DataTable GetFusao(string fabrica, int semana, int dia, int turno)
         {
             String query = "select Forno, NoFusao, Liga, Descricao, Carga " +
@@ -99,6 +105,7 @@ namespace Planeamento
             return table;
         }
 
+        //Procura na tabela do plano da Rebarbagem qual a maior Semana
         public static int MaxSemanaRebarbagem()
         {
             String query = "select isnull(max(Semana),0) from PlanCMW$Rebarbagem";
@@ -110,6 +117,7 @@ namespace Planeamento
             return max;
         }
 
+        //Devolve todas as linhas na tabela do plano da Rebarbagem
         public static DataTable GetRebarbagem(int semana, int dia, int turno)
         {
             String query = "select Encomenda, Produto, Posto, Quantidade, Tempo " +

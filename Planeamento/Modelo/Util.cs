@@ -11,7 +11,6 @@ namespace Planeamento
     class Util
     {
         //Função auxiliar para abrir a ligação à BD de planeamento
-
         public static SqlConnection AbreBD ()
         {
             SqlConnection connection;
@@ -31,6 +30,7 @@ namespace Planeamento
             return connection;
         }
 
+        //Calcula o proximo turno (se necessário passa para o próximo dia e semana)
         public static void ProximoTurno(ref int turno, ref int dia, ref int semana, int nTurnos)
         {
             turno = (turno % nTurnos) + 1;
@@ -38,6 +38,7 @@ namespace Planeamento
                 ProximoDia(ref dia, ref semana);
         }
         
+        //Calcula o próximo dia (se necessário passa para a próxima semana)
         public static void ProximoDia(ref int dia, ref int semana) 
         {
             dia = (dia % 5) + 1;
@@ -46,7 +47,6 @@ namespace Planeamento
         }
 
         //Função auxiliar para fechar uma ligação à BD
-
         public static void FechaBD (SqlConnection connection)
         {
             try
@@ -61,7 +61,6 @@ namespace Planeamento
         }
 
         //Gera uma query à tabela Sales Line
-
         public static String QuerySalesLine(String colunas, int local = 0, String data = "01-01-14")
         {
             String strLocal = "> 0";

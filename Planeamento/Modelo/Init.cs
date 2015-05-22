@@ -33,6 +33,7 @@ namespace Planeamento
             LimpaProdutos(con);
             ReseedProdutos(con);
             InicializaProdutos(con);
+            CalcularGitos(con);
             con.Close();
         }
 
@@ -70,6 +71,20 @@ namespace Planeamento
             Console.WriteLine(linhas + " linhas inseridas na tabela Produtos");
         }
 
+        //Calcula o peso com gitos para os produtos que não têm
+        //Peso com gitos = PesoPeca * NoMoldes * 145%
+        private static void CalcularGitos(SqlConnection con)
+        {
+            decimal percentagemGitos = (decimal)ParametrosBD.GetParametro(ParametrosBD.PercentagemGitos);
+            String query = "update dbo.[PlanCMW$Produtos] " +
+            "set [Peso Gitos] = PesoPeca * NoMoldes * @Percentagem " +
+            "where [Peso Gitos] = 0";
+            SqlCommand command = new SqlCommand(query, con);
+            command.Parameters.AddWithValue("@Percentagem", percentagemGitos);
+            command.ExecuteNonQuery();
+        }
+
+        //Recebe um DataTable com a lista de produtos e exclui os produtos marcados
         public static void ExcluirProdutosLista(DataTable table)
         {
             SqlConnection con = Util.AbreBD();
@@ -88,6 +103,7 @@ namespace Planeamento
             con.Close();
         }
 
+        //Todos os produtos em que o total da carga para liga em encomendas é inferior ao minimo são marcados como excluídos
         public static void ExcluiProdutosBaixaCarga(Fusao fusao)
         {
             String query = "update dbo.[PlanCMW$Produtos] " +
@@ -116,6 +132,8 @@ namespace Planeamento
             con.Close();
         }
 
+
+        //Preenche a informação da tabela das Ligas (Liga,Descrição e Classe)
         public static void InicializaLigas()
         {
             String query = "delete from dbo.PlanCMW$Ligas";
