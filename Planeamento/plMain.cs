@@ -8,9 +8,7 @@ using System.Windows.Forms;
  * 
  * ** Regras actuais **
  * 
- * Moldação de um produto só pode começar no turno seguinte à Macharia desse produto estar concluída
- * Fusão de um produto só pode ser feita no turno seguinte à Moldação estar concluída
- * Produtos em que a liga tem uma carga total inferior à fusão mínima não são incluídos no planeamento
+ * Planeamento é feito à semana. 
  * 
  * ** Fases **
  * 
@@ -23,7 +21,7 @@ using System.Windows.Forms;
  * 
  * ** Tabelas da BD Planeamento **
  * 
- * PlanCMW$Produtos
+ * PlanCMWv2$Produtos
  *          Lista de todos os produtos em encomendas abertas
  *          Contem informação sobre quantidades, peso, liga, dataprevista, urgencia.
  *          Contem também informação sobre o planeamento: semana/dia/turno em que a Macharia, Moldação e Fusão do produto estão concluídas.
@@ -33,25 +31,19 @@ using System.Windows.Forms;
  *              Id (int) - Id do par (Encomenda, Produto)
  *              Include (bit) - Flag que indica se este produto entra no planeamento
  *              NoEnc (string) - Número de encomenda
- *              NoProd (string) - Numero de produto
+ *              NoProd (string) - Número de produto
+ *              NoMolde (string) - Número de molde
  *              Liga (string) - Código da liga do produto
+ *              Descricao Liga - Descrição da liga do produto
  *              PesoPeca (decimal) - Peso de uma peça individual
- *              NoMoldes (int) - Número de moldes necessários para o produto
+ *              Peso Gitos - Peso de uma caixa de peças (inclui gitos)
+ *              NoMoldes (int) - Número de peças por caixa
+ *              TempoMachos (int) - Tempo total necessário de Macharia por caixa (em minutos)
+ *              QtdPendente (int) - Quantidade total de unidades a produzir
+ *              CaixasPendente (int) - Quantidade total de caixas a produzir. Arrendonda para cima -> CaixasPendente = Ceiling(QtdPendente / NoMoldes)
  *              Local (int) - Local onde é produzido: 1 - GF, 2 - IMF, 3 - Manual
- *              QtdPendente (int) - Quantidade a produzir
  *              DataPrevista (date) - Data prevista de entrega
  *              Urgente (bit) - Indica se é urgente
- *              SemanaMacharia (int) - Semana onde são concluídos todos os machos
- *              DiaMacharia (int) - Dia onde são concluídos todos os machos
- *              SemanaMoldacao (int) - Semana onde é concluida toda a moldação
- *              DiaMoldacao (int) - Dia onde é concluida toda a moldação
- *              TurnoMoldacao (int) - Turno onde é concluida toda a moldação
- *              SemanaFusao (int) - Semana onde é concluida toda a fusão
- *              DiaFusao (int) - Dia onde é concluida toda a fusão
- *              TurnoFusao (int) - Turno onde é concluida toda a fusão
- *              PesoVazadas (decimal) - Peso das peças já vazadas
- *              QtdVazadas (int) - Quantidade de peças já vazadas
- *              PesoEmFalta (decimal) - Peso que falta vazar
  *              
  * PlanCMW$Ligas
  *          Lista de todas as ligas existentes e das classes

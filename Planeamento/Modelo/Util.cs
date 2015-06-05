@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace Planeamento
 {
-    class Util
+    public class Util
     {
+        public static string TabelaProduto = "Planeamento.dbo.PlanCMWv2$Produtos";
         //Função auxiliar para abrir a ligação à BD de planeamento
         public static SqlConnection AbreBD ()
         {
