@@ -9,11 +9,13 @@ namespace Planeamento
 {
     class ParametrosBD
     {
-        private static string TabelaParametros = "Planeamento.dbo.PlanCMWv2$Parametros";
-
         public static string PercentagemGitos = "Gitos";
         public static string Horario = "Horas";
         public static string MinimoFusao = "Mínimo Fusão";
+
+        public static string TurnosCMW1 = "Turnos CMW1";
+        public static string TurnosCMW2 = "Turnos CMW2";
+        public static string TurnosRebarbagem = "Turnos Rebarbagem";
 
         public static string MachariaCMW1 = "Capacidade Macharia CMW1";
         public static string CaixasGF = "Caixas GF";
@@ -43,6 +45,10 @@ namespace Planeamento
             AddParametroIfNull(Horario, 400);
             AddParametroIfNull(MinimoFusao, 0.66);
 
+            AddParametroIfNull(TurnosCMW1, 2);
+            AddParametroIfNull(TurnosCMW2, 3);
+            AddParametroIfNull(TurnosRebarbagem, 3);
+
             AddParametroIfNull(MachariaCMW1, 6);
             AddParametroIfNull(CaixasGF, 550);
             AddParametroIfNull(FusoesCMW1, 10);
@@ -68,7 +74,7 @@ namespace Planeamento
         //Vai buscar o valor de um parametro
         public static Object GetParametro (string parametro)
         {
-            String query = "select Valor from " + TabelaParametros + " where Parametro = @Param";
+            String query = "select Valor from " + Util.TabelaParametros + " where Parametro = @Param";
             SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@Param", parametro);
@@ -81,7 +87,7 @@ namespace Planeamento
         //Altera o valor de um parametro
         public static void SetParametro(string parametro, Object valor)
         {
-            String query = "update " + TabelaParametros + " set Valor = @Valor where Parametro = @Param";
+            String query = "update " + Util.TabelaParametros + " set Valor = @Valor where Parametro = @Param";
             SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@Param", parametro);
@@ -100,13 +106,38 @@ namespace Planeamento
         //Adiciona um parametro novo
         private static void AddParametro(string parametro, Object valor)
         {
-            String query = "insert into " + TabelaParametros + " values (@Param,@Valor)";
+            String query = "insert into " + Util.TabelaParametros + " values (@Param,@Valor)";
             SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@Param", parametro);
             cmd.Parameters.AddWithValue("@Valor", valor);
             cmd.ExecuteNonQuery();
             con.Close();
+        }
+
+        public static decimal CalculaMinimoFusao(int Fabrica)
+        {
+            decimal forno1, forno2, forno3, forno4;
+
+            if (Fabrica == 1)
+            {
+                forno1 = (decimal)GetParametro(Forno1CMW1);
+                forno2 = (decimal)GetParametro(Forno2CMW1);
+                forno3 = (decimal)GetParametro(Forno3CMW1);
+                forno4 = (decimal)GetParametro(Forno4CMW1);
+            }
+
+            else
+            {
+                forno1 = (decimal)GetParametro(Forno1CMW2);
+                forno2 = (decimal)GetParametro(Forno2CMW2);
+                forno3 = (decimal)GetParametro(Forno3CMW2);
+                forno4 = (decimal)GetParametro(Forno4CMW2);
+            }
+
+            decimal minimo = (decimal)GetParametro(MinimoFusao);
+            decimal [] caps = {forno1,forno2,forno3,forno4};
+            return caps.Min() * minimo;
         }
     }
 }

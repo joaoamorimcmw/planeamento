@@ -85,11 +85,11 @@ namespace Planeamento
 
         public void GetParametros()
         {
-            FusoesForno = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoForno));
-            FusoesCMW1 = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoTotalCMW1));
-            FusoesCMW2 = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoTotalCMW2));
+            FusoesForno = 2; // Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoForno));
+            FusoesCMW1 = 3; //Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoTotalCMW1));
+            FusoesCMW2 = 4; //Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FusoesTurnoTotalCMW2));
             Minimo = (decimal) ParametrosBD.GetParametro(ParametrosBD.MinimoFusao);
-            int turnos = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Turnos));
+            int turnos = 3; // Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Turnos));
             TurnosCMW1 = turnos;
             TurnosCMW2 = turnos;
 

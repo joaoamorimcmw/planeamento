@@ -31,13 +31,14 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.menuFuncoes = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBtnActualizar = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuBtnParametros = new System.Windows.Forms.ToolStripMenuItem();
             this.resultadosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.produtosView = new System.Windows.Forms.DataGridView();
             this.btnIniciar = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.definiçõesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.parametrosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.produtosView)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -46,7 +47,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuFuncoes});
+            this.menuFuncoes,
+            this.definiçõesToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(957, 24);
@@ -57,7 +59,6 @@
             // 
             this.menuFuncoes.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuBtnActualizar,
-            this.menuBtnParametros,
             this.resultadosToolStripMenuItem});
             this.menuFuncoes.Name = "menuFuncoes";
             this.menuFuncoes.Size = new System.Drawing.Size(63, 20);
@@ -69,13 +70,6 @@
             this.menuBtnActualizar.Size = new System.Drawing.Size(177, 22);
             this.menuBtnActualizar.Text = "Actualizar Produtos";
             this.menuBtnActualizar.Click += new System.EventHandler(this.obterProdutosToolStripMenuItem_Click);
-            // 
-            // menuBtnParametros
-            // 
-            this.menuBtnParametros.Name = "menuBtnParametros";
-            this.menuBtnParametros.Size = new System.Drawing.Size(177, 22);
-            this.menuBtnParametros.Text = "Parametros";
-            this.menuBtnParametros.Click += new System.EventHandler(this.menuBtnParametros_Click);
             // 
             // resultadosToolStripMenuItem
             // 
@@ -133,6 +127,21 @@
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(553, 16);
             // 
+            // definiçõesToolStripMenuItem
+            // 
+            this.definiçõesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.parametrosToolStripMenuItem});
+            this.definiçõesToolStripMenuItem.Name = "definiçõesToolStripMenuItem";
+            this.definiçõesToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
+            this.definiçõesToolStripMenuItem.Text = "Definições";
+            // 
+            // parametrosToolStripMenuItem
+            // 
+            this.parametrosToolStripMenuItem.Name = "parametrosToolStripMenuItem";
+            this.parametrosToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.parametrosToolStripMenuItem.Text = "Parametros";
+            this.parametrosToolStripMenuItem.Click += new System.EventHandler(this.menuBtnParametros_Click);
+            // 
             // Interface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -166,7 +175,8 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.ToolStripProgressBar progressBar;
-        private System.Windows.Forms.ToolStripMenuItem menuBtnParametros;
         private System.Windows.Forms.ToolStripMenuItem resultadosToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem definiçõesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem parametrosToolStripMenuItem;
     }
 }

@@ -95,7 +95,7 @@ namespace Planeamento
         public void GetParametros()
         {
             FuncionariosTurno = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.FuncionariosTurnoRebarbagem));
-            nTurnos = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Turnos));
+            nTurnos = 3; //Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Turnos));
             Horario = Convert.ToDecimal(ParametrosBD.GetParametro(ParametrosBD.Horario));
         }
 

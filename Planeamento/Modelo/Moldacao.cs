@@ -108,10 +108,10 @@ namespace Planeamento
 
         public void GetParametros()
         {
-            CapacidadeGF = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoGF));
-            CapacidadeIMF = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoIMF));
-            CapacidadeManual = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoManual));
-            int turnos = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Turnos));
+            CapacidadeGF = 250; // Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoGF));
+            CapacidadeIMF = 90; // Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoIMF));
+            CapacidadeManual = 12; // Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.MoldacaoManual));
+            int turnos = 3; // Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Turnos));
             nTurnosGF = turnos;
             nTurnosIMF = turnos;
             nTurnosManual = turnos;

@@ -72,8 +72,8 @@ namespace Planeamento
         //Lê os parametros da BD
         public void GetParametros()
         {
-            CapacidadeCMW1 = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Macharia1));
-            CapacidadeCMW2 = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Macharia2));
+            CapacidadeCMW1 = 5; // Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Macharia1));
+            CapacidadeCMW2 = 4; // Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Macharia2));
             Horario = Convert.ToInt32(ParametrosBD.GetParametro(ParametrosBD.Horario));
         }
 

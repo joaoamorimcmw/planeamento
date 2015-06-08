@@ -62,8 +62,8 @@ namespace Planeamento
         //Inicializa Produtos e Plano
         private static void InicializaProdutos(SqlConnection con)
         {
-            String query = "INSERT INTO " + Util.TabelaProduto + " (NoEnc,NoProd,NoMolde,Liga,[Descricao Liga],PesoPeca,[Peso Gitos],NoMoldes,Local,QtdPendente,CaixasPendente,DataPrevista,Urgente)" +
-            "SELECT A.[Document No_],A.[No_],B.[No_ Molde],B.[Liga Metalica],C.Description,A.[Peso Peça [Kg]]],B.[Peso com Gitos [Kg]]],A.[NumeroMoldes],A.[Local de Producao],A.[Outstanding Quantity],CEILING(A.[Outstanding Quantity]/A.[NumeroMoldes]),A.[Planned Delivery Date],A.[Urgente] " +
+            String query = "INSERT INTO " + Util.TabelaProduto + " (NoEnc,NoProd,NoMolde,Equipamento,Liga,[Descricao Liga],PesoPeca,[Peso Gitos],NoMoldes,Local,QtdPendente,CaixasPendente,DataPrevista,Urgente)" +
+            "SELECT A.[Document No_],A.[No_],B.[No_ Molde],B.[Descricao Equip],B.[Liga Metalica],C.Description,A.[Peso Peça [Kg]]],B.[Peso com Gitos [Kg]]],A.[NumeroMoldes],A.[Local de Producao],A.[Outstanding Quantity],CEILING(A.[Outstanding Quantity]/A.[NumeroMoldes]),A.[Planned Delivery Date],A.[Urgente] " +
             "FROM (select * from Navision.dbo.[CMW$Sales Line] WHERE ([Document No_] LIKE @CodEncomenda) AND ([Outstanding Quantity] > 0) AND ([Posting Group] = @CodProduto) AND ([Planned Delivery Date] >= @Data) AND ([Local de Producao] > 0)) as A " +
             "INNER JOIN Navision.dbo.[CMW$Item] as B " +
             "on A.[No_] = B.[No_] " +
@@ -134,32 +134,44 @@ namespace Planeamento
         }
 
         //Todos os produtos em que o total da carga para liga em encomendas é inferior ao minimo são marcados como excluídos
-        public static void ExcluiProdutosBaixaCarga(Fusao fusao)
+        public static void ExcluiProdutosBaixaCarga()
         {
             String query = "update " + Util.TabelaProduto + " " +
             "set Include = 0 " +
             "output inserted.NoEnc as Enc,inserted.NoProd as Prod " +
             "where Id in " +
             "(select Id " +
-            "from dbo.[PlanCMW$Produtos] Prod " +
-            "inner join " +
-            "(select dbo.GetFabrica(Local) as Fabrica,Liga,sum(PesoPeca * QtdPendente) as PesoTotal " +
-            "from dbo.[PlanCMW$Produtos] " +
-            "group by dbo.GetFabrica(Local),Liga " +
-            "having sum(PesoPeca * QtdPendente) < (CASE WHEN dbo.GetFabrica(Local) = 1 THEN @MinimoCMW1 ELSE @MinimoCMW2 END)) Soma " +
-            "on dbo.GetFabrica(Prod.Local) = Soma.Fabrica and Prod.Liga = Soma.Liga)";
+            "from " + Util.TabelaProduto + " Prod " +
+	        "inner join " +
+		    "(select dbo.GetFabrica(Local) as Fabrica,Liga,sum([Peso Gitos] * CaixasPendente) as PesoTotal " +
+            "from " + Util.TabelaProduto + " " +
+		    "group by dbo.GetFabrica(Local),Liga " +
+            "having sum([Peso Gitos] * CaixasPendente) < (CASE WHEN dbo.GetFabrica(Local) = 1 THEN @MinimoCMW1 ELSE @MinimoCMW2 END) " +
+	        ") Somas " +
+	        "on Prod.Liga = Somas.Liga and dbo.GetFabrica(Prod.Local) = Somas.Fabrica)";
 
             Console.WriteLine("Produtos ignorados por falta de carga");
             
             SqlConnection con = Util.AbreBD();
             SqlCommand command = new SqlCommand(query, con);
-            command.Parameters.AddWithValue("@MinimoCMW1", fusao.FusaoMinima(1));
-            command.Parameters.AddWithValue("@MinimoCMW2", fusao.FusaoMinima(2));
+            command.Parameters.AddWithValue("@MinimoCMW1", ParametrosBD.CalculaMinimoFusao(1));
+            command.Parameters.AddWithValue("@MinimoCMW2", ParametrosBD.CalculaMinimoFusao(2));
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
                 Console.WriteLine ("Encomenda: " + reader["Enc"] + ", Produto: " + reader["Prod"]);
             reader.Close();
             con.Close();
+        }
+
+        //Limpa as linhas existentes na tabela do Plano de Producao
+        public static void LimpaBDPlanoProducao()
+        {
+            String query = "delete from " + Util.TabelaPlano;
+            SqlConnection con = Util.AbreBD();
+            SqlCommand command = new SqlCommand(query, con);
+            int linhas = command.ExecuteNonQuery();
+            con.Close();
+            Console.WriteLine(linhas + " linhas eliminadas da tabela PlanoProducao");
         }
     }
 }
