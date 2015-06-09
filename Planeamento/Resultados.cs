@@ -13,18 +13,12 @@ namespace Planeamento
 {
     public partial class Resultados : Form
     {
-        private static string strMacharia = "Macharia";
-        private static string strMoldacao = "Moldação";
-        private static string strFusao = "Fusão";
-        private static string strRebarbagem = "Rebarbagem";
-
         private static string strCMW1 = "CMW1";
         private static string strCMW2 = "CMW2";
-        private static string strGF = "GF";
-        private static string strIMF = "IMF";
-        private static string strManual = "Manual";
+        private static string strRebarbagem = "Rebarbagem";
 
-        private static string[] diasSemana = { "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira" };
+        private static string strCaixasGF = "Caixas GF";
+        private static string strCaixasIMF = "Caixas IMF";
 
         private bool actualizar;
 
@@ -33,105 +27,81 @@ namespace Planeamento
             actualizar = false;
             InitializeComponent();
 
-            boxFase.Items.Add(strMacharia);
-            boxFase.Items.Add(strMoldacao);
-            boxFase.Items.Add(strFusao);
-            boxFase.Items.Add(strRebarbagem);
-            boxFase.SelectedIndex = 0;
+            boxLocal.Items.Add(strCMW1);
+            boxLocal.Items.Add(strCMW2);
+            //boxLocal.Items.Add(strRebarbagem);
+            boxLocal.SelectedIndex = 0;
 
-            foreach (string dia in diasSemana)
-                boxDia.Items.Add(dia);
-            boxDia.SelectedIndex = 0;
-
-            actualizar = true;
+            FillBoxSemana();
             ActualizaTabela();
+            actualizar = true;
         }
 
         private void ActualizaTabela()
         {
-            String fase = boxFase.SelectedItem.ToString();
+            String local = boxLocal.SelectedItem.ToString();
+            int semana = boxSemana.SelectedIndex + 1;
 
-            if (boxSemana.Items.Count == 0)
+            if (local == strCMW1)
             {
-                MessageBox.Show("Não foi calculado o planeamento para a " + fase);
-                resultadosView.DataSource = new DataTable();
-                return;
+                DataTable resultados = ResultadosBD.GetPlanoCMW1(semana);
+                DataTable ligas = ResultadosBD.LigasCMW1(semana);
+                int caixasGF = ResultadosBD.CaixasGF(semana);
+                int macharia = ResultadosBD.MachariaCMW1(semana);
+                ActualizaEcrã(resultados, ligas, false, strCaixasGF, macharia, caixasGF);
             }
 
-            if (fase == strMacharia)
-                resultadosView.DataSource = ResultadosBD.GetMacharia(boxLocal.SelectedItem.ToString(), Convert.ToInt32(boxSemana.SelectedItem), boxDia.SelectedIndex + 1);
-            if (fase == strMoldacao)
-                resultadosView.DataSource = ResultadosBD.GetMoldacao(boxLocal.SelectedItem.ToString(), Convert.ToInt32(boxSemana.SelectedItem), boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
-            if (fase == strFusao)
-                resultadosView.DataSource = ResultadosBD.GetFusao(boxLocal.SelectedItem.ToString(), Convert.ToInt32(boxSemana.SelectedItem), boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
-            if (fase == strRebarbagem)
-                resultadosView.DataSource = ResultadosBD.GetRebarbagem(Convert.ToInt32(boxSemana.SelectedItem), boxDia.SelectedIndex + 1, boxTurno.SelectedIndex + 1);
-                
+            if (local == strCMW2)
+            {
+                DataTable resultados = ResultadosBD.GetPlanoCMW2(semana);
+                DataTable ligas = ResultadosBD.LigasCMW2(semana);
+                int caixasIMF = ResultadosBD.CaixasIMF(semana);
+                int caixasManual = ResultadosBD.CaixasManual(semana);
+                int macharia = ResultadosBD.MachariaCMW2(semana);
+                ActualizaEcrã(resultados, ligas, true, strCaixasIMF, macharia, caixasIMF, caixasManual);
+            }
+        }
 
+        private void ActualizaEcrã(DataTable resultados, DataTable ligas, bool caixasVisible, string textoCaixas,int tempoMacharia, int caixas1, int caixas2 = 0)
+        {
+            resultadosView.DataSource = resultados;
             foreach (DataGridViewColumn column in resultadosView.Columns)
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            ligasView.DataSource = ligas;
+            foreach (DataGridViewColumn column in ligasView.Columns)
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            lblCaixas2.Visible = caixasVisible;
+            txtCaixas2.Visible = caixasVisible;
+            lblCaixas2dia.Visible = caixasVisible;
+            txtCaixas2dia.Visible = caixasVisible;
+
+            txtMacharia.Text = "" + tempoMacharia;
+            txtMachariaDia.Text = "" + (tempoMacharia / 5);
+
+            lblCaixas1.Text = textoCaixas + ":";
+            txtCaixas1.Text = "" + caixas1;
+            lblCaixas1dia.Text = textoCaixas + " / dia:";
+            txtCaixas1dia.Text = "" + (caixas1 / 5);
+
+            txtCaixas2.Text = "" + caixas2;
+            txtCaixas2dia.Text = "" + (caixas2 / 5);
         }
 
-
-        private void boxFase_SelectedIndexChanged(object sender, EventArgs e)
+        private void FillBoxSemana()
         {
-            String fase = boxFase.SelectedItem.ToString();
-
-            bool stateActualizar = actualizar;
             actualizar = false;
 
-            if (fase == strMacharia)
-                ChangeBoxes(2, ResultadosBD.MaxSemanaMacharia(), 1);
-            else if (fase == strMoldacao)
-                ChangeBoxes(3, ResultadosBD.MaxSemanaMoldacao(), 3);
-            else if (fase == strFusao)
-                ChangeBoxes(2, ResultadosBD.MaxSemanaFusao(), 3);
-            else
-                ChangeBoxes(1, ResultadosBD.MaxSemanaRebarbagem(), 3);
+            int semana;
+            String local = boxLocal.SelectedItem.ToString();
 
-            actualizar = stateActualizar;
-
-            if (actualizar)
-                ActualizaTabela();
-        }
-
-        private void ChangeBoxes(int nLocais, int semanaMax, int nTurnos)
-        {
-            FillBoxLocal(nLocais);
-            FillBoxSemana(semanaMax);
-            FillBoxTurno(nTurnos);
-        }
-
-        private void FillBoxLocal(int nLocais)
-        {
-            boxLocal.Items.Clear();
-
-            if (nLocais == 1)
-            {
-                boxLocal.Enabled = false;
-                return;
-            }
-
-            boxLocal.Enabled = true;
-
-            if (nLocais == 3)
-            {
-                boxLocal.Items.Add(strGF);
-                boxLocal.Items.Add(strIMF);
-                boxLocal.Items.Add(strManual);
-            }
+            if (local == strCMW1)
+                semana = ResultadosBD.MaxSemanaCMW1();
 
             else
-            {
-                boxLocal.Items.Add(strCMW1);
-                boxLocal.Items.Add(strCMW2);
-            }
+                semana = ResultadosBD.MaxSemanaCMW2();
 
-            boxLocal.SelectedIndex = 0;
-        }
-
-        private void FillBoxSemana(int semana)
-        {
             boxSemana.Items.Clear();
             DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
             int semanaActual = dfi.Calendar.GetWeekOfYear(DateTime.Now,dfi.CalendarWeekRule,dfi.FirstDayOfWeek);
@@ -141,27 +111,8 @@ namespace Planeamento
 
             if (boxSemana.Items.Count > 0)
                 boxSemana.SelectedIndex = 0;
-        }
 
-        private void FillBoxTurno(int nTurnos)
-        {
-            boxTurno.Items.Clear();
-            if (nTurnos == 1)
-                boxTurno.Enabled = false;
-            else
-            {
-                boxTurno.Enabled = true;
-                for (int i = 1; i <= nTurnos; i++)
-                    boxTurno.Items.Add(i);
-
-                boxTurno.SelectedIndex = 0;
-            }
-        }
-
-        private void boxLocal_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (actualizar)
-                ActualizaTabela();
+            actualizar = true;
         }
 
         private void boxSemana_SelectedIndexChanged(object sender, EventArgs e)
@@ -170,16 +121,10 @@ namespace Planeamento
                 ActualizaTabela();
         }
 
-        private void boxDia_SelectedIndexChanged(object sender, EventArgs e)
+        private void boxLocal_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (actualizar)
-                ActualizaTabela();
-        }
-
-        private void boxTurno_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (actualizar)
-                ActualizaTabela();
+            FillBoxSemana();
+            ActualizaTabela();              
         }
     }
 }

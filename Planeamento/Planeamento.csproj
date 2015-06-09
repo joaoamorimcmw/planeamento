@@ -53,14 +53,12 @@
       <DependentUpon>Interface.cs</DependentUpon>
     </Compile>
     <Compile Include="Modelo\LigaFusao.cs" />
-    <Compile Include="Modelo\Moldacao.cs" />
     <Compile Include="Modelo\ParametrosBD.cs" />
     <Compile Include="Modelo\ProducaoCMW1.cs" />
     <Compile Include="Modelo\ProducaoCMW2.cs" />
     <Compile Include="Modelo\Rebarbagem.cs" />
     <Compile Include="Modelo\ResultadosBD.cs" />
     <Compile Include="Modelo\Util.cs" />
-    <Compile Include="Modelo\Macharia.cs" />
     <Compile Include="Parametros.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,7 +100,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Script.fsx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

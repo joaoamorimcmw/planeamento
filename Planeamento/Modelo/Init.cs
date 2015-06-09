@@ -12,6 +12,7 @@ namespace Planeamento
     {
         private static string CodEncomenda = "VE1%";
         private static string CodMacho = "M%";
+        private static string CodLiga = "LIG%";
         private static string CodSemMacho = "M002204";
         private static string CodProduto = "PROD.ACABA";
         private static string DataInicio = "01-01-15";
@@ -64,10 +65,10 @@ namespace Planeamento
         {
             String query = "INSERT INTO " + Util.TabelaProduto + " (NoEnc,NoProd,NoMolde,Equipamento,Liga,[Descricao Liga],PesoPeca,[Peso Gitos],NoMoldes,Local,QtdPendente,CaixasPendente,DataPrevista,Urgente)" +
             "SELECT A.[Document No_],A.[No_],B.[No_ Molde],B.[Descricao Equip],B.[Liga Metalica],C.Description,A.[Peso Peça [Kg]]],B.[Peso com Gitos [Kg]]],A.[NumeroMoldes],A.[Local de Producao],A.[Outstanding Quantity],CEILING(A.[Outstanding Quantity]/A.[NumeroMoldes]),A.[Planned Delivery Date],A.[Urgente] " +
-            "FROM (select * from Navision.dbo.[CMW$Sales Line] WHERE ([Document No_] LIKE @CodEncomenda) AND ([Outstanding Quantity] > 0) AND ([Posting Group] = @CodProduto) AND ([Planned Delivery Date] >= @Data) AND ([Local de Producao] > 0)) as A " +
-            "INNER JOIN Navision.dbo.[CMW$Item] as B " +
+            "FROM (select * from " + Util.NavisionSalesLine + " WHERE ([Document No_] LIKE @CodEncomenda) AND ([Outstanding Quantity] > 0) AND ([Posting Group] = @CodProduto) AND ([Planned Delivery Date] >= @Data) AND ([Local de Producao] > 0)) as A " +
+            "INNER JOIN " + Util.NavisionItem + " as B " +
             "on A.[No_] = B.[No_] " +
-            "INNER JOIN (select No_,Description from Navision.dbo.[CMW$Item] where No_ like 'LIG%') as C " +
+            "INNER JOIN (select No_,Description from " + Util.NavisionItem + " where No_ like @CodLiga) as C " +
             "on B.[Liga Metalica] = C.[No_] " +
             "ORDER BY Urgente DESC,[Planned Delivery Date] ASC";
 
@@ -75,6 +76,7 @@ namespace Planeamento
             cmd.CommandType = CommandType.Text;
             cmd.Parameters.AddWithValue("@CodEncomenda", CodEncomenda);
             cmd.Parameters.AddWithValue("@CodProduto", CodProduto);
+            cmd.Parameters.AddWithValue("@CodLiga",CodLiga);
             cmd.Parameters.AddWithValue("@Data", DataInicio);
             int linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas inseridas na tabela Produtos");
@@ -102,9 +104,9 @@ namespace Planeamento
             "inner join " +
             "(select Prd.Id as Id, sum(Prd.NoMoldes * Bom.Quantity * Itm.[Tempo Fabrico Machos] / 60) as TempoCaixa from " +
             "(select Id,NoProd,NoMoldes from " + Util.TabelaProduto + ") as Prd " +
-            "left join (select [Production BOM No_],[No_],Quantity from Navision.dbo.[CMW$Production BOM Line] where No_ like @CodMacho) as Bom " +
+            "left join (select [Production BOM No_],[No_],Quantity from " + Util.NavisionBOMLine + " where No_ like @CodMacho) as Bom " +
             "on Prd.NoProd + '#' = Bom.[Production BOM No_] " +
-            "inner join (select [No_], [Tempo Fabrico Machos] from Navision.dbo.CMW$Item where [No_] like @CodMacho) as Itm " +
+            "inner join (select [No_], [Tempo Fabrico Machos] from " + Util.NavisionItem + " where [No_] like @CodMacho) as Itm " +
             "on isnull(Bom.[No_],@CodSemMacho) = Itm.[No_] " +
             "group by Id) as A " +
             "on Prd.Id = A.Id";

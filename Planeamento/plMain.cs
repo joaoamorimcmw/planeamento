@@ -45,47 +45,10 @@ using System.Windows.Forms;
  *              DataPrevista (date) - Data prevista de entrega
  *              Urgente (bit) - Indica se é urgente
  *              
- * PlanCMW$Ligas
- *          Lista de todas as ligas existentes e das classes
- *          Colunas
- *              Liga (string) - Código da liga
- *              Descrição (string)  - Nome da liga
- *              Codigo Classe - Código da classe da liga
- *              Descricao Classe - Descrição da classe
+ * PlanCMWv2$PlanoProducao
+ *          Guarda o Plano de Produção (Macharia/Moldação/Fusão)
+ *          Colunas:
  *              
- * PlanCMW$Macharia
- *          Plano de fabrico de todos os machos associados aos produtos
- *          Colunas
- *              Id (int) - Id do produto associado
- *              CodMach (string) - Código do macho a produzir
- *              Fabrica (int) - Fábrica onde é feito o macho (1 ou 2)
- *              Semana (int) - Semana onde é produzido o macho
- *              Dia (int) - Dia onde é produzido o macho
- *              Qtd (decimal) - Quantidade de machos produzidos
- *              Tempo (int) - Tempo total de fabrico dos machos (tempo individual * qtd)
- *              Acc (int) - Tempo acumulado de fabrico de machos nesse dia
- *              
- * PlanCMW$Moldacao
- *          Plano de fabrico dos moldes
- *          Colunas
- *              Id (int) - Id do produto associado
- *              Local (int) - Local onde é feito o molde (1 - GF, 2 - IMF, 3 - Manual)
- *              Semana (int) - Semana onde é feito o molde
- *              Dia (int) - Dia onde é feito o molde
- *              Turno (int) - Turno em que é feito o molde
- *              Caixas (int) - Numero de caixas
- *              CaixasAcc (int) - Caixas produzidas acumuladas nesse turno
- *              
- * PlanCMW$Fusao
- *          Plano de fusões
- *          Colunas
- *              Semana (int)
- *              Dia (int)
- *              Turno (int)
- *              Forno (int) - Forno em que a fusão é feita
- *              NoFusao (int) - Qual o número da fusão feita por forno e turno
- *              Liga (string) - Código da liga
- *              PesoTotal (decimal)  - Carga total da fusão
  *              
  * PlanCMW$Rebarbagem
  *          Plano da rebarbagem

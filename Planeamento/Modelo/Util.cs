@@ -13,6 +13,11 @@ namespace Planeamento
         public static string TabelaProduto = "Planeamento.dbo.PlanCMWv2$Produtos";
         public static string TabelaPlano = "Planeamento.dbo.PlanCMWv2$PlanoProducao";
         public static string TabelaParametros = "Planeamento.dbo.PlanCMWv2$Parametros";
+
+        public static string NavisionItem = "Navision.dbo.CMW$Item";
+        public static string NavisionSalesLine = "Navision.dbo.[CMW$Sales Line]";
+        public static string NavisionBOMLine = "Navision.dbo.[CMW$Production BOM Line]";
+
         //Função auxiliar para abrir a ligação à BD de planeamento
         public static SqlConnection AbreBD ()
         {
@@ -61,20 +66,6 @@ namespace Planeamento
                 System.Console.Write(ex);
                 System.Console.WriteLine("Erro na conexão.");
             }
-        }
-
-        //Gera uma query à tabela Sales Line
-        public static String QuerySalesLine(String colunas, int local = 0, String data = "01-01-14")
-        {
-            String strLocal = "> 0";
-            if (local == 1)
-                strLocal = "= 1";
-            if (local == 2)
-                strLocal = "> 1";
-
-            String sql = "SELECT " + colunas + " FROM Planeamento.dbo.[CMW$Sales Line] WHERE ([Outstanding Quantity]>0) AND ([Posting Group]='PROD.ACABA') AND [Planned Delivery Date] >= '" + data + "' AND ([Local de Producao]" + strLocal + ") ORDER BY [Local de Producao] ASC,Urgente DESC,[Planned Delivery Date] ASC";
-
-            return sql;
         }
 
         #region stuff
