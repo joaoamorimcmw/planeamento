@@ -124,7 +124,14 @@ namespace Planeamento
         private void boxLocal_SelectedIndexChanged(object sender, EventArgs e)
         {
             FillBoxSemana();
-            ActualizaTabela();              
+            ActualizaTabela();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            String encomenda = txtEncomenda.Text;
+            if (!String.IsNullOrEmpty(encomenda))
+                viewEncomenda.DataSource = ResultadosBD.GetEncomenda(encomenda);
         }
     }
 }

@@ -215,5 +215,22 @@ namespace Planeamento
             con.Close();
             return table;
         }
+
+        public static DataTable GetEncomenda(string encomenda)
+        {
+            String query = "select Prd.NoProd,Pln.Semana,Pln.Caixas, Pln.Caixas * NoMoldes as Pecas from " +
+            "(select Id,NoProd,NoMoldes from " + Util.TabelaProduto + " where NoEnc = @NoEnc) Prd " +
+            "inner join " + Util.TabelaPlano + " Pln " +
+            "on Prd.Id = Pln.Id";
+
+            DataTable table = new DataTable();
+            SqlConnection con = Util.AbreBD();
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@NoEnc", encomenda.ToUpper());
+
+            table.Load(cmd.ExecuteReader());
+            con.Close();
+            return table;
+        }
     }
 }

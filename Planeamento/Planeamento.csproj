@@ -56,7 +56,6 @@
     <Compile Include="Modelo\ParametrosBD.cs" />
     <Compile Include="Modelo\ProducaoCMW1.cs" />
     <Compile Include="Modelo\ProducaoCMW2.cs" />
-    <Compile Include="Modelo\Rebarbagem.cs" />
     <Compile Include="Modelo\ResultadosBD.cs" />
     <Compile Include="Modelo\Util.cs" />
     <Compile Include="Parametros.cs">
