@@ -17,6 +17,8 @@ namespace Planeamento
         public static string NavisionItem = "Navision.dbo.CMW$Item";
         public static string NavisionSalesLine = "Navision.dbo.[CMW$Sales Line]";
         public static string NavisionBOMLine = "Navision.dbo.[CMW$Production BOM Line]";
+        public static string NavisionRoutingLine = "Navision.dbo.[CMW$Routing Line]";
+        public static string NavisionMachineCenter = "Navision.dbo.[CMW$Machine Center]";
 
         //Função auxiliar para abrir a ligação à BD de planeamento
         public static SqlConnection AbreBD ()

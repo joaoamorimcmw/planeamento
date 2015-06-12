@@ -15,7 +15,6 @@ namespace Planeamento
     {
         private static string strCMW1 = "CMW1";
         private static string strCMW2 = "CMW2";
-        private static string strRebarbagem = "Rebarbagem";
 
         private static string strCaixasGF = "Caixas GF";
         private static string strCaixasIMF = "Caixas IMF";
@@ -29,11 +28,14 @@ namespace Planeamento
 
             boxLocal.Items.Add(strCMW1);
             boxLocal.Items.Add(strCMW2);
-            //boxLocal.Items.Add(strRebarbagem);
             boxLocal.SelectedIndex = 0;
 
-            FillBoxSemana();
+            FillBoxSemanaProducao();
+            FillBoxSemana(boxSemanaRebarbagem, ResultadosBD.MaxSemana());
+
             ActualizaTabela();
+            ActualizaTabelaRebarbagem();
+
             actualizar = true;
         }
 
@@ -48,7 +50,7 @@ namespace Planeamento
                 DataTable ligas = ResultadosBD.LigasCMW1(semana);
                 int caixasGF = ResultadosBD.CaixasGF(semana);
                 int macharia = ResultadosBD.MachariaCMW1(semana);
-                ActualizaEcrã(resultados, ligas, false, strCaixasGF, macharia, caixasGF);
+                ActualizaEcra(resultados, ligas, false, strCaixasGF, macharia, caixasGF);
             }
 
             if (local == strCMW2)
@@ -58,11 +60,11 @@ namespace Planeamento
                 int caixasIMF = ResultadosBD.CaixasIMF(semana);
                 int caixasManual = ResultadosBD.CaixasManual(semana);
                 int macharia = ResultadosBD.MachariaCMW2(semana);
-                ActualizaEcrã(resultados, ligas, true, strCaixasIMF, macharia, caixasIMF, caixasManual);
+                ActualizaEcra(resultados, ligas, true, strCaixasIMF, macharia, caixasIMF, caixasManual);
             }
         }
 
-        private void ActualizaEcrã(DataTable resultados, DataTable ligas, bool caixasVisible, string textoCaixas,int tempoMacharia, int caixas1, int caixas2 = 0)
+        private void ActualizaEcra(DataTable resultados, DataTable ligas, bool caixasVisible, string textoCaixas,int tempoMacharia, int caixas1, int caixas2 = 0)
         {
             resultadosView.DataSource = resultados;
             foreach (DataGridViewColumn column in resultadosView.Columns)
@@ -71,6 +73,9 @@ namespace Planeamento
             ligasView.DataSource = ligas;
             foreach (DataGridViewColumn column in ligasView.Columns)
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            resultadosView.Columns[6].DefaultCellStyle.Format = "n2";
+            ligasView.Columns[1].DefaultCellStyle.Format = "n0";
 
             lblCaixas2.Visible = caixasVisible;
             txtCaixas2.Visible = caixasVisible;
@@ -89,7 +94,18 @@ namespace Planeamento
             txtCaixas2dia.Text = "" + (caixas2 / 5);
         }
 
-        private void FillBoxSemana()
+        private void ActualizaTabelaRebarbagem()
+        {
+            viewRebarbagem.DataSource = ResultadosBD.CargaRebarbagem(boxSemanaRebarbagem.SelectedIndex + 1);
+            foreach (DataGridViewColumn column in viewRebarbagem.Columns)
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+            viewRebarbagem.Columns[2].DefaultCellStyle.Format = "n0";
+            viewRebarbagem.Columns[3].DefaultCellStyle.Format = "n0";
+            viewRebarbagem.Columns[4].DefaultCellStyle.Format = "n1";
+        }
+
+        private void FillBoxSemanaProducao()
         {
             actualizar = false;
 
@@ -102,17 +118,23 @@ namespace Planeamento
             else
                 semana = ResultadosBD.MaxSemanaCMW2();
 
-            boxSemana.Items.Clear();
-            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
-            int semanaActual = dfi.Calendar.GetWeekOfYear(DateTime.Now,dfi.CalendarWeekRule,dfi.FirstDayOfWeek);
-
-            for (int i = 1; i <= semana; i++)
-                boxSemana.Items.Add(i + semanaActual);
-
-            if (boxSemana.Items.Count > 0)
-                boxSemana.SelectedIndex = 0;
+            FillBoxSemana(boxSemana, semana);
 
             actualizar = true;
+        }
+
+        private void FillBoxSemana(ComboBox box, int semana)
+        {
+            box.Items.Clear();
+            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+            int semanaActual = dfi.Calendar.GetWeekOfYear(DateTime.Now, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+
+            for (int i = 1; i <= semana; i++)
+                box.Items.Add(i + semanaActual);
+
+            if (boxSemana.Items.Count > 0)
+                box.SelectedIndex = 0;
+
         }
 
         private void boxSemana_SelectedIndexChanged(object sender, EventArgs e)
@@ -123,7 +145,7 @@ namespace Planeamento
 
         private void boxLocal_SelectedIndexChanged(object sender, EventArgs e)
         {
-            FillBoxSemana();
+            FillBoxSemanaProducao();
             ActualizaTabela();
         }
 
@@ -131,7 +153,30 @@ namespace Planeamento
         {
             String encomenda = txtEncomenda.Text;
             if (!String.IsNullOrEmpty(encomenda))
+            {
                 viewEncomenda.DataSource = ResultadosBD.GetEncomenda(encomenda);
+                foreach (DataGridViewColumn column in viewEncomenda.Columns)
+                    column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+
+                viewEncomenda.Columns[5].DefaultCellStyle.Format = "n2";
+            }
+                
+        }
+
+        private void boxSemanaRebarbagem_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (actualizar)
+                ActualizaTabelaRebarbagem();
+        }
+
+        private void txtEncomenda_Enter(object sender, EventArgs e)
+        {
+            ActiveForm.AcceptButton = button1;
+        }
+
+        private void txtEncomenda_Leave(object sender, EventArgs e)
+        {
+            ActiveForm.AcceptButton = null;
         }
     }
 }

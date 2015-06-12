@@ -6,18 +6,6 @@ using System.Windows.Forms;
 
 /************************** Planeamento CMW *************************
  * 
- * ** Regras actuais **
- * 
- * Planeamento é feito à semana. 
- * 
- * ** Fases **
- * 
- * Init     Lê a Sales Line do Navision e preenche a tabela Produtos na BD do Planeamento
- *          Exclui (muda uma flag na tabela) os produtos de ligas com pouca carga
- *          Actualiza informação das ligas (tabela ligas)
- * Macharia
- * Moldacao
- * Fusao
  * 
  * ** Tabelas da BD Planeamento **
  * 
@@ -48,8 +36,16 @@ using System.Windows.Forms;
  * PlanCMWv2$PlanoProducao
  *          Guarda o Plano de Produção (Macharia/Moldação/Fusão)
  *          Colunas:
- *              
- *              
+ *              Local (int) - Local onde é produzido (1 - GF, 2 - IMF, 3 - Manual)
+ *              Semana (int) - Semana de produção (começa a contar em 1)
+ *              Id (int) - Id do produto na tabela Produtos
+ *              Caixas (int) - Número de caixas a produzir
+ * 
+ * PlanCMWv2$Parametros
+ *          Guarda os parâmetros da produção. Ex: turnos, capacidade fornos, capacidade caixas, etc.
+ *          Colunas:
+ *              Parametro (string) - Nome do parametro
+ *              Valor (decimal) - Valor do parametro
  * 
  * ** Ordem do planeamento **
  * 
@@ -59,26 +55,6 @@ using System.Windows.Forms;
  *      Init.ExcluiProdutosBaixaCarga(); //Calcula quais os produtos em que a liga não tem peso total suficiente para uma fusao, e exclui do planeamento
  *      Init.InicializaLigas(); //Actualiza a tabela Ligas com base no Navision
  *
- *      Macharia macharia = new Macharia();
- *      macharia.LimpaBDMacharia(); //Limpa a tabela Macharia na BD do planeamento
- *      macharia.Executa(1); //Faz o plano de Macharia da CMW1 e guarda o resultado na BD
- *      macharia.Executa(2); //Faz o plano de Macharia da CMW2 e guarda o resultado na BD
- *      macharia.LimpaTabelas(); //Limpa as DataTables intermédias
- *
- *      Moldacao moldacao = new Moldacao();
- *      moldacao.LimpaBDMoldacao(); //Limpa a tabela Moldação na BD do planeamento
- *      moldacao.Executa(1); //Faz o plano de Moldação da GF e guarda o resultado na BD
- *      moldacao.Executa(2); //Faz o plano de Moldação da GF e guarda o resultado na BD
- *      moldacao.Executa(3); //Faz o plano de Moldação da GF e guarda o resultado na BD
- *      moldacao.LimpaTabelas(); //Limpa as DataTables intermédias
- *
- *      Fusao fusao = new Fusao();
- *      fusao.LimpaBDFusao(); //Limpa a tabela Fusão na BD do planeamento
- *      fusao.Executa(1); //Faz o plano de Fusão da CMW1
- *      fusao.Executa(2); //Faz o plano de Fusão da CMW2
- *      fusao.EscreveBD(); //Guarda o plano de Fusão na BD
- *      fusao.ListaProdutosEmFalta(); //Lista os produtos que não têm fusão planeada por falta de carga
- *      fusao.LimpaTabelas(); //Limpa as DataTables intermédias
 */
 
 namespace Planeamento

@@ -30,7 +30,6 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtMachariaDia = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.txtMacharia = new System.Windows.Forms.TextBox();
@@ -51,18 +50,21 @@
             this.resultadosView = new System.Windows.Forms.DataGridView();
             this.boxSemana = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.label3 = new System.Windows.Forms.Label();
-            this.txtEncomenda = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.viewEncomenda = new System.Windows.Forms.DataGridView();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.viewRebarbagem = new System.Windows.Forms.DataGridView();
+            this.boxSemanaRebarbagem = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.viewEncomenda = new System.Windows.Forms.DataGridView();
+            this.button1 = new System.Windows.Forms.Button();
+            this.txtEncomenda = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ligasView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.resultadosView)).BeginInit();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.viewRebarbagem)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewEncomenda)).BeginInit();
             this.SuspendLayout();
@@ -107,18 +109,6 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Produção Semanal";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.comboBox1);
-            this.tabPage2.Controls.Add(this.label4);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(934, 444);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Carga Rebarbagem";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // txtMachariaDia
             // 
@@ -167,9 +157,9 @@
             this.lblCaixas2dia.AutoSize = true;
             this.lblCaixas2dia.Location = new System.Drawing.Point(722, 407);
             this.lblCaixas2dia.Name = "lblCaixas2dia";
-            this.lblCaixas2dia.Size = new System.Drawing.Size(79, 13);
+            this.lblCaixas2dia.Size = new System.Drawing.Size(104, 13);
             this.lblCaixas2dia.TabIndex = 40;
-            this.lblCaixas2dia.Text = "Caixas Manual:";
+            this.lblCaixas2dia.Text = "Caixas Manual / dia:";
             // 
             // txtCaixas1dia
             // 
@@ -302,6 +292,49 @@
             this.label2.TabIndex = 26;
             this.label2.Text = "Semana:";
             // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.viewRebarbagem);
+            this.tabPage2.Controls.Add(this.boxSemanaRebarbagem);
+            this.tabPage2.Controls.Add(this.label4);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(934, 444);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Carga Rebarbagem";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // viewRebarbagem
+            // 
+            this.viewRebarbagem.AllowUserToAddRows = false;
+            this.viewRebarbagem.AllowUserToDeleteRows = false;
+            this.viewRebarbagem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.viewRebarbagem.Location = new System.Drawing.Point(19, 47);
+            this.viewRebarbagem.Name = "viewRebarbagem";
+            this.viewRebarbagem.RowHeadersVisible = false;
+            this.viewRebarbagem.Size = new System.Drawing.Size(896, 381);
+            this.viewRebarbagem.TabIndex = 30;
+            // 
+            // boxSemanaRebarbagem
+            // 
+            this.boxSemanaRebarbagem.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.boxSemanaRebarbagem.FormattingEnabled = true;
+            this.boxSemanaRebarbagem.Location = new System.Drawing.Point(71, 15);
+            this.boxSemanaRebarbagem.Name = "boxSemanaRebarbagem";
+            this.boxSemanaRebarbagem.Size = new System.Drawing.Size(62, 21);
+            this.boxSemanaRebarbagem.TabIndex = 29;
+            this.boxSemanaRebarbagem.SelectedIndexChanged += new System.EventHandler(this.boxSemanaRebarbagem_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(16, 18);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(49, 13);
+            this.label4.TabIndex = 28;
+            this.label4.Text = "Semana:";
+            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.viewEncomenda);
@@ -316,21 +349,16 @@
             this.tabPage3.Text = "Pesquisar Encomenda";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // label3
+            // viewEncomenda
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 18);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(82, 13);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "Nº Encomenda:";
-            // 
-            // txtEncomenda
-            // 
-            this.txtEncomenda.Location = new System.Drawing.Point(104, 15);
-            this.txtEncomenda.Name = "txtEncomenda";
-            this.txtEncomenda.Size = new System.Drawing.Size(148, 20);
-            this.txtEncomenda.TabIndex = 1;
+            this.viewEncomenda.AllowUserToAddRows = false;
+            this.viewEncomenda.AllowUserToDeleteRows = false;
+            this.viewEncomenda.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.viewEncomenda.Location = new System.Drawing.Point(19, 47);
+            this.viewEncomenda.Name = "viewEncomenda";
+            this.viewEncomenda.RowHeadersVisible = false;
+            this.viewEncomenda.Size = new System.Drawing.Size(896, 381);
+            this.viewEncomenda.TabIndex = 3;
             // 
             // button1
             // 
@@ -342,34 +370,23 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // viewEncomenda
+            // txtEncomenda
             // 
-            this.viewEncomenda.AllowUserToAddRows = false;
-            this.viewEncomenda.AllowUserToDeleteRows = false;
-            this.viewEncomenda.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.viewEncomenda.Location = new System.Drawing.Point(19, 47);
-            this.viewEncomenda.Name = "viewEncomenda";
-            this.viewEncomenda.RowHeadersVisible = false;
-            this.viewEncomenda.Size = new System.Drawing.Size(451, 381);
-            this.viewEncomenda.TabIndex = 3;
+            this.txtEncomenda.Location = new System.Drawing.Point(104, 15);
+            this.txtEncomenda.Name = "txtEncomenda";
+            this.txtEncomenda.Size = new System.Drawing.Size(148, 20);
+            this.txtEncomenda.TabIndex = 1;
+            this.txtEncomenda.Enter += new System.EventHandler(this.txtEncomenda_Enter);
+            this.txtEncomenda.Leave += new System.EventHandler(this.txtEncomenda_Leave);
             // 
-            // comboBox1
+            // label3
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(74, 11);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(62, 21);
-            this.comboBox1.TabIndex = 29;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(19, 14);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(49, 13);
-            this.label4.TabIndex = 28;
-            this.label4.Text = "Semana:";
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(16, 18);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(82, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Nº Encomenda:";
             // 
             // Resultados
             // 
@@ -386,10 +403,11 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ligasView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.resultadosView)).EndInit();
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.viewRebarbagem)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.viewEncomenda)).EndInit();
@@ -427,8 +445,9 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox txtEncomenda;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox boxSemanaRebarbagem;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView viewRebarbagem;
 
     }
 }

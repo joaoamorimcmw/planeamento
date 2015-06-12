@@ -23,7 +23,7 @@ namespace Planeamento
 
         public static DataTable GetPlanoCMW1(int semana)
         {
-            String query = "select Prd.NoEnc as Encomenda,Prd.DataPrevista as [Data Prevista],Prd.NoProd as Produto,Prd.NoMolde as Molde,Prd.[Descricao Liga] as Liga,Plano.Caixas,convert(int,Plano.Caixas * Prd.[Peso Gitos]) as [Peso Total (kg)], Plano.Caixas * Prd.TempoMachos as [Macharia (min)] from " +
+            String query = "select Prd.NoEnc as Encomenda,Prd.DataPrevista as [Data Prevista],Prd.NoProd as Produto,Prd.NoMolde as Molde,Prd.[Descricao Liga] as Liga,Plano.Caixas,Plano.Caixas * Prd.[Peso Gitos] as [Peso Total (kg)], Plano.Caixas * Prd.TempoMachos as [Macharia (min)] from " +
             "(select Id,Caixas from " + Util.TabelaPlano + " where Local = @Local and Semana = @Semana) Plano " +
             "inner join " + Util.TabelaProduto + " Prd " +
             "on Plano.Id = Prd.Id";
@@ -41,7 +41,7 @@ namespace Planeamento
 
         public static DataTable LigasCMW1(int semana)
         {
-            String query = "select Prd.[Descricao Liga] as Liga, sum(convert(int,Plano.Caixas * Prd.[Peso Gitos])) as [Peso Total (kg)] from " +
+            String query = "select Prd.[Descricao Liga] as Liga, sum(Plano.Caixas * Prd.[Peso Gitos]) as [Peso Total (kg)] from " +
             "(select Id,Caixas from " + Util.TabelaPlano + " where Local = @Local and Semana = @Semana) Plano " +
             "inner join " + Util.TabelaProduto + " Prd " +
             "on Plano.Id = Prd.Id " +
@@ -103,7 +103,7 @@ namespace Planeamento
 
         public static DataTable GetPlanoCMW2(int semana)
         {
-            String query = "select Prd.NoEnc as Encomenda,Prd.DataPrevista as [Data Prevista],Prd.NoProd as Produto,Prd.NoMolde as Molde,Prd.[Descricao Liga] as Liga,Plano.Caixas,convert(int,Plano.Caixas * Prd.[Peso Gitos]) as [Peso Total (kg)], Plano.Caixas * Prd.TempoMachos as [Macharia (min)] from " +
+            String query = "select Prd.NoEnc as Encomenda,Prd.DataPrevista as [Data Prevista],Prd.NoProd as Produto,Prd.NoMolde as Molde,Prd.[Descricao Liga] as Liga,Plano.Caixas,Plano.Caixas * Prd.[Peso Gitos] as [Peso Total (kg)], Plano.Caixas * Prd.TempoMachos as [Macharia (min)] from " +
             "(select Id,Caixas from " + Util.TabelaPlano + " where Local > @Local and Semana = @Semana) Plano " +
             "inner join " + Util.TabelaProduto + " Prd " +
             "on Plano.Id = Prd.Id";
@@ -121,7 +121,7 @@ namespace Planeamento
 
         public static DataTable LigasCMW2(int semana)
         {
-            String query = "select Prd.[Descricao Liga] as Liga, sum(convert(int,Plano.Caixas * Prd.[Peso Gitos])) as [Peso Total (kg)] from " +
+            String query = "select Prd.[Descricao Liga] as Liga, sum(Plano.Caixas * Prd.[Peso Gitos]) as [Peso Total (kg)] from " +
             "(select Id,Caixas from " + Util.TabelaPlano + " where Local > @Local and Semana = @Semana) Plano " +
             "inner join " + Util.TabelaProduto + " Prd " +
             "on Plano.Id = Prd.Id " +
@@ -218,15 +218,54 @@ namespace Planeamento
 
         public static DataTable GetEncomenda(string encomenda)
         {
-            String query = "select Prd.NoProd,Pln.Semana,Pln.Caixas, Pln.Caixas * NoMoldes as Pecas from " +
-            "(select Id,NoProd,NoMoldes from " + Util.TabelaProduto + " where NoEnc = @NoEnc) Prd " +
+            String query = "select Prd.NoProd,Pln.Semana,dbo.NomeLocal(Prd.Local) as Local,Pln.Caixas, Pln.Caixas * NoMoldes as Pecas, Pln.Caixas * NoMoldes * PesoPeca  as [Peso Total (kg)] from " +
+            "(select * from " + Util.TabelaProduto + " where NoEnc = @NoEnc) Prd " +
             "inner join " + Util.TabelaPlano + " Pln " +
-            "on Prd.Id = Pln.Id";
+            "on Prd.Id = Pln.Id " +
+            "order by Semana";
 
             DataTable table = new DataTable();
             SqlConnection con = Util.AbreBD();
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@NoEnc", encomenda.ToUpper());
+
+            table.Load(cmd.ExecuteReader());
+            con.Close();
+            return table;
+        }
+
+        public static int MaxSemana()
+        {
+            String query = "select isnull(max(Semana),0) from " + Util.TabelaPlano;
+            SqlConnection con = Util.AbreBD();
+            SqlCommand cmd = new SqlCommand(query, con);
+            int max = (int)cmd.ExecuteScalar();
+            con.Close();
+
+            return max;
+        }
+
+        public static DataTable CargaRebarbagem(int semana)
+        {
+            String query = "select Rout.No_ as [Código],Mac.Name as [Máquina],sum(Prd.NoMoldes * Pln.Caixas) as [Total Peças],sum(Prd.NoMoldes * Pln.Caixas * Rout.[Run Time]) as [Tempo Total (min)], sum(Prd.NoMoldes * Pln.Caixas * Prd.[PesoPeca]) as [Peso Total (kg)] from " +
+            Util.TabelaProduto + " Prd " +
+            "inner join " +
+            "(select * from " + Util.TabelaPlano + " where Semana = @Semana) Pln " +
+            "on Prd.Id = Pln.Id " +
+            "inner join " +
+            Util.NavisionRoutingLine + " Rout " +
+            "on Prd.NoProd = Rout.[Routing No_] " +
+            "inner join " +
+            Util.NavisionMachineCenter + " Mac " +
+            "on Rout.No_ = Mac.No_ " +
+            "group by Rout.No_,Mac.Name " +
+            "having sum(Prd.NoMoldes * Pln.Caixas * Rout.[Run Time]) > 0 " +
+            "order by dbo.OrdenaMaquinas(Rout.No_ )";
+
+            DataTable table = new DataTable();
+            SqlConnection con = Util.AbreBD();
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Semana", semana);
 
             table.Load(cmd.ExecuteReader());
             con.Close();
