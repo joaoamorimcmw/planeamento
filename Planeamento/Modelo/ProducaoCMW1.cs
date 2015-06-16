@@ -10,8 +10,8 @@ namespace Planeamento
 {
     public class ProducaoCMW1
     {
-        private DataTable Produtos;
         private DataTable Plano;
+        private List<GrupoFusao> Grupos;
 
         private readonly int CapacidadeMacharia;
         private readonly int CapacidadeCaixas;
@@ -22,15 +22,10 @@ namespace Planeamento
         private readonly decimal CapacidadeForno3;
         private readonly decimal CapacidadeForno4;
 
+        private readonly decimal CapacidadeKgsSemanal;
+
         public ProducaoCMW1()
         {
-            Produtos = new DataTable();
-            Produtos.Columns.Add(new DataColumn("Id", typeof(int)));
-            Produtos.Columns.Add(new DataColumn("Liga", typeof(string)));
-            Produtos.Columns.Add(new DataColumn("PesoGitos", typeof(decimal)));
-            Produtos.Columns.Add(new DataColumn("TempoMachos", typeof(decimal)));
-            Produtos.Columns.Add(new DataColumn("Caixas", typeof(int)));
-
             Plano = new DataTable();
             Plano.Columns.Add(new DataColumn("Local", typeof(int)));
             Plano.Columns.Add(new DataColumn("Semana", typeof(int)));
@@ -48,76 +43,136 @@ namespace Planeamento
             CapacidadeForno2 = (decimal)ParametrosBD.GetParametro(ParametrosBD.Forno2CMW1);
             CapacidadeForno3 = (decimal)ParametrosBD.GetParametro(ParametrosBD.Forno3CMW1);
             CapacidadeForno4 = (decimal)ParametrosBD.GetParametro(ParametrosBD.Forno4CMW1);
+
+            CapacidadeKgsSemanal = CapacidadeFusoes * (CapacidadeForno1 + CapacidadeForno2 + CapacidadeForno3 + CapacidadeForno4) / 4;
         }
 
-        public void LeituraProdutos()
+
+        public void ExecutaPlaneamento()
         {
-            String query = "select Id,Liga,[Peso Gitos] as Gitos,TempoMachos,CaixasPendente from " + Util.TabelaProduto + " where Local = 1";
+            CalculaGrupos();
+
+            //foreach (GrupoFusao grupo in Grupos)
+            //    Console.WriteLine(grupo.Liga +" ( " + grupo.IdMaisPequeno + "): " + grupo.Peso + "kg // " + grupo.TempoMacharia + " min // " + grupo.Caixas + " caixas");
+
+            int semana = 1;
+            while (Grupos.Count > 0)
+            {
+                PlaneamentoSemana(semana);
+                semana++;
+            }
+        }
+
+        private void PlaneamentoSemana(int semana)
+        {
+            decimal pesoAcumulado = 0;
+            for (int i = Grupos.Count - 1; i >= 0; i--)
+            {
+                if (pesoAcumulado + Grupos[i].Peso < CapacidadeKgsSemanal)
+                {
+                    pesoAcumulado += Grupos[i].Peso;
+                    AdicionaGrupo(Grupos[i], semana);
+                    Grupos.RemoveAt(i);
+                }
+            }
+        }
+
+        private void AdicionaGrupo(GrupoFusao grupo, int semana)
+        {
+            foreach (LinhaProducao linha in grupo.Lista)
+            {
+                DataRow planoRow = Plano.NewRow();
+
+                planoRow["Id"] = linha.Id;
+                planoRow["Caixas"] = linha.Caixas;
+                planoRow["Local"] = 1;
+                planoRow["Semana"] = semana;
+
+                Plano.Rows.Add(planoRow);
+            }
+        }
+
+        #region DivisaoEmGrupos
+
+        private void CalculaGrupos()
+        {
+            Grupos = new List<GrupoFusao>();
+
+            String query = "select Liga,sum(CaixasPendente*[Peso Gitos])as Peso from " + Util.TabelaProduto + " where Local = 1 and Include = 1 group by Liga";
             SqlConnection con = Util.AbreBD();
             SqlCommand command = new SqlCommand(query, con);
             SqlDataReader reader = command.ExecuteReader();
 
             while (reader.Read())
             {
-                DataRow row = Produtos.NewRow();
-
-                row["Id"] = Convert.ToInt32(reader["Id"]);
-                row["Liga"] = (string)reader["Liga"];
-                row["PesoGitos"] = (decimal)reader["Gitos"];
-                row["TempoMachos"] = Convert.ToInt32(reader["TempoMachos"]);
-                row["Caixas"] = Convert.ToInt32(reader["CaixasPendente"]);
-
-                Produtos.Rows.Add(row);
+                string liga = reader["Liga"].ToString();
+                decimal peso = (decimal)reader["Peso"];
+                DivideEmGrupos(liga, peso);
             }
+
+            reader.Close();
+            con.Close();
+
+            Grupos = Grupos.OrderByDescending(grupo => grupo.IdMaisPequeno).ToList(); 
+        }
+
+        private void DivideEmGrupos(string liga, decimal peso)
+        {
+            decimal pesoGrupo;
+
+            if (peso < 2 * ParametrosBD.CalculaMinimoFusao(1))
+                pesoGrupo = peso;
+
+            else if (peso < 2 * ParametrosBD.MenorForno(1))
+                pesoGrupo = peso / 2;
+
+            else
+            {
+                int nGrupos = (int)Math.Ceiling(peso / ParametrosBD.MaiorForno(1));
+                pesoGrupo = peso / nGrupos;
+            }
+
+            decimal pesoAcumulado = 0;
+            GrupoFusao grupo = new GrupoFusao(liga);
+
+            String query = "select Id,[Peso Gitos] as Gitos,TempoMachos,CaixasPendente from " + Util.TabelaProduto + " where Local = 1 and Include = 1 and Liga = @Liga order by Id";
+            SqlConnection con = Util.AbreBD();
+            SqlCommand command = new SqlCommand(query, con);
+            command.Parameters.AddWithValue("@Liga", liga);
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                int id = Convert.ToInt32(reader["Id"]);
+                decimal pesoGitos = (decimal)reader["Gitos"];
+                int tempoMachos = Convert.ToInt32(reader["TempoMachos"]);
+                int caixas = Convert.ToInt32(reader["CaixasPendente"]);
+
+                while (pesoAcumulado + caixas * pesoGitos > pesoGrupo)
+                {
+                    int caixasJuntar = (int) Math.Ceiling ((pesoGrupo - pesoAcumulado) / pesoGitos);
+                    grupo.AddLinha(id, pesoGitos, tempoMachos, caixasJuntar);
+                    Grupos.Add(grupo.Clone());
+                    caixas -= caixasJuntar;
+                    pesoAcumulado = 0;
+                    grupo = new GrupoFusao(liga);
+                }
+
+                if (caixas > 0)
+                {
+                    grupo.AddLinha(id, pesoGitos, tempoMachos, caixas);
+                    pesoAcumulado += caixas * pesoGitos;
+                }
+            }
+
+            if (grupo.Peso > 0)
+                Grupos.Add(grupo);
 
             reader.Close();
             con.Close();
         }
 
-        public void ExecutaPlaneamento()
-        {
-            int semana = 1;
-            int caixasAcc = 0;
-            int index = 0;
-
-            while (index < Produtos.Rows.Count)
-            {
-                int caixasLinha = Convert.ToInt32(Produtos.Rows[index]["Caixas"]);
-                int id = Convert.ToInt32(Produtos.Rows[index]["Id"]);
-
-                if (caixasAcc + caixasLinha < CapacidadeCaixas)
-                {
-                    InsereLinha(id, caixasLinha, semana);
-                    caixasAcc += caixasLinha;
-                    index++;
-                }
-
-                else
-                {
-                    if (caixasAcc < CapacidadeCaixas)
-                    {
-                        int caixasLivres = CapacidadeCaixas - caixasAcc;
-                        InsereLinha(id, caixasLivres, semana);
-                        Produtos.Rows[index]["Caixas"] = caixasLinha - caixasLivres;
-                    }
-
-                    semana++;
-                    caixasAcc = 0;
-                }
-            }
-        }
-
-        private void InsereLinha(int id, int caixas, int semana)
-        {
-            DataRow planoRow = Plano.NewRow();
-
-            planoRow["Id"] = id;
-            planoRow["Caixas"] = caixas;
-            planoRow["Local"] = 1;
-            planoRow["Semana"] = semana;
-
-            Plano.Rows.Add(planoRow);
-        }
+        #endregion
 
         public void EscritaBD()
         {
@@ -146,7 +201,6 @@ namespace Planeamento
             Console.WriteLine("CMW1: " + linhas + " linhas inseridas na tabela PlanoProducao");
 
             Plano.Clear();
-            Produtos.Clear();
         }
 
     }

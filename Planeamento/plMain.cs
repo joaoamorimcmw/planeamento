@@ -64,6 +64,7 @@ namespace Planeamento
         [STAThread]
         static void Main()
         {
+
             ParametrosBD.ParametrosDefault(); //Preenche a tabela de parametros na BD caso esteja vazia
 
             Application.EnableVisualStyles();

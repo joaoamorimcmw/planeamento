@@ -139,5 +139,53 @@ namespace Planeamento
             decimal [] caps = {forno1,forno2,forno3,forno4};
             return caps.Min() * minimo;
         }
+
+        public static decimal MenorForno(int Fabrica)
+        {
+            decimal forno1, forno2, forno3, forno4;
+
+            if (Fabrica == 1)
+            {
+                forno1 = (decimal)GetParametro(Forno1CMW1);
+                forno2 = (decimal)GetParametro(Forno2CMW1);
+                forno3 = (decimal)GetParametro(Forno3CMW1);
+                forno4 = (decimal)GetParametro(Forno4CMW1);
+            }
+
+            else
+            {
+                forno1 = (decimal)GetParametro(Forno1CMW2);
+                forno2 = (decimal)GetParametro(Forno2CMW2);
+                forno3 = (decimal)GetParametro(Forno3CMW2);
+                forno4 = (decimal)GetParametro(Forno4CMW2);
+            }
+
+            decimal[] caps = { forno1, forno2, forno3, forno4 };
+            return caps.Min();
+        }
+
+        public static decimal MaiorForno(int Fabrica)
+        {
+            decimal forno1, forno2, forno3, forno4;
+
+            if (Fabrica == 1)
+            {
+                forno1 = (decimal)GetParametro(Forno1CMW1);
+                forno2 = (decimal)GetParametro(Forno2CMW1);
+                forno3 = (decimal)GetParametro(Forno3CMW1);
+                forno4 = (decimal)GetParametro(Forno4CMW1);
+            }
+
+            else
+            {
+                forno1 = (decimal)GetParametro(Forno1CMW2);
+                forno2 = (decimal)GetParametro(Forno2CMW2);
+                forno3 = (decimal)GetParametro(Forno3CMW2);
+                forno4 = (decimal)GetParametro(Forno4CMW2);
+            }
+
+            decimal[] caps = { forno1, forno2, forno3, forno4 };
+            return caps.Max();
+        }
     }
 }

@@ -56,7 +56,7 @@ namespace Planeamento
 
         public void LeituraProdutos()
         {
-            String query = "select Id,Equipamento,Liga,[Peso Gitos] as Gitos,TempoMachos,CaixasPendente,Local from " + Util.TabelaProduto + " where Local > 1";
+            String query = "select Id,Equipamento,Liga,[Peso Gitos] as Gitos,TempoMachos,CaixasPendente,Local from " + Util.TabelaProduto + " where Local > 1 and Include = 1";
             SqlConnection con = Util.AbreBD();
             SqlCommand command = new SqlCommand(query, con);
             SqlDataReader reader = command.ExecuteReader();

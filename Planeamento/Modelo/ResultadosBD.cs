@@ -150,7 +150,7 @@ namespace Planeamento
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@Semana", semana);
             cmd.Parameters.AddWithValue("@Local", 1);
-            int caixas = (int)cmd.ExecuteScalar();
+            int caixas = (int) cmd.ExecuteScalar();
             con.Close();
 
             return caixas;
