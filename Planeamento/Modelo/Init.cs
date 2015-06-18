@@ -6,16 +6,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ * Nesta classe tem os métodos para popular a Base de Dados do Planeamento com base no Navision
+ * Calcula o tempo total de machos, peso c/ gitos, produtos sem carga, etc. 
+ * 
+ * */
+
 namespace Planeamento
 {
     public class Init
     {
-        private static string CodEncomenda = "VE1%";
-        private static string CodMacho = "M%";
-        private static string CodLiga = "LIG%";
-        private static string CodSemMacho = "M002204";
-        private static string CodProduto = "PROD.ACABA";
-        private static string DataInicio = "01-01-15";
+        private static string CodEncomenda = "VE1%"; //Código para procurar as encomendas na Sales Line
+        private static string CodMacho = "M%"; //Código para procurar machos nas listas de materiais
+        private static string CodLiga = "LIG%"; //Código para procurar ligas na tabela Item
+        private static string CodSemMacho = "M002204"; //Código de produto sem macho na lista de materiais
+        private static string CodProduto = "PROD.ACABA"; //Código de tipo de produto associado a produtos acabados
+        private static string DataInicio = "01-01-15"; //Apenas são consideradas encomendas feitas depois desta data (evita ter em conta encomendas antigas que ainda estão abertas no Navision)
 
         //Carrega a tabela Produtos da BD do Planeamento para um DataTable
         public static DataTable GetProdutos()
@@ -31,7 +37,14 @@ namespace Planeamento
             return table;
         }
 
-        //Faz o reset da tabela dos produtos com base nas encomendas abertas do Navision
+        /* Faz o reset da tabela dos produtos com base nas encomendas abertas do Navision
+         * A ordem é:
+         * 1 - Limpar todas as linhas da tabela de Produtos
+         * 2 - Fazer um reseed da coluna do Id (para começar a 1)
+         * 3 - Ler os produtos nas encomendas em aberto e popular a tabela de produtos
+         * 4 - Calcular o peso com gitos para os produtos que não têm já calculado no Navision
+         * 5 - Calcular o tempo total de macharia para cada caixa de produto
+         * */
         public static void UpdateProdutos()
         {
             SqlConnection con = Util.AbreBD();
@@ -46,7 +59,8 @@ namespace Planeamento
         //Limpa a tabela de Produtos
         private static void LimpaProdutos(SqlConnection con)
         {
-            SqlCommand cmd = new SqlCommand("DELETE " + Util.TabelaProduto, con);
+            String query = "DELETE " + Util.TabelaProduto;
+            SqlCommand cmd = new SqlCommand(query, con);
             cmd.CommandType = CommandType.Text;
             int linhas = cmd.ExecuteNonQuery();
             Console.WriteLine(linhas + " linhas removidas da tabela Produtos");
@@ -55,12 +69,15 @@ namespace Planeamento
         //Reinicia o ID da tabela Produtos
         private static void ReseedProdutos(SqlConnection con)
         {
-            SqlCommand cmd = new SqlCommand("DBCC CHECKIDENT ('" + Util.TabelaProduto + "', RESEED, 0)", con);
+            String query = "DBCC CHECKIDENT ('" + Util.TabelaProduto + "', RESEED, 0)";
+            SqlCommand cmd = new SqlCommand(query, con);
             cmd.CommandType = CommandType.Text;
             cmd.ExecuteNonQuery();
         }
 
         //Inicializa Produtos e Plano
+        //Procura na Sales Line encomendas em aberto (outstanding quantity > 0), com código do tipo 'VE1*', com produtos do tipo produto acabado, e com data planeada acima da DataInicio
+        //O numero de caixas pendentes é calculado dividindo o numero de peças pendentes pelo numero de moldes e arredondando para cima.
         private static void InicializaProdutos(SqlConnection con)
         {
             String query = "INSERT INTO " + Util.TabelaProduto + " (NoEnc,NoProd,NoMolde,Equipamento,Liga,[Descricao Liga],PesoPeca,[Peso Gitos],NoMoldes,Local,QtdPendente,CaixasPendente,DataPrevista,Urgente)" +
@@ -95,10 +112,12 @@ namespace Planeamento
             command.ExecuteNonQuery();
         }
 
+        //Calcula o tempo de macharia para todos os produtos (por caixa)
+
         private static void CalculaTempoMachos(SqlConnection con)
         {
             String query = "update " + Util.TabelaProduto + " " +
-            "set TempoMachos = ceiling(A.TempoCaixa) " +
+            "set TempoMachos = ceiling(isnull(A.TempoCaixa,0)) " +
             "from " +
             Util.TabelaProduto + " as Prd " +
             "inner join " +

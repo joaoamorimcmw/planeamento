@@ -47,13 +47,6 @@ using System.Windows.Forms;
  *              Parametro (string) - Nome do parametro
  *              Valor (decimal) - Valor do parametro
  * 
- * ** Ordem do planeamento **
- * 
- * Este é o flow completo de todo o processo (agora este código está na Interface associada ao botão Iniciar)
- *           
- *      Init.UpdateProdutos(); //Vai à tabela SalesLine do Navision buscar as encomendas abertas, e preenche a tabela Produtos na BD do planeamento
- *      Init.ExcluiProdutosBaixaCarga(); //Calcula quais os produtos em que a liga não tem peso total suficiente para uma fusao, e exclui do planeamento
- *      Init.InicializaLigas(); //Actualiza a tabela Ligas com base no Navision
  *
 */
 
@@ -64,9 +57,6 @@ namespace Planeamento
         [STAThread]
         static void Main()
         {
-
-            ParametrosBD.ParametrosDefault(); //Preenche a tabela de parametros na BD caso esteja vazia
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Interface());

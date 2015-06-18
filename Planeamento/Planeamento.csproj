@@ -46,14 +46,12 @@
   <ItemGroup>
     <Compile Include="Modelo\GrupoFusao.cs" />
     <Compile Include="Modelo\Init.cs" />
-    <Compile Include="Modelo\Fusao.cs" />
     <Compile Include="Interface.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Interface.Designer.cs">
       <DependentUpon>Interface.cs</DependentUpon>
     </Compile>
-    <Compile Include="Modelo\LigaFusao.cs" />
     <Compile Include="Modelo\LinhaProducao.cs" />
     <Compile Include="Modelo\ParametrosBD.cs" />
     <Compile Include="Modelo\ProducaoCMW1.cs" />

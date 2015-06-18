@@ -47,6 +47,7 @@ namespace Planeamento
             CapacidadeKgsSemanal = CapacidadeFusoes * (CapacidadeForno1 + CapacidadeForno2 + CapacidadeForno3 + CapacidadeForno4) / 4;
         }
 
+        #region Planeamento
 
         public void ExecutaPlaneamento()
         {
@@ -91,6 +92,8 @@ namespace Planeamento
                 Plano.Rows.Add(planoRow);
             }
         }
+
+        #endregion
 
         #region DivisaoEmGrupos
 
@@ -151,7 +154,7 @@ namespace Planeamento
                 while (pesoAcumulado + caixas * pesoGitos > pesoGrupo)
                 {
                     int caixasJuntar = (int) Math.Ceiling ((pesoGrupo - pesoAcumulado) / pesoGitos);
-                    grupo.AddLinha(id, pesoGitos, tempoMachos, caixasJuntar);
+                    grupo.AddLinha(id, pesoGitos, tempoMachos, caixasJuntar,1);
                     Grupos.Add(grupo.Clone());
                     caixas -= caixasJuntar;
                     pesoAcumulado = 0;
@@ -160,7 +163,7 @@ namespace Planeamento
 
                 if (caixas > 0)
                 {
-                    grupo.AddLinha(id, pesoGitos, tempoMachos, caixas);
+                    grupo.AddLinha(id, pesoGitos, tempoMachos, caixas,1);
                     pesoAcumulado += caixas * pesoGitos;
                 }
             }
